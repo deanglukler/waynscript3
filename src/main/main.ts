@@ -23,7 +23,8 @@ export default class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null;
+let queryWindow: BrowserWindow | null = null;
+let listWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -56,7 +57,7 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-const createWindow = async () => {
+const createQueryWindow = async () => {
   if (isDebug) {
     await installExtensions();
   }
@@ -69,7 +70,7 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  mainWindow = new BrowserWindow({
+  queryWindow = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
@@ -81,28 +82,84 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  queryWindow.loadURL(resolveHtmlPath('query.index.html'));
 
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
+  queryWindow.on('ready-to-show', () => {
+    if (!queryWindow) {
       throw new Error('"mainWindow" is not defined');
     }
     if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
+      queryWindow.minimize();
     } else {
-      mainWindow.show();
+      queryWindow.show();
     }
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  queryWindow.on('closed', () => {
+    queryWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
+  const menuBuilder = new MenuBuilder(queryWindow);
   menuBuilder.buildMenu();
 
   // Open urls in the user's browser
-  mainWindow.webContents.setWindowOpenHandler((edata) => {
+  queryWindow.webContents.setWindowOpenHandler((edata) => {
+    shell.openExternal(edata.url);
+    return { action: 'deny' };
+  });
+
+  // Remove this if your app does not use auto updates
+  // eslint-disable-next-line
+  new AppUpdater();
+};
+
+const createListWindow = async () => {
+  if (isDebug) {
+    await installExtensions();
+  }
+
+  const RESOURCES_PATH = app.isPackaged
+    ? path.join(process.resourcesPath, 'assets')
+    : path.join(__dirname, '../../assets');
+
+  const getAssetPath = (...paths: string[]): string => {
+    return path.join(RESOURCES_PATH, ...paths);
+  };
+
+  listWindow = new BrowserWindow({
+    show: false,
+    width: 1024,
+    height: 728,
+    icon: getAssetPath('icon.png'),
+    webPreferences: {
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
+  });
+
+  listWindow.loadURL(resolveHtmlPath('list.index.html'));
+
+  listWindow.on('ready-to-show', () => {
+    if (!listWindow) {
+      throw new Error('"mainWindow" is not defined');
+    }
+    if (process.env.START_MINIMIZED) {
+      listWindow.minimize();
+    } else {
+      listWindow.show();
+    }
+  });
+
+  listWindow.on('closed', () => {
+    listWindow = null;
+  });
+
+  const menuBuilder = new MenuBuilder(listWindow);
+  menuBuilder.buildMenu();
+
+  // Open urls in the user's browser
+  listWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
@@ -127,11 +184,13 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
-    createWindow();
+    createQueryWindow();
+    createListWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow();
+      if (queryWindow === null) createQueryWindow();
+      if (listWindow === null) createListWindow();
     });
   })
   .catch(console.log);

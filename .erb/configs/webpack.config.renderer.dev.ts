@@ -132,8 +132,21 @@ const configuration: webpack.Configuration = {
     new ReactRefreshWebpackPlugin(),
 
     new HtmlWebpackPlugin({
-      filename: path.join('index.html'),
-      template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
+      filename: path.join('query.index.html'),
+      template: path.join(webpackPaths.srcRendererPath, 'query.index.ejs'),
+      minify: {
+        collapseWhitespace: true,
+        removeAttributeQuotes: true,
+        removeComments: true,
+      },
+      isBrowser: false,
+      env: process.env.NODE_ENV,
+      isDevelopment: process.env.NODE_ENV !== 'production',
+      nodeModules: webpackPaths.appNodeModulesPath,
+    }),
+    new HtmlWebpackPlugin({
+      filename: path.join('list.index.html'),
+      template: path.join(webpackPaths.srcRendererPath, 'list.index.ejs'),
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,
