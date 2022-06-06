@@ -1,3 +1,5 @@
+import { Filebrowse } from './queryComponents/FileBrowse';
+
 export default function QueryApp() {
-  return <div>hi from query</div>;
+  return <Filebrowse />;
 }

@@ -2,8 +2,10 @@ import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 
 import MenuBuilder from '../menu';
+import { Channels } from '../preload';
 import { AvailableWindows } from '../types';
 import { resolveHtmlPath } from '../util';
+import getAssetPath from './getAssetPath';
 import installExtensions from './installExtensions';
 
 export default class Windows {
@@ -26,14 +28,6 @@ export default class Windows {
     if (windowKey === 'listWindow') {
       indexFileName = 'list.index.html';
     }
-
-    const RESOURCES_PATH = app.isPackaged
-      ? path.join(process.resourcesPath, 'assets')
-      : path.join(__dirname, '../../assets');
-
-    const getAssetPath = (...paths: string[]): string => {
-      return path.join(RESOURCES_PATH, ...paths);
-    };
 
     this.windows[windowKey] = new BrowserWindow({
       show: false,
@@ -82,8 +76,9 @@ export default class Windows {
   /**
    * createQueryWindow
    */
-  public createQueryWindow() {
-    this.createWindow('queryWindow');
+  public async createQueryWindow() {
+    await this.createWindow('queryWindow');
+    console.log('\nQuery Window Created\n');
   }
 
   /**
@@ -103,5 +98,20 @@ export default class Windows {
       this.createListWindow.bind(this)
     );
     menuBuilder.buildMenu();
+  }
+
+  /**
+   * sendWindowMessage
+   */
+  public sendWindowMessage(
+    target: keyof AvailableWindows,
+    ch: Channels,
+    payload: string
+  ) {
+    const window = this.windows[target];
+    if (window == null) {
+      throw new Error('IPC: Main: Target window does not exist');
+    }
+    window.webContents.send(ch, payload);
   }
 }

@@ -11,6 +11,8 @@ module.exports = {
     'no-lone-blocks': 'off',
     'prefer-destructuring': 'warn',
     'class-methods-use-this': 'warn',
+    'jsx-a11y/click-events-have-key-events': 'warn',
+    'jsx-a11y/no-static-element-interactions': 'warn',
   },
   parserOptions: {
     ecmaVersion: 2020,

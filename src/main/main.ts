@@ -8,14 +8,9 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, ipcMain } from 'electron';
+import { app } from 'electron';
+import IPC from './utils/IPC';
 import Windows from './utils/Windows';
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -60,3 +55,7 @@ app
     });
   })
   .catch(console.log);
+
+// new FileScan();
+// eslint-disable-next-line no-new
+new IPC();
