@@ -8,23 +8,8 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
-import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
-
-export default class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
-
-let queryWindow: BrowserWindow | null = null;
-let listWindow: BrowserWindow | null = null;
+import { app, ipcMain } from 'electron';
+import Windows from './utils/Windows';
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -44,130 +29,7 @@ if (isDebug) {
   require('electron-debug')();
 }
 
-const installExtensions = async () => {
-  const installer = require('electron-devtools-installer');
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
-
-  return installer
-    .default(
-      extensions.map((name) => installer[name]),
-      forceDownload
-    )
-    .catch(console.log);
-};
-
-const createQueryWindow = async () => {
-  if (isDebug) {
-    await installExtensions();
-  }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
-
-  queryWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
-    icon: getAssetPath('icon.png'),
-    webPreferences: {
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-  });
-
-  queryWindow.loadURL(resolveHtmlPath('query.index.html'));
-
-  queryWindow.on('ready-to-show', () => {
-    if (!queryWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
-    if (process.env.START_MINIMIZED) {
-      queryWindow.minimize();
-    } else {
-      queryWindow.show();
-    }
-  });
-
-  queryWindow.on('closed', () => {
-    queryWindow = null;
-  });
-
-  const menuBuilder = new MenuBuilder(queryWindow);
-  menuBuilder.buildMenu();
-
-  // Open urls in the user's browser
-  queryWindow.webContents.setWindowOpenHandler((edata) => {
-    shell.openExternal(edata.url);
-    return { action: 'deny' };
-  });
-
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
-};
-
-const createListWindow = async () => {
-  if (isDebug) {
-    await installExtensions();
-  }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
-
-  listWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
-    icon: getAssetPath('icon.png'),
-    webPreferences: {
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
-    },
-  });
-
-  listWindow.loadURL(resolveHtmlPath('list.index.html'));
-
-  listWindow.on('ready-to-show', () => {
-    if (!listWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
-    if (process.env.START_MINIMIZED) {
-      listWindow.minimize();
-    } else {
-      listWindow.show();
-    }
-  });
-
-  listWindow.on('closed', () => {
-    listWindow = null;
-  });
-
-  const menuBuilder = new MenuBuilder(listWindow);
-  menuBuilder.buildMenu();
-
-  // Open urls in the user's browser
-  listWindow.webContents.setWindowOpenHandler((edata) => {
-    shell.openExternal(edata.url);
-    return { action: 'deny' };
-  });
-
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
-};
+const windows = new Windows(isDebug);
 
 /**
  * Add event listeners...
@@ -183,14 +45,18 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
-    createQueryWindow();
-    createListWindow();
-    app.on('activate', () => {
+  .then(async () => {
+    windows.createListWindow();
+    windows.createQueryWindow();
+    app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (queryWindow === null) createQueryWindow();
-      if (listWindow === null) createListWindow();
+      if (windows.windows.queryWindow === null) {
+        windows.createQueryWindow();
+      }
+      if (windows.windows.listWindow === null) {
+        windows.createListWindow();
+      }
     });
   })
   .catch(console.log);
