@@ -20,11 +20,25 @@ export const addDirectory = (dirPath: string) => {
   return runQuery(sql);
 };
 
-export const removeDirectory = (dirPath: string) =>
-  runQuery(`DELETE FROM directories WHERE path = '${dirPath}';`);
+export const removeDirectory = (dirPath: string) => {
+  const sql = SqlString.format('DELETE FROM directories WHERE path = ?', [
+    dirPath,
+  ]);
+  return runQuery(sql);
+};
 
-export const activateDir = (dirPath: string) =>
-  runQuery(`UPDATE directories SET active=TRUE WHERE path = '${dirPath}';`);
+export const activateDir = (dirPath: string) => {
+  const sql = SqlString.format(
+    'UPDATE directories SET active=TRUE WHERE path = ?',
+    [dirPath]
+  );
+  return runQuery(sql);
+};
 
-export const deActivateDir = (dirPath: string) =>
-  runQuery(`UPDATE directories SET active=FALSE WHERE path = '${dirPath}';`);
+export const deActivateDir = (dirPath: string) => {
+  const sql = SqlString.format(
+    'UPDATE directories SET active=FALSE WHERE path = ?',
+    [dirPath]
+  );
+  return runQuery(sql);
+};

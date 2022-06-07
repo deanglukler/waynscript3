@@ -16,21 +16,21 @@ export const runQuery = (q: string) => {
 export const resetDatabase = () => {
   // samples
   runQuery(`DROP TABLE IF EXISTS samples;`);
-  let sql = `CREATE TABLE "samples" (
+  const samplesSQL = `CREATE TABLE "samples" (
     "id"	INTEGER NOT NULL UNIQUE,
     "path"	TEXT NOT NULL,
     PRIMARY KEY("id" AUTOINCREMENT)
     UNIQUE(path) ON CONFLICT REPLACE
   );`;
-  runQuery(sql);
+  runQuery(samplesSQL);
 
-  // directories
+  // // directories
   // runQuery(`DROP TABLE IF EXISTS directories;`);
-  // sql = `CREATE TABLE "directories" (
+  // const dirsSQL = `CREATE TABLE "directories" (
   //   "id"	INTEGER NOT NULL UNIQUE,
   //   "path"	TEXT NOT NULL,
   //   "active"	INTEGER NOT NULL,
   //   PRIMARY KEY("id" AUTOINCREMENT)
   // );`;
-  // runQuery(sql);
+  // runQuery(dirsSQL);
 };
