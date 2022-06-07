@@ -10,7 +10,6 @@
  */
 import { app } from 'electron';
 import Directories from './utils/Directories';
-import IPC from './utils/IPC';
 import Windows from './utils/Windows';
 
 if (process.env.NODE_ENV === 'production') {
@@ -58,6 +57,6 @@ app
   .catch(console.log);
 
 // new FileScan();
-const dirs = new Directories();
+new Directories();
 // eslint-disable-next-line no-new
-new IPC(dirs);
+// new IPC(dirs);
