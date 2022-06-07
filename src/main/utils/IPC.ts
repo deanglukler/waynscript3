@@ -9,7 +9,7 @@ const logMainOn = (arg: string, ch: string) => {
 };
 
 export default class IPC {
-  constructor() {
+  constructor(public dirs: Directories) {
     ipcMain.on('CHOOSE_DIR', (event, arg) => {
       logMainOn(arg, 'CHOOSE_DIR');
       const selectedPaths = dialog.showOpenDialogSync({
@@ -20,25 +20,34 @@ export default class IPC {
       }
       const path = selectedPaths[0];
 
-      const dirs = new Directories();
-      dirs.addDirectory(path);
-      event.reply('DIR_LIST', JSON.stringify(dirs.getDirectories()));
+      this.dirs.addDirectory(path);
+      this.dirs.replyToEventWithDirList(event);
     });
 
     ipcMain.on('REMOVE_DIR', (event, arg) => {
       logMainOn(arg, 'REMOVE_DIR');
       const path = arg[0];
-      const dirs = new Directories();
-      dirs.removeDirectory(path);
-      const dirList = dirs.getDirectories();
-      event.reply('DIR_LIST', JSON.stringify(dirList));
+      this.dirs.removeDirectory(path);
+      this.dirs.replyToEventWithDirList(event);
     });
 
     ipcMain.on('SYNC_QUERY_VIEW', (event, arg) => {
       logMainOn(arg, 'SYNC_QUERY_VIEW');
-      const dirs = new Directories();
-      const dirList = dirs.getDirectories();
-      event.reply('DIR_LIST', JSON.stringify(dirList));
+      this.dirs.replyToEventWithDirList(event);
+    });
+
+    ipcMain.on('ACTIVATE_DIR', (event, arg) => {
+      logMainOn(arg, 'ACTIVATE_DIR');
+      const path = arg[0];
+      this.dirs.activateDir(path);
+      this.dirs.replyToEventWithDirList(event);
+    });
+
+    ipcMain.on('DEACTIVATE_DIR', (event, arg) => {
+      logMainOn(arg, 'DEACTIVATE_DIR');
+      const path = arg[0];
+      this.dirs.deActivateDir(path);
+      this.dirs.replyToEventWithDirList(event);
     });
   }
 }

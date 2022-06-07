@@ -1,5 +1,6 @@
 import { Directory } from '../types';
-import db, { logQuery } from './db';
+import db from './db';
+import { logQuery, runQuery } from './utils';
 
 export const getDirectories = () => {
   const sql = `SELECT * FROM directories;`;
@@ -9,18 +10,16 @@ export const getDirectories = () => {
   return res as Directory[];
 };
 
-export const addDirectory = (dirPath: string) => {
-  const sql = `INSERT INTO directories (path, active) VALUES ('${dirPath}', TRUE);`;
-  logQuery(sql);
-  const stmt = db.prepare(sql);
-  const res = stmt.run();
-  return res;
-};
+export const addDirectory = (dirPath: string) =>
+  runQuery(
+    `INSERT INTO directories (path, active) VALUES ('${dirPath}', TRUE);`
+  );
 
-export const removeDirectory = (dirPath: string) => {
-  const sql = `DELETE FROM directories WHERE path = '${dirPath}';`;
-  logQuery(sql);
-  const stmt = db.prepare(sql);
-  const res = stmt.run();
-  return res;
-};
+export const removeDirectory = (dirPath: string) =>
+  runQuery(`DELETE FROM directories WHERE path = '${dirPath}';`);
+
+export const activateDir = (dirPath: string) =>
+  runQuery(`UPDATE directories SET active=TRUE WHERE path = '${dirPath}';`);
+
+export const deActivateDir = (dirPath: string) =>
+  runQuery(`UPDATE directories SET active=FALSE WHERE path = '${dirPath}';`);

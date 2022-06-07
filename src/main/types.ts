@@ -7,5 +7,5 @@ export interface AvailableWindows {
 
 export interface Directory {
   path: string;
-  active: boolean;
+  active: 0 | 1;
 }

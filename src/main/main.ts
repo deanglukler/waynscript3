@@ -9,6 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app } from 'electron';
+import Directories from './utils/Directories';
 import IPC from './utils/IPC';
 import Windows from './utils/Windows';
 
@@ -57,5 +58,6 @@ app
   .catch(console.log);
 
 // new FileScan();
+const dirs = new Directories();
 // eslint-disable-next-line no-new
-new IPC();
+new IPC(dirs);

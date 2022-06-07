@@ -4,7 +4,9 @@ export type Channels =
   | 'CHOOSE_DIR'
   | 'REMOVE_DIR'
   | 'DIR_LIST'
-  | 'SYNC_QUERY_VIEW';
+  | 'SYNC_QUERY_VIEW'
+  | 'ACTIVATE_DIR'
+  | 'DEACTIVATE_DIR';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -15,10 +17,13 @@ contextBridge.exposeInMainWorld('electron', {
     //
     //
     on(channel: Channels, func: (...args: unknown[]) => void) {
-      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
-        func(...args);
+      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) => {
+        console.log(`*** on: ${channel} ***`);
+        console.log(args);
+        console.log(`***`);
+        return func(...args);
+      };
       ipcRenderer.on(channel, subscription);
-      console.log(`*** on: ${channel} ***`);
 
       return () => ipcRenderer.removeListener(channel, subscription);
     },

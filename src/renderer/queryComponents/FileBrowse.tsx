@@ -1,4 +1,6 @@
+import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+
 import { Directory } from '../../main/types';
 
 export function Filebrowse(): JSX.Element {
@@ -14,7 +16,7 @@ export function Filebrowse(): JSX.Element {
 
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on('DIR_LIST', (arg) => {
-      setDirs(JSON.parse(arg as string) as Directory[]);
+      setDirs(arg as Directory[]);
     });
     return cleanup;
   }, []);
@@ -27,7 +29,8 @@ export function Filebrowse(): JSX.Element {
       {dirs.map((dir) => {
         return (
           <div key={dir.path}>
-            <span
+            <Button
+              component="span"
               onClick={() =>
                 window.electron.ipcRenderer.sendMessage('REMOVE_DIR', [
                   dir.path,
@@ -35,8 +38,31 @@ export function Filebrowse(): JSX.Element {
               }
             >
               REMOVE
-            </span>
-            {dir.path}
+            </Button>
+            <Button
+              component="span"
+              disabled={dir.active === 1}
+              onClick={() =>
+                window.electron.ipcRenderer.sendMessage('ACTIVATE_DIR', [
+                  dir.path,
+                ])
+              }
+            >
+              ACTIVATE
+            </Button>
+            <Button
+              component="span"
+              disabled={dir.active === 0}
+              onClick={() =>
+                window.electron.ipcRenderer.sendMessage('DEACTIVATE_DIR', [
+                  dir.path,
+                ])
+              }
+            >
+              HIDE
+            </Button>
+
+            <Typography>{dir.path}</Typography>
           </div>
         );
       })}

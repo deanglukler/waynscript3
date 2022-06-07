@@ -1,4 +1,5 @@
-import db, { logQuery } from './db';
+import db from './db';
+import { logQuery } from './utils';
 
 export const insertSample = (path: string) => {
   const sql = `INSERT INTO samples (path) VALUES ('${path}');`;
