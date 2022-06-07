@@ -15,6 +15,7 @@ module.exports = {
     'jsx-a11y/no-static-element-interactions': 'warn',
     'no-plusplus': 'off',
     'no-console': 'off',
+    radix: 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

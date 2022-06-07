@@ -12,6 +12,8 @@ export interface Directory {
 
 export interface AnalyzedFile {
   path: string;
+  bpm: number | null;
+  key: Keys | null;
 }
 
 export interface ScanProgress {
@@ -27,4 +29,37 @@ export interface WindowInfo {
   height: number;
   x: number | undefined;
   y: number | undefined;
+}
+
+export enum Keys {
+  A_FLAT_MAJ = 'A_FLAT_MAJ',
+  A_FLAT_MIN = 'A_FLAT_MIN',
+  A_NAT_MAJ = 'A_NAT_MAJ',
+  A_NAT_MIN = 'A_NAT_MIN',
+
+  B_FLAT_MAJ = 'B_FLAT_MAJ',
+  B_FLAT_MIN = 'B_FLAT_MIN',
+  B_NAT_MAJ = 'B_NAT_MAJ',
+  B_NAT_MIN = 'B_NAT_MIN',
+
+  C_NAT_MAJ = 'C_NAT_MAJ',
+  C_NAT_MIN = 'C_NAT_MIN',
+
+  D_FLAT_MAJ = 'D_FLAT_MAJ',
+  D_FLAT_MIN = 'D_FLAT_MIN',
+  D_NAT_MAJ = 'D_NAT_MAJ',
+  D_NAT_MIN = 'D_NAT_MIN',
+
+  E_FLAT_MAJ = 'E_FLAT_MAJ',
+  E_FLAT_MIN = 'E_FLAT_MIN',
+  E_NAT_MAJ = 'E_NAT_MAJ',
+  E_NAT_MIN = 'E_NAT_MIN',
+
+  F_NAT_MAJ = 'F_NAT_MAJ',
+  F_NAT_MIN = 'F_NAT_MIN',
+
+  G_FLAT_MAJ = 'G_FLAT_MAJ',
+  G_FLAT_MIN = 'G_FLAT_MIN',
+  G_NAT_MAJ = 'G_NAT_MAJ',
+  G_NAT_MIN = 'G_NAT_MIN',
 }

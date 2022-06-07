@@ -4,6 +4,8 @@ import path from 'path';
 
 import { insertSamples } from '../db/samples';
 import { AnalyzedFile, ScanProgress } from '../types';
+import { Bpm } from './BPM';
+import { Key } from './Key';
 
 export const audioExts = ['.wav', '.aiff', '.mp3'];
 
@@ -33,15 +35,13 @@ export const allAudioFilesInDir = (dir: string): string[] => {
   return recursiveFileList(dir, audioExts, false);
 };
 
-const analyzeFile = (filePath: string) => {
-  // const bpm = new BpmAnal(filePath);
-  // const key = new KeyAnal(filePath);
-  // const tags = new TagAnal(filePath);
+const analyzeFile = (filePath: string): AnalyzedFile => {
+  const bpm = new Bpm(filePath);
+  const key = new Key(filePath);
   return {
     path: filePath,
-    // bpm: bpm.bpm,
-    // key: key.key,
-    // tags: tags.tags,
+    bpm: bpm.bpm,
+    key: key.key,
   };
 };
 

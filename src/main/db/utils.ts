@@ -14,15 +14,17 @@ export const runQuery = (q: string) => {
 };
 
 export const resetDatabase = () => {
-  // // samples
-  // runQuery(`DROP TABLE IF EXISTS samples;`);
-  // const samplesSQL = `CREATE TABLE "samples" (
-  //   "id"	INTEGER NOT NULL UNIQUE,
-  //   "path"	TEXT NOT NULL,
-  //   PRIMARY KEY("id" AUTOINCREMENT)
-  //   UNIQUE(path) ON CONFLICT REPLACE
-  // );`;
-  // runQuery(samplesSQL);
+  // samples
+  runQuery(`DROP TABLE IF EXISTS samples;`);
+  const samplesSQL = `CREATE TABLE "samples" (
+    "id"	INTEGER NOT NULL UNIQUE,
+    "path"	TEXT NOT NULL,
+    "bpm"	INTEGER,
+    "key"	TEXT,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    UNIQUE("path") ON CONFLICT REPLACE
+  );`;
+  runQuery(samplesSQL);
 
   // // directories
   // runQuery(`DROP TABLE IF EXISTS directories;`);
@@ -34,22 +36,22 @@ export const resetDatabase = () => {
   // );`;
   // runQuery(dirsSQL);
 
-  // windows
-  runQuery(`DROP TABLE IF EXISTS windows;`);
-  const windowsSQL = `CREATE TABLE "windows" (
-    "id"	INTEGER NOT NULL UNIQUE,
-    "name"	TEXT NOT NULL UNIQUE,
-    "width"	INTEGER NOT NULL,
-    "height"	INTEGER NOT NULL,
-    "x"	INTEGER,
-    "y"	INTEGER,
-    PRIMARY KEY("id" AUTOINCREMENT)
-  );`;
-  runQuery(windowsSQL);
-  runQuery(
-    `INSERT INTO windows (name,width,height) VALUES ('queryWindow',900,700);`
-  );
-  runQuery(
-    `INSERT INTO windows (name,width,height) VALUES ('listWindow',400,700);`
-  );
+  // // windows
+  // runQuery(`DROP TABLE IF EXISTS windows;`);
+  // const windowsSQL = `CREATE TABLE "windows" (
+  //   "id"	INTEGER NOT NULL UNIQUE,
+  //   "name"	TEXT NOT NULL UNIQUE,
+  //   "width"	INTEGER NOT NULL,
+  //   "height"	INTEGER NOT NULL,
+  //   "x"	INTEGER,
+  //   "y"	INTEGER,
+  //   PRIMARY KEY("id" AUTOINCREMENT)
+  // );`;
+  // runQuery(windowsSQL);
+  // runQuery(
+  //   `INSERT INTO windows (name,width,height) VALUES ('queryWindow',900,700);`
+  // );
+  // runQuery(
+  //   `INSERT INTO windows (name,width,height) VALUES ('listWindow',400,700);`
+  // );
 };
