@@ -19,3 +19,12 @@ export interface ScanProgress {
   scanned: number;
   total: number;
 }
+
+export interface WindowInfo {
+  id?: number;
+  name?: string;
+  width: number;
+  height: number;
+  x: number | undefined;
+  y: number | undefined;
+}

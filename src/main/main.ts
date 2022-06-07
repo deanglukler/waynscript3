@@ -58,6 +58,15 @@ app
   })
   .catch(console.log);
 
+process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+  console.log('\nUnhandled Rejection at:');
+  console.log(reason?.stack || reason);
+});
+process.on('uncaughtException', (err) => {
+  console.log('\nuncaught exception:');
+  console.log(err);
+});
+
 // new FileScan();
 new Directories();
 // new IPC(dirs);

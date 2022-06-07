@@ -1,9 +1,11 @@
 import { app, BrowserWindow, shell } from 'electron';
+import _ from 'lodash';
 import path from 'path';
+import { getListWindow, getQueryWindow, updateWindow } from '../db/windows';
 
 import MenuBuilder from '../menu';
 import { Channels } from '../preload';
-import { AvailableWindows } from '../types';
+import { AvailableWindows, WindowInfo } from '../types';
 import { resolveHtmlPath } from '../util';
 import getAssetPath from './getAssetPath';
 import installExtensions from './installExtensions';
@@ -22,17 +24,24 @@ export default class Windows {
     }
 
     let indexFileName = '';
+    let windowInfo: WindowInfo = {
+      width: 1024,
+      height: 728,
+      x: undefined,
+      y: undefined,
+    };
     if (windowKey === 'queryWindow') {
       indexFileName = 'query.index.html';
+      windowInfo = { ...getQueryWindow() };
     }
     if (windowKey === 'listWindow') {
       indexFileName = 'list.index.html';
+      windowInfo = { ...getListWindow() };
     }
 
     this.windows[windowKey] = new BrowserWindow({
+      ...windowInfo,
       show: false,
-      width: 1024,
-      height: 728,
       icon: getAssetPath('icon.png'),
       webPreferences: {
         preload: app.isPackaged
@@ -61,6 +70,16 @@ export default class Windows {
     window.on('closed', () => {
       this.windows[windowKey] = null;
     });
+
+    const updateWindowBounds = () => {
+      updateWindow({
+        ...window.getBounds(),
+        name: windowKey,
+      });
+    };
+
+    window.on('resized', updateWindowBounds);
+    window.on('moved', _.debounce(updateWindowBounds, 500));
 
     // Open urls in the user's browser
     window.webContents.setWindowOpenHandler((edata) => {
