@@ -6,16 +6,16 @@ export type Channels =
   | 'DIR_LIST'
   | 'SYNC_QUERY_VIEW'
   | 'ACTIVATE_DIR'
-  | 'DEACTIVATE_DIR';
+  | 'DEACTIVATE_DIR'
+  | 'SCAN_DIR'
+  | 'UPDATE_SCAN_PROGRESS'
+  | 'RESET_DB';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
     sendMessage(channel: Channels, args: unknown[]) {
       ipcRenderer.send(channel, args);
     },
-    //
-    //
-    //
     on(channel: Channels, func: (...args: unknown[]) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) => {
         console.log(`*** on: ${channel} ***`);

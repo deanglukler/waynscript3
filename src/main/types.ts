@@ -9,3 +9,13 @@ export interface Directory {
   path: string;
   active: 0 | 1;
 }
+
+export interface AnalyzedFile {
+  path: string;
+}
+
+export interface ScanProgress {
+  finished: boolean;
+  scanned: number;
+  total: number;
+}

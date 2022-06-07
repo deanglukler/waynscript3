@@ -7,6 +7,7 @@ import {
   removeDirectory,
 } from '../db/directories';
 import { Directory } from '../types';
+import FileScan from './FileScan';
 import { logMainOn } from './log';
 
 export default class Directories {
@@ -38,6 +39,7 @@ export default class Directories {
 
     ipcMain.on('SYNC_QUERY_VIEW', (event, arg) => {
       logMainOn(arg, 'SYNC_QUERY_VIEW');
+      this.refreshDirs();
       this.replyToEventWithDirList(event);
     });
 
@@ -52,6 +54,14 @@ export default class Directories {
       logMainOn(arg, 'DEACTIVATE_DIR');
       const path = arg[0];
       this.deActivateDir(path);
+      this.replyToEventWithDirList(event);
+    });
+
+    ipcMain.on('SCAN_DIR', (event, arg) => {
+      logMainOn(arg, 'SCAN_DIR');
+      const path = arg[0];
+      const fScan = new FileScan(path);
+      fScan.updateProgressWithEvent(event);
       this.replyToEventWithDirList(event);
     });
   }

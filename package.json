@@ -112,12 +112,15 @@
     "@emotion/styled": "^11.8.1",
     "@mui/material": "^5.8.2",
     "@mui/types": "^7.1.3",
+    "@types/lodash": "^4.14.182",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.7",
     "electron-updater": "^5.0.1",
+    "lodash": "^4.17.21",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "sqlstring-sqlite": "^0.1.1"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.6",

@@ -13,6 +13,8 @@ module.exports = {
     'class-methods-use-this': 'warn',
     'jsx-a11y/click-events-have-key-events': 'warn',
     'jsx-a11y/no-static-element-interactions': 'warn',
+    'no-plusplus': 'off',
+    'no-console': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

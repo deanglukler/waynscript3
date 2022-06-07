@@ -1,10 +1,11 @@
-import { Button, Typography } from '@mui/material';
+import { Box, Button, LinearProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { Directory } from '../../main/types';
+import { Directory, ScanProgress } from '../../main/types';
 
 export function Filebrowse(): JSX.Element {
   const [dirs, setDirs] = useState<Directory[]>([]);
+  const [scanProgress, setScanProgress] = useState<ScanProgress | null>(null);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('SYNC_QUERY_VIEW', []);
@@ -14,6 +15,10 @@ export function Filebrowse(): JSX.Element {
     window.electron.ipcRenderer.sendMessage('CHOOSE_DIR', []);
   }
 
+  function handleDBReset() {
+    window.electron.ipcRenderer.sendMessage('RESET_DB', []);
+  }
+
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on('DIR_LIST', (arg) => {
       setDirs(arg as Directory[]);
@@ -21,11 +26,38 @@ export function Filebrowse(): JSX.Element {
     return cleanup;
   }, []);
 
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'UPDATE_SCAN_PROGRESS',
+      (arg) => {
+        const scanProgressInfo = arg as ScanProgress;
+        if (scanProgressInfo.finished) {
+          setScanProgress(null);
+        } else {
+          setScanProgress(scanProgressInfo);
+        }
+      }
+    );
+    return cleanup;
+  }, []);
+
+  const renderProgress = () => {
+    if (!scanProgress) return null;
+    return (
+      <Box sx={{ width: '100%' }}>
+        <LinearProgress
+          variant="determinate"
+          value={(scanProgress.scanned / scanProgress.total) * 100}
+        />
+      </Box>
+    );
+  };
+
   return (
-    <div>
-      <button className="scrub-button" onClick={handleFolderSelect}>
-        Add Folder
-      </button>
+    <Box>
+      {renderProgress()}
+      <button onClick={handleDBReset}>Reset DB</button>
+      <button onClick={handleFolderSelect}>Add Folder</button>
       {dirs.map((dir) => {
         return (
           <div key={dir.path}>
@@ -61,11 +93,20 @@ export function Filebrowse(): JSX.Element {
             >
               HIDE
             </Button>
+            <Button
+              component="span"
+              color="secondary"
+              onClick={() =>
+                window.electron.ipcRenderer.sendMessage('SCAN_DIR', [dir.path])
+              }
+            >
+              SCAN
+            </Button>
 
             <Typography>{dir.path}</Typography>
           </div>
         );
       })}
-    </div>
+    </Box>
   );
 }

@@ -1,10 +1,14 @@
-import db from './db';
-import { logQuery } from './utils';
+import SqlString from 'sqlstring-sqlite';
+import { AnalyzedFile } from '../types';
+import { runQuery } from './utils';
 
-export const insertSample = (path: string) => {
-  const sql = `INSERT INTO samples (path) VALUES ('${path}');`;
-  logQuery(sql);
-  const stmt = db.prepare(sql);
-  const res = stmt.run();
-  return res;
+export const insertSample = (path: string) =>
+  runQuery(`INSERT INTO samples (path) VALUES ('${path}');`);
+
+export const insertSamples = (samples: AnalyzedFile[]) => {
+  const samplesSQL = samples.map((sample) => [sample.path]);
+  const sql = SqlString.format('INSERT INTO samples (path) VALUES ?', [
+    samplesSQL,
+  ]);
+  return runQuery(sql);
 };

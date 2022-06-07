@@ -1,3 +1,4 @@
+/* eslint-disable no-new */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 /**
@@ -9,6 +10,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app } from 'electron';
+import Database from './utils/Database';
 import Directories from './utils/Directories';
 import Windows from './utils/Windows';
 
@@ -58,5 +60,5 @@ app
 
 // new FileScan();
 new Directories();
-// eslint-disable-next-line no-new
 // new IPC(dirs);
+new Database();

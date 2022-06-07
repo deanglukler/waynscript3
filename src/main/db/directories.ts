@@ -1,3 +1,5 @@
+import SqlString from 'sqlstring-sqlite';
+
 import { Directory } from '../types';
 import db from './db';
 import { logQuery, runQuery } from './utils';
@@ -10,10 +12,13 @@ export const getDirectories = () => {
   return res as Directory[];
 };
 
-export const addDirectory = (dirPath: string) =>
-  runQuery(
-    `INSERT INTO directories (path, active) VALUES ('${dirPath}', TRUE);`
+export const addDirectory = (dirPath: string) => {
+  const sql = SqlString.format(
+    'INSERT INTO directories (path, active) VALUES (?, TRUE)',
+    [dirPath]
   );
+  return runQuery(sql);
+};
 
 export const removeDirectory = (dirPath: string) =>
   runQuery(`DELETE FROM directories WHERE path = '${dirPath}';`);
