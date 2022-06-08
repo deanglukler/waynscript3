@@ -13,6 +13,14 @@ export const runQuery = (q: string) => {
   return res;
 };
 
+export const getQuery = <T>(q: string) => {
+  const sql = q;
+  logQuery(sql);
+  const stmt = db.prepare(sql);
+  const res = stmt.get();
+  return res as T;
+};
+
 export const resetDatabase = () => {
   // samples
   runQuery(`DROP TABLE IF EXISTS samples;`);
@@ -54,4 +62,13 @@ export const resetDatabase = () => {
   // runQuery(
   //   `INSERT INTO windows (name,width,height) VALUES ('listWindow',400,700);`
   // );
+
+  // queries
+  runQuery(`DROP TABLE IF EXISTS queries;`);
+  const querySQL = `CREATE TABLE "queries" (
+    "id"	INTEGER NOT NULL UNIQUE,
+    "query"	TEXT NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT)
+  );`;
+  runQuery(querySQL);
 };

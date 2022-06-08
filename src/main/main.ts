@@ -12,6 +12,7 @@
 import { app } from 'electron';
 import Database from './utils/Database';
 import Directories from './utils/Directories';
+import { Queries } from './utils/Queries';
 import Windows from './utils/Windows';
 
 if (process.env.NODE_ENV === 'production') {
@@ -71,3 +72,4 @@ process.on('uncaughtException', (err) => {
 new Directories();
 // new IPC(dirs);
 new Database();
+new Queries();

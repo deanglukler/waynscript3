@@ -1,3 +1,4 @@
+import { Action } from 'easy-peasy';
 import { BrowserWindow } from 'electron';
 
 export interface AvailableWindows {
@@ -62,4 +63,23 @@ export enum Keys {
   G_FLAT_MIN = 'G_FLAT_MIN',
   G_NAT_MAJ = 'G_NAT_MAJ',
   G_NAT_MIN = 'G_NAT_MIN',
+}
+
+type Bpms = number[];
+
+export interface QueryStoreModel {
+  initializing: boolean;
+  initialized: Action<QueryStoreModel>;
+  initQueryParams: Action<QueryStoreModel, Query>;
+  bpms: Bpms;
+  toggleBpm: Action<QueryStoreModel, number>;
+}
+
+export interface Query {
+  bpms: Bpms;
+}
+
+export interface QueryRow {
+  id: number;
+  query: string;
 }

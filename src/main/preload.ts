@@ -9,7 +9,10 @@ export type Channels =
   | 'DEACTIVATE_DIR'
   | 'SCAN_DIR'
   | 'UPDATE_SCAN_PROGRESS'
-  | 'RESET_DB';
+  | 'RESET_DB'
+  | 'QUERY_UPDATE'
+  | 'REQUEST_INIT_QUERY'
+  | 'RECEIVE_QUERY';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
