@@ -3,7 +3,7 @@ import _ from 'lodash';
 import path from 'path';
 
 import { insertSamples } from '../db/samples';
-import { AnalyzedFile, ScanProgress } from '../types';
+import { Sample, ScanProgress } from '../types';
 import { Bpm } from './BPM';
 import { Key } from './Key';
 
@@ -35,7 +35,7 @@ export const allAudioFilesInDir = (dir: string): string[] => {
   return recursiveFileList(dir, audioExts, false);
 };
 
-const analyzeFile = (filePath: string): AnalyzedFile => {
+const analyzeFile = (filePath: string): Sample => {
   const bpm = new Bpm(filePath);
   const key = new Key(filePath);
   return {
@@ -78,7 +78,7 @@ export default class FileScan {
       const asyncAnalysis = (chunks: string[][]) => {
         if (chunks.length > 0) {
           setTimeout(() => {
-            const analyzedFiles: AnalyzedFile[] = [];
+            const analyzedFiles: Sample[] = [];
             chunks[0].forEach((file) => {
               analyzedFiles.push(analyzeFile(file));
               this.totalFilesAnalyzed++;

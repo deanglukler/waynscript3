@@ -12,7 +12,8 @@ export type Channels =
   | 'RESET_DB'
   | 'QUERY_UPDATE'
   | 'REQUEST_INIT_QUERY'
-  | 'RECEIVE_QUERY';
+  | 'RECEIVE_QUERY'
+  | 'RECEIVE_FILES';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

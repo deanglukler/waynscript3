@@ -1,16 +1,13 @@
 import SqlString from 'sqlstring-sqlite';
 
 import { Directory } from '../types';
-import db from './db';
-import { logQuery, runQuery } from './utils';
+import { allQuery, runQuery } from './utils';
 
-export const getDirectories = () => {
-  const sql = `SELECT * FROM directories;`;
-  logQuery(sql);
-  const stmt = db.prepare(sql);
-  const res = stmt.all();
-  return res as Directory[];
-};
+export const getDirectories = () =>
+  allQuery<Directory>(`SELECT * FROM directories;`);
+
+export const getActiveDirectories = () =>
+  allQuery<Directory>(`SELECT * FROM directories WHERE active=TRUE`);
 
 export const addDirectory = (dirPath: string) => {
   const sql = SqlString.format(

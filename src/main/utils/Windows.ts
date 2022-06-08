@@ -47,6 +47,12 @@ export default class Windows {
         preload: app.isPackaged
           ? path.join(__dirname, 'preload.js')
           : path.join(__dirname, '../../../.erb/dll/preload.js'),
+        // the following allows howler to access files to play
+        // https://www.electronjs.org/docs/latest/tutorial/security#6-do-not-disable-websecurity
+        // webSecurity boolean (optional) - When false, it will disable the same-origin policy (usually using testing websites by people), and set allowRunningInsecureContent to true if this options has not been set by user. Default is true.
+        webSecurity: false,
+        // allowRunningInsecureContent boolean (optional) - Allow an https page to run JavaScript, CSS or plugins from http URLs. Default is false.
+        allowRunningInsecureContent: false,
       },
     });
 
@@ -125,7 +131,7 @@ export default class Windows {
   public sendWindowMessage(
     target: keyof AvailableWindows,
     ch: Channels,
-    payload: string
+    payload: unknown
   ) {
     const window = this.windows[target];
     if (window == null) {

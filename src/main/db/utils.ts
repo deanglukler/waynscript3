@@ -21,6 +21,14 @@ export const getQuery = <T>(q: string) => {
   return res as T;
 };
 
+export const allQuery = <T>(q: string) => {
+  const sql = q;
+  logQuery(sql);
+  const stmt = db.prepare(sql);
+  const res = stmt.all();
+  return res as T[];
+};
+
 export const resetDatabase = () => {
   // samples
   runQuery(`DROP TABLE IF EXISTS samples;`);

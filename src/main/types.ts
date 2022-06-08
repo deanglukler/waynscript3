@@ -11,7 +11,7 @@ export interface Directory {
   active: 0 | 1;
 }
 
-export interface AnalyzedFile {
+export interface Sample {
   path: string;
   bpm: number | null;
   key: Keys | null;

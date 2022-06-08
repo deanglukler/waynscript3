@@ -1,8 +1,9 @@
 import SqlString from 'sqlstring-sqlite';
-import { AnalyzedFile } from '../types';
-import { runQuery } from './utils';
+import { Sample, Query } from '../types';
+import { getActiveDirectories } from './directories';
+import { allQuery, runQuery } from './utils';
 
-export const insertSamples = (samples: AnalyzedFile[]) => {
+export const insertSamples = (samples: Sample[]) => {
   const samplesSQL = samples.map((sample) => [
     sample.path,
     sample.bpm,
@@ -12,4 +13,30 @@ export const insertSamples = (samples: AnalyzedFile[]) => {
     samplesSQL,
   ]);
   return runQuery(sql);
+};
+
+export const getSamplesByQuery = (query: Query) => {
+  const { bpms } = query;
+  let bpmsClause = '';
+  bpmsClause = bpms.map((bpm) => `samples.bpm = ${bpm}`).join(' OR ');
+
+  const activeDirs = getActiveDirectories();
+  const whereClause = activeDirs
+    .map((dir) => {
+      let pathClause = `samples.path LIKE ${SqlString.escape(`%${dir.path}%`)}`;
+      if (bpmsClause) {
+        pathClause = `${pathClause} AND (${bpmsClause})`;
+      }
+      pathClause = `(${pathClause})`;
+      return pathClause;
+    })
+    .join(' OR ');
+
+  let fullClause = 'SELECT * FROM samples';
+  if (whereClause) {
+    fullClause = `${fullClause} WHERE ${whereClause}`;
+  }
+  fullClause = `${fullClause} ORDER BY RANDOM() LIMIT 50;`;
+
+  return allQuery<Sample>(fullClause);
 };

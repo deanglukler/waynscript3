@@ -72,4 +72,4 @@ process.on('uncaughtException', (err) => {
 new Directories();
 // new IPC(dirs);
 new Database();
-new Queries();
+new Queries(windows);
