@@ -1,3 +1,5 @@
+import SqlString from 'sqlstring-sqlite';
+import { Directory } from '../types';
 import db from './db';
 
 export const logQuery = (q: string) => {
@@ -27,6 +29,22 @@ export const allQuery = <T>(q: string) => {
   const stmt = db.prepare(sql);
   const res = stmt.all();
   return res as T[];
+};
+
+export const activeDirsWhereClause = (
+  activeDirs: Directory[],
+  andClause: string
+): string => {
+  return activeDirs
+    .map((dir) => {
+      let pathClause = `samples.path LIKE ${SqlString.escape(`%${dir.path}%`)}`;
+      if (andClause) {
+        pathClause = `${pathClause} AND (${andClause})`;
+      }
+      pathClause = `(${pathClause})`;
+      return pathClause;
+    })
+    .join(' OR ');
 };
 
 export const resetDatabase = () => {

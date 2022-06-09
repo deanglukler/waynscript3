@@ -5,21 +5,41 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from '@mui/material';
 import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { BpmStats } from '../../main/types';
 import { useStoreActions, useStoreState } from '../queryHooks';
 
 export function BPMList(): JSX.Element {
   const bpms = useStoreState((state) => state.bpms);
   const toggleBpm = useStoreActions((actions) => actions.toggleBpm);
+  const [bpmStats, setBpmStats] = useState<BpmStats | null>();
 
   const handleToggle = (value: number) => () => {
     toggleBpm(value);
   };
 
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'BPM_QUERY_STATS',
+      (stats) => {
+        setBpmStats(stats as BpmStats);
+      }
+    );
+    return cleanup;
+  }, []);
+
+  if (!bpmStats || _.keys(bpmStats).length === 0) {
+    return <Typography>No BPMs found</Typography>;
+  }
+
   return (
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      {_.range(50, 200).map((value) => {
+      {_.keys(bpmStats).map((bpm) => {
+        const value = parseInt(bpm);
+        const stats = bpmStats[value];
         const labelId = `checkbox-list-label-${value}`;
 
         return (
@@ -38,7 +58,11 @@ export function BPMList(): JSX.Element {
                   inputProps={{ 'aria-labelledby': labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`${value} bpm`} />
+              <ListItemText
+                id={labelId}
+                primary={`${value} bpm`}
+                secondary={`found: ${stats.amount}`}
+              />
             </ListItemButton>
           </ListItem>
         );

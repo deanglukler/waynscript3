@@ -6,24 +6,37 @@ const typedHooks = createTypedHooks<QueryStoreModel>();
 
 export const { useStoreState, useStoreDispatch, useStoreActions } = typedHooks;
 
-export const useQueryInit = () => {
-  const initQueryParams = useStoreActions((actions) => actions.initQueryParams);
+export const useQueryParamsInit = () => {
+  const updateQueryParams = useStoreActions(
+    (actions) => actions.updateQueryParams
+  );
   const initialized = useStoreActions((actions) => actions.initialized);
+  const updateBpmStats = useStoreActions((actions) => actions.updateBpmStats);
 
   useEffect(() => {
-    console.log('initializing query');
-    window.electron.ipcRenderer.on('RECEIVE_QUERY', (arg) => {
-      initQueryParams(arg as Query);
+    console.log('initializing query params');
+
+    window.electron.ipcRenderer.once('INITIALIZED_QUERY_PARAMS', (arg) => {
       initialized();
     });
-    window.electron.ipcRenderer.sendMessage('REQUEST_INIT_QUERY', []);
-  }, [initQueryParams, initialized]);
+
+    const cleanupQueryParams = window.electron.ipcRenderer.on(
+      'RECEIVE_QUERY',
+      (arg) => {
+        updateQueryParams(arg as Query);
+      }
+    );
+
+    window.electron.ipcRenderer.sendMessage('INIT_QUERY_PARAMS', []);
+
+    return cleanupQueryParams;
+  }, [updateQueryParams, initialized, updateBpmStats]);
 };
 
-export const useQueryUpdate = () => {
+export const useQueryParamsUpdate = () => {
   const bpms = useStoreState((state) => state.bpms);
   const initializing = useStoreState((state) => state.initializing);
-  return useEffect(() => {
+  useEffect(() => {
     if (initializing) {
       return;
     }
@@ -32,6 +45,6 @@ export const useQueryUpdate = () => {
       bpms: [...bpms],
     };
 
-    window.electron.ipcRenderer.sendMessage('QUERY_UPDATE', [query]);
+    window.electron.ipcRenderer.sendMessage('SYNC_QUERY', [query]);
   }, [bpms, initializing]);
 };

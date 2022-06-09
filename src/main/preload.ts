@@ -4,17 +4,19 @@ export type Channels =
   | 'CHOOSE_DIR'
   | 'REMOVE_DIR'
   | 'DIR_LIST'
-  | 'SYNC_QUERY_VIEW'
+  | 'SYNC_FILE_BROWSE'
   | 'ACTIVATE_DIR'
   | 'DEACTIVATE_DIR'
   | 'SCAN_DIR'
   | 'UPDATE_SCAN_PROGRESS'
   | 'RESET_DB'
-  | 'QUERY_UPDATE'
-  | 'REQUEST_INIT_QUERY'
+  | 'SYNC_QUERY'
+  | 'INIT_QUERY_PARAMS'
+  | 'INITIALIZED_QUERY_PARAMS'
   | 'RECEIVE_QUERY'
   | 'RECEIVE_FILES'
-  | 'FILE_DRAG';
+  | 'FILE_DRAG'
+  | 'BPM_QUERY_STATS';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -24,7 +26,7 @@ contextBridge.exposeInMainWorld('electron', {
     on(channel: Channels, func: (...args: unknown[]) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) => {
         console.log(`*** on: ${channel} ***`);
-        console.log(args);
+        console.log(...args);
         console.log(`***`);
         return func(...args);
       };

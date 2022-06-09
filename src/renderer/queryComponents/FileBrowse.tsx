@@ -8,7 +8,7 @@ export function Filebrowse(): JSX.Element {
   const [scanProgress, setScanProgress] = useState<ScanProgress | null>(null);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('SYNC_QUERY_VIEW', []);
+    window.electron.ipcRenderer.sendMessage('SYNC_FILE_BROWSE', []);
   }, []);
 
   function handleFolderSelect() {

@@ -1,7 +1,7 @@
 import SqlString from 'sqlstring-sqlite';
 import { Sample, Query } from '../types';
 import { getActiveDirectories } from './directories';
-import { allQuery, runQuery } from './utils';
+import { activeDirsWhereClause, allQuery, runQuery } from './utils';
 
 export const insertSamples = (samples: Sample[]) => {
   const samplesSQL = samples.map((sample) => [
@@ -16,27 +16,17 @@ export const insertSamples = (samples: Sample[]) => {
 };
 
 export const getSamplesByQuery = (query: Query) => {
+  const activeDirs = getActiveDirectories();
+  if (activeDirs.length === 0) {
+    console.log('\nNO ACTIVE DIRS\n');
+    return [];
+  }
+
   const { bpms } = query;
   let bpmsClause = '';
   bpmsClause = bpms.map((bpm) => `samples.bpm = ${bpm}`).join(' OR ');
 
-  const activeDirs = getActiveDirectories();
-
-  if (activeDirs.length === 0) {
-    console.log('\nNO ACTIVE DIRS ie. No Samples\n');
-    return [];
-  }
-
-  const whereClause = activeDirs
-    .map((dir) => {
-      let pathClause = `samples.path LIKE ${SqlString.escape(`%${dir.path}%`)}`;
-      if (bpmsClause) {
-        pathClause = `${pathClause} AND (${bpmsClause})`;
-      }
-      pathClause = `(${pathClause})`;
-      return pathClause;
-    })
-    .join(' OR ');
+  const whereClause = activeDirsWhereClause(activeDirs, bpmsClause);
 
   let fullClause = 'SELECT * FROM samples';
   if (whereClause) {

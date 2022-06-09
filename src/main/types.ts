@@ -70,9 +70,11 @@ type Bpms = number[];
 export interface QueryStoreModel {
   initializing: boolean;
   initialized: Action<QueryStoreModel>;
-  initQueryParams: Action<QueryStoreModel, Query>;
+  updateQueryParams: Action<QueryStoreModel, Query>;
   bpms: Bpms;
   toggleBpm: Action<QueryStoreModel, number>;
+  bpmStats: BpmStats;
+  updateBpmStats: Action<QueryStoreModel, BpmStats>;
 }
 
 export interface Query {
@@ -82,4 +84,8 @@ export interface Query {
 export interface QueryRow {
   id: number;
   query: string;
+}
+
+export interface BpmStats {
+  [key: number]: { amount: number };
 }

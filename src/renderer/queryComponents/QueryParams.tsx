@@ -1,8 +1,8 @@
-import { useQueryInit, useQueryUpdate } from '../queryHooks';
+import { useQueryParamsInit, useQueryParamsUpdate } from '../queryHooks';
 import { BPMList } from './BPMList';
 
 export function QueryParams(): JSX.Element {
-  useQueryInit();
-  useQueryUpdate();
+  useQueryParamsInit();
+  useQueryParamsUpdate();
   return <BPMList />;
 }
