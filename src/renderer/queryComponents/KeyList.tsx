@@ -9,37 +9,38 @@ import {
 } from '@mui/material';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { BpmStats } from '../../main/types';
+import { KeyStats } from '../../main/types';
 import { useStoreActions, useStoreState } from '../queryHooks';
 
-export function BPMList(): JSX.Element {
-  const bpms = useStoreState((state) => state.bpms);
-  const toggleBpm = useStoreActions((actions) => actions.toggleBpm);
-  const [bpmStats, setBpmStats] = useState<BpmStats | null>(null);
+export function KeyList() {
+  const keys = useStoreState((state) => state.keys);
 
-  const handleToggle = (value: number) => () => {
-    toggleBpm(value);
+  const toggleKey = useStoreActions((actions) => actions.toggleKey);
+  const [keyStats, setKeyStats] = useState<KeyStats | null>(null);
+
+  const handleToggle = (value: string) => () => {
+    toggleKey(value);
   };
 
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on(
-      'BPM_QUERY_STATS',
+      'KEY_QUERY_STATS',
       (stats) => {
-        setBpmStats(stats as BpmStats);
+        setKeyStats(stats as KeyStats);
       }
     );
     return cleanup;
   }, []);
 
-  if (!bpmStats || _.keys(bpmStats).length === 0) {
-    return <Typography>No BPMs found</Typography>;
+  if (!keyStats || _.keys(keyStats).length === 0) {
+    return <Typography>No Keys found</Typography>;
   }
 
   return (
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      {_.keys(bpmStats).map((bpm) => {
-        const value = parseInt(bpm);
-        const stats = bpmStats[value];
+      {_.keys(keyStats).map((key) => {
+        const value = key;
+        const stats = keyStats[key];
         const labelId = `checkbox-list-label-${value}`;
 
         return (
@@ -52,7 +53,7 @@ export function BPMList(): JSX.Element {
               <ListItemIcon>
                 <Checkbox
                   edge="start"
-                  checked={bpms.includes(value)}
+                  checked={keys.includes(value)}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ 'aria-labelledby': labelId }}

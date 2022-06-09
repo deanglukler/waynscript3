@@ -1,7 +1,5 @@
-import { Keys } from '../types';
-
-export class Key {
-  public key: Keys | null = null;
+export class KeyAnalysis {
+  public key: string | null = null;
 
   private pitchLetter = '';
 
@@ -70,35 +68,23 @@ export class Key {
     }
   }
 
-  private swapEnharmonic() {
-    if (['C', 'D', 'F', 'G', 'A'].includes(this.pitchLetter)) {
-      this.flat = true;
-      this.sharp = false;
-    }
-    if (this.pitchLetter === 'C') {
-      this.pitchLetter = 'D';
-    } else if (this.pitchLetter === 'D') {
-      this.pitchLetter = 'E';
-    } else if (this.pitchLetter === 'F') {
-      this.pitchLetter = 'G';
-    } else if (this.pitchLetter === 'G') {
-      this.pitchLetter = 'A';
-    } else if (this.pitchLetter === 'A') {
-      this.pitchLetter = 'B';
-    }
-  }
-
   private assignKey() {
-    if (this.sharp) this.swapEnharmonic();
+    let key = `${this.pitchLetter}_`;
 
-    const KeysDynamic = `${this.pitchLetter}_${this.flat ? 'FLAT' : 'NAT'}_${
-      this.minor ? 'MIN' : 'MAJ'
-    }`;
+    if (this.flat) {
+      key = `${key}FLAT_`;
+    } else if (this.sharp) {
+      key = `${key}SHARP_`;
+    } else {
+      key = `${key}NAT_`;
+    }
 
-    // this is a lil hack since we shouldnt be using a dynamic string to search from enum
-    this.key = Keys[KeysDynamic as Keys];
-    // there are some edge cases with this though.. I noticed C_FLAT_MAJ come through..
-    // so just in case
-    if (!this.key) this.key = null;
+    if (this.minor) {
+      key = `${key}MIN`;
+    } else {
+      key = `${key}MAX`;
+    }
+
+    this.key = key;
   }
 }

@@ -3,7 +3,7 @@ const getLastBpmNumFromMatch = (matches: RegExpMatchArray[]): string => {
   return lastMatchInString[1];
 };
 
-export class Bpm {
+export class BpmAnalysis {
   bpm: null | number = null;
 
   constructor(stringBeingAnalyzed: string) {

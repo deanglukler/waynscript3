@@ -14,7 +14,7 @@ export interface Directory {
 export interface Sample {
   path: string;
   bpm: number | null;
-  key: Keys | null;
+  key: string | null;
 }
 
 export interface ScanProgress {
@@ -32,40 +32,8 @@ export interface WindowInfo {
   y: number | undefined;
 }
 
-export enum Keys {
-  A_FLAT_MAJ = 'A_FLAT_MAJ',
-  A_FLAT_MIN = 'A_FLAT_MIN',
-  A_NAT_MAJ = 'A_NAT_MAJ',
-  A_NAT_MIN = 'A_NAT_MIN',
-
-  B_FLAT_MAJ = 'B_FLAT_MAJ',
-  B_FLAT_MIN = 'B_FLAT_MIN',
-  B_NAT_MAJ = 'B_NAT_MAJ',
-  B_NAT_MIN = 'B_NAT_MIN',
-
-  C_NAT_MAJ = 'C_NAT_MAJ',
-  C_NAT_MIN = 'C_NAT_MIN',
-
-  D_FLAT_MAJ = 'D_FLAT_MAJ',
-  D_FLAT_MIN = 'D_FLAT_MIN',
-  D_NAT_MAJ = 'D_NAT_MAJ',
-  D_NAT_MIN = 'D_NAT_MIN',
-
-  E_FLAT_MAJ = 'E_FLAT_MAJ',
-  E_FLAT_MIN = 'E_FLAT_MIN',
-  E_NAT_MAJ = 'E_NAT_MAJ',
-  E_NAT_MIN = 'E_NAT_MIN',
-
-  F_NAT_MAJ = 'F_NAT_MAJ',
-  F_NAT_MIN = 'F_NAT_MIN',
-
-  G_FLAT_MAJ = 'G_FLAT_MAJ',
-  G_FLAT_MIN = 'G_FLAT_MIN',
-  G_NAT_MAJ = 'G_NAT_MAJ',
-  G_NAT_MIN = 'G_NAT_MIN',
-}
-
 type Bpms = number[];
+type Keys = string[];
 
 export interface QueryStoreModel {
   initializing: boolean;
@@ -73,8 +41,8 @@ export interface QueryStoreModel {
   updateQueryParams: Action<QueryStoreModel, Query>;
   bpms: Bpms;
   toggleBpm: Action<QueryStoreModel, number>;
-  bpmStats: BpmStats;
-  updateBpmStats: Action<QueryStoreModel, BpmStats>;
+  keys: Keys;
+  toggleKey: Action<QueryStoreModel, string>;
 }
 
 export interface Query {
@@ -88,4 +56,8 @@ export interface QueryRow {
 
 export interface BpmStats {
   [key: number]: { amount: number };
+}
+
+export interface KeyStats {
+  [key: string]: { amount: number };
 }

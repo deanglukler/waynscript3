@@ -23,5 +23,6 @@ export default class App {
 
   private refreshQueryStats(): void {
     QueryStats.getBpmStatsAndSendToQuery(this.windows);
+    QueryStats.getKeyStatsAndSendToQuery(this.windows);
   }
 }

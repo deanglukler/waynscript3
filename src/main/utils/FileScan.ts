@@ -4,8 +4,8 @@ import path from 'path';
 
 import { insertSamples } from '../db/samples';
 import { Sample, ScanProgress } from '../types';
-import { Bpm } from './BPM';
-import { Key } from './Key';
+import { BpmAnalysis } from './BpmAnalysis';
+import { KeyAnalysis } from './KeyAnalysis';
 
 export const audioExts = ['.wav', '.aiff', '.mp3'];
 
@@ -36,8 +36,8 @@ export const allAudioFilesInDir = (dir: string): string[] => {
 };
 
 const analyzeFile = (filePath: string): Sample => {
-  const bpm = new Bpm(filePath);
-  const key = new Key(filePath);
+  const bpm = new BpmAnalysis(filePath);
+  const key = new KeyAnalysis(filePath);
   return {
     path: filePath,
     bpm: bpm.bpm,
