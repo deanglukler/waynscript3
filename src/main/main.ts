@@ -13,6 +13,7 @@ import { app } from 'electron';
 import Database from './utils/Database';
 import Directories from './utils/Directories';
 import { Queries } from './utils/Queries';
+import Samples from './utils/Samples';
 import Windows from './utils/Windows';
 
 if (process.env.NODE_ENV === 'production') {
@@ -73,3 +74,4 @@ new Directories();
 // new IPC(dirs);
 new Database();
 new Queries(windows);
+new Samples();

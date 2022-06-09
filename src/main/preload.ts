@@ -13,7 +13,8 @@ export type Channels =
   | 'QUERY_UPDATE'
   | 'REQUEST_INIT_QUERY'
   | 'RECEIVE_QUERY'
-  | 'RECEIVE_FILES';
+  | 'RECEIVE_FILES'
+  | 'FILE_DRAG';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
