@@ -71,12 +71,12 @@ export const resetDatabase = () => {
   //   `INSERT INTO windows (name,width,height) VALUES ('listWindow',400,700);`
   // );
 
-  // queries
-  runQuery(`DROP TABLE IF EXISTS queries;`);
-  const querySQL = `CREATE TABLE "queries" (
-    "id"	INTEGER NOT NULL UNIQUE,
-    "query"	TEXT NOT NULL,
-    PRIMARY KEY("id" AUTOINCREMENT)
-  );`;
-  runQuery(querySQL);
+  // // queries
+  // runQuery(`DROP TABLE IF EXISTS queries;`);
+  // const querySQL = `CREATE TABLE "queries" (
+  //   "id"	INTEGER NOT NULL UNIQUE,
+  //   "query"	TEXT NOT NULL,
+  //   PRIMARY KEY("id" AUTOINCREMENT)
+  // );`;
+  // runQuery(querySQL);
 };

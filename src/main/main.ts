@@ -10,10 +10,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app } from 'electron';
-import Database from './utils/Database';
-import Directories from './utils/Directories';
-import { Queries } from './utils/Queries';
-import Samples from './utils/Samples';
+import App from './App';
 import Windows from './utils/Windows';
 
 if (process.env.NODE_ENV === 'production') {
@@ -29,6 +26,7 @@ if (isDebug) {
 }
 
 const windows = new Windows(isDebug);
+new App(windows);
 
 /**
  * Add event listeners...
@@ -68,10 +66,3 @@ process.on('uncaughtException', (err) => {
   console.log('\nuncaught exception:');
   console.log(err);
 });
-
-// new FileScan();
-new Directories();
-// new IPC(dirs);
-new Database();
-new Queries(windows);
-new Samples();

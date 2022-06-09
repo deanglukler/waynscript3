@@ -7,7 +7,7 @@ export default class Database {
     resetDatabase();
   }
 
-  constructor() {
+  static initIPC() {
     ipcMain.on('RESET_DB', (event, arg) => {
       logMainOn(arg, 'RESET_DB');
       Database.resetDatabase();

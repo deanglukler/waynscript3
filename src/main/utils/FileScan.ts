@@ -61,10 +61,9 @@ export default class FileScan {
   constructor(public dirPath: string) {
     this.audioFilePaths = allAudioFilesInDir(dirPath);
     this.totalFiles = this.audioFilePaths.length;
-    this.analyzeFiles();
   }
 
-  private analyzeFiles() {
+  public analyzeFiles() {
     this.scanActive = true;
 
     const fileChunks = _.chunk(this.audioFilePaths, ANALISIS_CHUNK_SIZE);

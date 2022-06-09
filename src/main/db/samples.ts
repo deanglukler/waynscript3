@@ -21,6 +21,12 @@ export const getSamplesByQuery = (query: Query) => {
   bpmsClause = bpms.map((bpm) => `samples.bpm = ${bpm}`).join(' OR ');
 
   const activeDirs = getActiveDirectories();
+
+  if (activeDirs.length === 0) {
+    console.log('\nNO ACTIVE DIRS ie. No Samples\n');
+    return [];
+  }
+
   const whereClause = activeDirs
     .map((dir) => {
       let pathClause = `samples.path LIKE ${SqlString.escape(`%${dir.path}%`)}`;
