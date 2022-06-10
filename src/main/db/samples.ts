@@ -1,6 +1,7 @@
 import SqlString from 'sqlstring-sqlite';
-import { Sample, Query } from '../types';
+import { Sample } from '../types';
 import { getActiveDirectories } from './directories';
+import { getLastQuery } from './queries';
 import { activeDirsWhereClause, allQuery, runQuery } from './utils';
 
 export const insertSamples = (samples: Sample[]) => {
@@ -15,7 +16,8 @@ export const insertSamples = (samples: Sample[]) => {
   return runQuery(sql);
 };
 
-export const getSamplesByQuery = (query: Query) => {
+export const getSamplesByQuery = () => {
+  const query = getLastQuery();
   const activeDirs = getActiveDirectories();
   if (activeDirs.length === 0) {
     console.log('\nNO ACTIVE DIRS\n');

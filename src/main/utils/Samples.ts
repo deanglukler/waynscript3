@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { getSamplesByQuery } from '../db/samples';
-import { Query, Sample } from '../types';
+import { Sample } from '../types';
 import getAssetPath from './getAssetPath';
 import { logMainOn } from './log';
 import Windows from './Windows';
@@ -17,9 +17,9 @@ export default class Samples {
     });
   }
 
-  static getSamplesAndSendToList(windows: Windows, query: Query) {
+  static getSamplesAndSendToList(windows: Windows) {
     console.log('\nStarting get samples and send to list . . . . .');
-    const files: Sample[] = getSamplesByQuery(query);
+    const files: Sample[] = getSamplesByQuery();
     windows.sendWindowMessage('listWindow', 'RECEIVE_FILES', files);
   }
 }

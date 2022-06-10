@@ -5,13 +5,18 @@ import { logMainOn } from './log';
 import Windows from './Windows';
 
 export default class Queries {
-  static initIPC(windows: Windows, refreshSampleList: () => void) {
+  static initIPC(
+    windows: Windows,
+    refreshSampleList: () => void,
+    refreshQueryStats: () => void
+  ) {
     ipcMain.on('SYNC_QUERY', (event, arg: [Query]) => {
       logMainOn(arg, 'SYNC_QUERY');
       const query = arg[0];
 
       addQuery(query);
       refreshSampleList();
+      refreshQueryStats();
     });
 
     ipcMain.on('INIT_QUERY_PARAMS', (event, arg) => {
@@ -24,9 +29,5 @@ export default class Queries {
         null
       );
     });
-  }
-
-  static getLastQuery() {
-    return getLastQuery();
   }
 }

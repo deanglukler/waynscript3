@@ -12,13 +12,17 @@ export default class App {
       this.refreshSampleList.bind(this),
       this.refreshQueryStats.bind(this)
     );
-    Queries.initIPC(windows, this.refreshSampleList.bind(this));
+    Queries.initIPC(
+      windows,
+      this.refreshSampleList.bind(this),
+      this.refreshQueryStats.bind(this)
+    );
     Database.initIPC();
     Samples.initIPC();
   }
 
   private refreshSampleList(): void {
-    Samples.getSamplesAndSendToList(this.windows, Queries.getLastQuery());
+    Samples.getSamplesAndSendToList(this.windows);
   }
 
   private refreshQueryStats(): void {
