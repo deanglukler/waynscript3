@@ -9,10 +9,9 @@ export const getBpmStats = (): BpmStats => {
     return {};
   }
 
-  const whereClause = activeDirsWhereClause(
-    activeDirs,
-    `samples.bpm IS NOT NULL`
-  );
+  const whereClause = activeDirsWhereClause(activeDirs, [
+    `samples.bpm IS NOT NULL`,
+  ]);
 
   const sql = `SELECT samples.bpm FROM samples WHERE ${whereClause}`;
 
@@ -34,10 +33,9 @@ export const getKeyStats = (): KeyStats => {
     return {};
   }
 
-  const whereClause = activeDirsWhereClause(
-    activeDirs,
-    `samples.key IS NOT NULL`
-  );
+  const whereClause = activeDirsWhereClause(activeDirs, [
+    `samples.key IS NOT NULL`,
+  ]);
 
   const sql = `SELECT samples.key FROM samples WHERE ${whereClause}`;
 

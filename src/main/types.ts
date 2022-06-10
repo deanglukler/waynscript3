@@ -47,6 +47,7 @@ export interface QueryStoreModel {
 
 export interface Query {
   bpms: Bpms;
+  keys: Keys;
 }
 
 export interface QueryRow {

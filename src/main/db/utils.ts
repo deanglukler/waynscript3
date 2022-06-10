@@ -33,13 +33,16 @@ export const allQuery = <T>(q: string) => {
 
 export const activeDirsWhereClause = (
   activeDirs: Directory[],
-  andClause: string
+  andClauses: string[]
 ): string => {
   return activeDirs
     .map((dir) => {
       let pathClause = `samples.path LIKE ${SqlString.escape(`%${dir.path}%`)}`;
-      if (andClause) {
-        pathClause = `${pathClause} AND (${andClause})`;
+      if (andClauses.length > 0) {
+        andClauses.forEach((sql) => {
+          if (!sql) return;
+          pathClause = `${pathClause} AND (${sql})`;
+        });
       }
       pathClause = `(${pathClause})`;
       return pathClause;

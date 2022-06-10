@@ -11,7 +11,6 @@ export const useQueryParamsInit = () => {
     (actions) => actions.updateQueryParams
   );
   const initialized = useStoreActions((actions) => actions.initialized);
-  const updateBpmStats = useStoreActions((actions) => actions.updateBpmStats);
 
   useEffect(() => {
     console.log('initializing query params');
@@ -30,11 +29,12 @@ export const useQueryParamsInit = () => {
     window.electron.ipcRenderer.sendMessage('INIT_QUERY_PARAMS', []);
 
     return cleanupQueryParams;
-  }, [updateQueryParams, initialized, updateBpmStats]);
+  }, [updateQueryParams, initialized]);
 };
 
 export const useQueryParamsUpdate = () => {
   const bpms = useStoreState((state) => state.bpms);
+  const keys = useStoreState((state) => state.keys);
   const initializing = useStoreState((state) => state.initializing);
   useEffect(() => {
     if (initializing) {
@@ -43,8 +43,9 @@ export const useQueryParamsUpdate = () => {
 
     const query: Query = {
       bpms: [...bpms],
+      keys: [...keys],
     };
 
     window.electron.ipcRenderer.sendMessage('SYNC_QUERY', [query]);
-  }, [bpms, initializing]);
+  }, [bpms, keys, initializing]);
 };

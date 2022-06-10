@@ -22,11 +22,18 @@ export const getSamplesByQuery = (query: Query) => {
     return [];
   }
 
-  const { bpms } = query;
-  let bpmsClause = '';
-  bpmsClause = bpms.map((bpm) => `samples.bpm = ${bpm}`).join(' OR ');
+  const { bpms, keys } = query;
+  const bpmsClause = bpms
+    .map((bpm) => SqlString.format(`samples.bpm = ?`, [bpm]))
+    .join(' OR ');
+  const keysClause = keys
+    .map((key) => SqlString.format(`samples.key = ?`, [key]))
+    .join(' OR ');
 
-  const whereClause = activeDirsWhereClause(activeDirs, bpmsClause);
+  const whereClause = activeDirsWhereClause(activeDirs, [
+    bpmsClause,
+    keysClause,
+  ]);
 
   let fullClause = 'SELECT * FROM samples';
   if (whereClause) {

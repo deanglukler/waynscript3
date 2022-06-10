@@ -8,7 +8,7 @@ export const store = createStore<QueryStoreModel>({
     state.initializing = false;
   }),
   updateQueryParams: action((state, payload) => {
-    return { ...state, ...payload };
+    return { ...state, ...payload }; // <-- nice one bruv
   }),
   bpms: [],
   toggleBpm: action((state, payload) => {
