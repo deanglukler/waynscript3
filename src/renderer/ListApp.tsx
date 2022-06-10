@@ -2,19 +2,22 @@ import { PlayArrow } from '@mui/icons-material';
 import {
   IconButton,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import { Howl } from 'howler';
 import path from 'path';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import scrollIntoView from 'scroll-into-view-if-needed';
 
 import { Sample } from '../main/types';
+import { useHowlManager, useListNavigator } from './listHooks';
 
 export default function ListApp() {
   const [files, setFiles] = useState<Sample[]>([]);
-  const [howl, setHowl] = useState<Howl | null>(null);
+  const [selected, setSelected] = useListNavigator(files);
+
+  const [handlePlaySample] = useHowlManager();
 
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on('RECEIVE_SAMPLES', (arg) => {
@@ -31,62 +34,48 @@ export default function ListApp() {
     window.electron.ipcRenderer.sendMessage('FILE_DRAG', [filepath]);
   }
 
-  function playSample(filepath: string) {
-    const sound = new Howl({
-      src: [
-        // encoding necessary for file names with sharp hashtag sign
-        // this doesnt work for some reason..
-        // `file://${encodeURIComponent(filepath)}`,
-        `file://${filepath.split('/').map(encodeURIComponent).join('/')}`,
-      ],
-      onplay: () => {
-        setHowl(sound);
-      },
-      onstop: () => {
-        setHowl(null);
-      },
-      onend: () => {
-        setHowl(null);
-      },
-    });
-    sound.play();
-  }
+  const handleClickListItem = useCallback(setSelected, [setSelected]);
 
-  function unloadHowl() {
-    howl?.pause();
-    howl?.unload();
-    setHowl(null);
-  }
-
-  function handlePlayClick(file: Sample) {
-    unloadHowl();
-    playSample(file.path);
-  }
+  const selectedNode = useCallback((node: HTMLElement) => {
+    if (node !== null) {
+      node.focus();
+      scrollIntoView(node, {
+        scrollMode: 'if-needed',
+        block: 'nearest',
+        inline: 'nearest',
+      });
+    }
+  }, []);
 
   return (
     <List dense>
-      {files.map((file) => {
+      {files.map((file, index) => {
         return (
-          <ListItem
+          <ListItemButton
+            key={file.path}
             draggable
+            selected={index === selected}
             onDragStart={(e) => {
               handleDragSample(e, file.path);
             }}
-            key={file.path}
+            onClick={() => {
+              handleClickListItem(index);
+            }}
+            ref={index === selected ? selectedNode : null}
           >
             <ListItemIcon
               onClick={() => {
-                handlePlayClick(file);
+                handlePlaySample(file);
               }}
             >
-              <IconButton aria-label="comment">
+              <IconButton>
                 <PlayArrow />
               </IconButton>
             </ListItemIcon>
             <ListItemText primaryTypographyProps={{ noWrap: true }}>
               {path.basename(file.path)}
             </ListItemText>
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
