@@ -6,7 +6,7 @@ import { logMainOn } from './log';
 import Windows from './Windows';
 
 export default class Samples {
-  static initIPC() {
+  static initIPC(windows: Windows, refreshSampleList: () => void) {
     ipcMain.on('FILE_DRAG', (event, arg) => {
       logMainOn(arg, 'FILE_DRAG');
       const file = arg[0] as string;
@@ -15,11 +15,15 @@ export default class Samples {
         icon: getAssetPath('music-icon-sm.png'),
       });
     });
+
+    ipcMain.on('SYNC_SAMPLES', () => {
+      refreshSampleList();
+    });
   }
 
   static getSamplesAndSendToList(windows: Windows) {
     console.log('\nStarting get samples and send to list . . . . .');
     const files: Sample[] = getSamplesByQuery();
-    windows.sendWindowMessage('listWindow', 'RECEIVE_FILES', files);
+    windows.sendWindowMessage('listWindow', 'RECEIVE_SAMPLES', files);
   }
 }

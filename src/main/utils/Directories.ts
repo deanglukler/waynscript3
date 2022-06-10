@@ -26,6 +26,15 @@ export default class Directories {
       refreshQueryStats();
     }
 
+    function scan(path: string) {
+      const fScan = new FileScan(path, windows);
+      // eslint-disable-next-line promise/catch-or-return
+      fScan.analyzeFiles().then(() => {
+        sync();
+        return null;
+      });
+    }
+
     ipcMain.on('CHOOSE_DIR', (event, arg) => {
       logMainOn(arg, 'CHOOSE_DIR');
       const selectedPaths = dialog.showOpenDialogSync({
@@ -41,6 +50,7 @@ export default class Directories {
 
       addDirectory(path);
       sync();
+      scan(path);
     });
 
     ipcMain.on('REMOVE_DIR', (event, arg) => {
@@ -72,14 +82,8 @@ export default class Directories {
     ipcMain.on('SCAN_DIR', (event, arg) => {
       logMainOn(arg, 'SCAN_DIR');
       const path = arg[0];
-      const fScan = new FileScan(path);
-      fScan.updateProgressWithEvent(event);
-      // eslint-disable-next-line promise/catch-or-return
-      fScan.analyzeFiles().then(() => {
-        refreshSampleList();
-        return null;
-      });
       sync();
+      scan(path);
     });
   }
 }

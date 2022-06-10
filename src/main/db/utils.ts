@@ -1,5 +1,5 @@
 import SqlString from 'sqlstring-sqlite';
-import { Directory } from '../types';
+import { Directory, Query } from '../types';
 import db from './db';
 
 export const logQuery = (q: string) => {
@@ -50,10 +50,12 @@ export const activeDirsWhereClause = (
     .join(' OR ');
 };
 
+export const initQuery: Query = { bpms: [], keys: [] };
+
 export const resetDatabase = () => {
   // samples
   runQuery(`DROP TABLE IF EXISTS samples;`);
-  const samplesSQL = `CREATE TABLE "samples" (
+  const createSamples = `CREATE TABLE "samples" (
     "id"	INTEGER NOT NULL UNIQUE,
     "path"	TEXT NOT NULL,
     "bpm"	INTEGER,
@@ -61,17 +63,33 @@ export const resetDatabase = () => {
     PRIMARY KEY("id" AUTOINCREMENT),
     UNIQUE("path") ON CONFLICT REPLACE
   );`;
-  runQuery(samplesSQL);
+  runQuery(createSamples);
 
-  // // directories
-  // runQuery(`DROP TABLE IF EXISTS directories;`);
-  // const dirsSQL = `CREATE TABLE "directories" (
-  //   "id"	INTEGER NOT NULL UNIQUE,
-  //   "path"	TEXT NOT NULL,
-  //   "active"	INTEGER NOT NULL,
-  //   PRIMARY KEY("id" AUTOINCREMENT)
-  // );`;
-  // runQuery(dirsSQL);
+  // directories
+  runQuery(`DROP TABLE IF EXISTS directories;`);
+  const createDirs = `CREATE TABLE "directories" (
+    "id"	INTEGER NOT NULL UNIQUE,
+    "path"	TEXT NOT NULL,
+    "active"	INTEGER NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    UNIQUE("path") ON CONFLICT REPLACE
+  );`;
+  runQuery(createDirs);
+
+  // queries
+  runQuery(`DROP TABLE IF EXISTS queries;`);
+  const createQueries = `CREATE TABLE "queries" (
+    "id"	INTEGER NOT NULL UNIQUE,
+    "query"	TEXT NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT)
+  );`;
+  runQuery(createQueries);
+
+  runQuery(
+    SqlString.format(`INSERT INTO queries (query) VALUES ( ? )`, [
+      JSON.stringify(initQuery),
+    ])
+  );
 
   // // windows
   // runQuery(`DROP TABLE IF EXISTS windows;`);
@@ -91,13 +109,4 @@ export const resetDatabase = () => {
   // runQuery(
   //   `INSERT INTO windows (name,width,height) VALUES ('listWindow',400,700);`
   // );
-
-  // // queries
-  // runQuery(`DROP TABLE IF EXISTS queries;`);
-  // const querySQL = `CREATE TABLE "queries" (
-  //   "id"	INTEGER NOT NULL UNIQUE,
-  //   "query"	TEXT NOT NULL,
-  //   PRIMARY KEY("id" AUTOINCREMENT)
-  // );`;
-  // runQuery(querySQL);
 };

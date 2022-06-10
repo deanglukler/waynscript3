@@ -6,6 +6,7 @@ import { insertSamples } from '../db/samples';
 import { Sample, ScanProgress } from '../types';
 import { BpmAnalysis } from './BpmAnalysis';
 import { KeyAnalysis } from './KeyAnalysis';
+import Windows from './Windows';
 
 export const audioExts = ['.wav', '.aiff', '.mp3'];
 
@@ -36,8 +37,9 @@ export const allAudioFilesInDir = (dir: string): string[] => {
 };
 
 const analyzeFile = (filePath: string): Sample => {
+  // we may find bpm info in the whole path?
   const bpm = new BpmAnalysis(filePath);
-  const key = new KeyAnalysis(filePath);
+  const key = new KeyAnalysis(path.basename(filePath));
   return {
     path: filePath,
     bpm: bpm.bpm,
@@ -56,9 +58,7 @@ export default class FileScan {
 
   public scanActive: boolean = false;
 
-  public ipcEvent: Electron.IpcMainEvent | null = null;
-
-  constructor(public dirPath: string) {
+  constructor(public dirPath: string, public windows: Windows) {
     this.audioFilePaths = allAudioFilesInDir(dirPath);
     this.totalFiles = this.audioFilePaths.length;
   }
@@ -99,7 +99,7 @@ export default class FileScan {
   }
 
   private updateProgress(): void {
-    if (!this.ipcEvent) return;
+    if (!this.windows) return;
 
     const scanProgress: ScanProgress = {
       total: this.totalFiles,
@@ -107,13 +107,10 @@ export default class FileScan {
       scanned: this.totalFilesAnalyzed,
     };
 
-    this.ipcEvent.reply('UPDATE_SCAN_PROGRESS', scanProgress);
-  }
-
-  /**
-   * updateProgressWithEvent
-   */
-  public updateProgressWithEvent(event: Electron.IpcMainEvent) {
-    this.ipcEvent = event;
+    this.windows.sendWindowMessage(
+      'queryWindow',
+      'UPDATE_SCAN_PROGRESS',
+      scanProgress
+    );
   }
 }

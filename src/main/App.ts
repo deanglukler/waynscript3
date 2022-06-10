@@ -18,7 +18,7 @@ export default class App {
       this.refreshQueryStats.bind(this)
     );
     Database.initIPC();
-    Samples.initIPC();
+    Samples.initIPC(windows, this.refreshSampleList.bind(this));
   }
 
   private refreshSampleList(): void {

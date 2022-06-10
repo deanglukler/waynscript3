@@ -1,3 +1,4 @@
+import { PlayArrow } from '@mui/icons-material';
 import {
   IconButton,
   List,
@@ -5,20 +6,22 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import { PlayArrow } from '@mui/icons-material';
+import { Howl } from 'howler';
 import path from 'path';
 import React, { useEffect, useState } from 'react';
+
 import { Sample } from '../main/types';
-import { Howl } from 'howler';
 
 export default function ListApp() {
   const [files, setFiles] = useState<Sample[]>([]);
   const [howl, setHowl] = useState<Howl | null>(null);
 
   useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on('RECEIVE_FILES', (arg) => {
+    const cleanup = window.electron.ipcRenderer.on('RECEIVE_SAMPLES', (arg) => {
       setFiles(arg as Sample[]);
     });
+
+    window.electron.ipcRenderer.sendMessage('SYNC_SAMPLES', [null]);
 
     return cleanup;
   }, []);
@@ -49,7 +52,14 @@ export default function ListApp() {
     sound.play();
   }
 
+  function unloadHowl() {
+    howl?.pause();
+    howl?.unload();
+    setHowl(null);
+  }
+
   function handlePlayClick(file: Sample) {
+    unloadHowl();
     playSample(file.path);
   }
 

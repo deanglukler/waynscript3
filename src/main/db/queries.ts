@@ -1,6 +1,6 @@
 import SqlString from 'sqlstring-sqlite';
 import { Query, QueryRow } from '../types';
-import { getQuery, runQuery } from './utils';
+import { getQuery, initQuery, runQuery } from './utils';
 
 export const addQuery = (query: Query) => {
   const queryJSON = JSON.stringify(query);
@@ -13,5 +13,8 @@ export const addQuery = (query: Query) => {
 export const getLastQuery = () => {
   const sql = `SELECT * FROM queries WHERE id = (SELECT MAX(id) FROM queries);`;
   const queryRow = getQuery<QueryRow>(sql);
+  if (!queryRow) {
+    return initQuery;
+  }
   return JSON.parse(queryRow.query) as Query;
 };
