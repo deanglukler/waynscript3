@@ -1,3 +1,4 @@
+import { getActiveDirectories } from './db/directories';
 import Database from './utils/Database';
 import Directories from './utils/Directories';
 import Queries from './utils/Queries';
@@ -26,7 +27,12 @@ export default class App {
   }
 
   private refreshQueryStats(): void {
+    const activeDirs = getActiveDirectories();
+    if (activeDirs.length === 0) {
+      console.log('\n!! No active directories !!\n');
+    }
     QueryStats.getBpmStatsAndSendToQuery(this.windows);
     QueryStats.getKeyStatsAndSendToQuery(this.windows);
+    QueryStats.getWordStatsAndSendToQuery(this.windows);
   }
 }

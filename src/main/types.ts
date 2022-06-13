@@ -17,6 +17,10 @@ export interface Sample {
   key: string | null;
 }
 
+export interface SampleAnalysis extends Sample {
+  words: WordAndSampleAnalysis[];
+}
+
 export interface ScanProgress {
   finished: boolean;
   scanned: number;
@@ -32,8 +36,24 @@ export interface WindowInfo {
   y: number | undefined;
 }
 
+export interface WordAndSampleAnalysis {
+  word: string;
+  sampleWord: SampleWord;
+}
+
+export interface Word {
+  word: string;
+  favorite: boolean;
+}
+
+export interface SampleWord {
+  word: string;
+  path: string;
+}
+
 type Bpms = number[];
 type Keys = string[];
+type Words = string[];
 
 export interface QueryStoreModel {
   initializing: boolean;
@@ -43,11 +63,14 @@ export interface QueryStoreModel {
   toggleBpm: Action<QueryStoreModel, number>;
   keys: Keys;
   toggleKey: Action<QueryStoreModel, string>;
+  words: Words;
+  toggleWord: Action<QueryStoreModel, string>;
 }
 
 export interface Query {
   bpms: Bpms;
   keys: Keys;
+  words: Words;
 }
 
 export interface QueryRow {
@@ -55,10 +78,25 @@ export interface QueryRow {
   query: string;
 }
 
+export type Total = number;
+
+export interface Stats {
+  amount: number;
+}
+
 export interface BpmStats {
-  [key: number]: { amount: number };
+  [key: number]: Stats;
 }
 
 export interface KeyStats {
-  [key: string]: { amount: number };
+  [key: string]: Stats;
+}
+
+export interface WordStats {
+  [key: string]: Stats;
+}
+
+export interface AllWordStats {
+  stats: WordStats;
+  average: number;
 }

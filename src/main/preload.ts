@@ -18,7 +18,9 @@ export type Channels =
   | 'RECEIVE_SAMPLES'
   | 'FILE_DRAG'
   | 'BPM_QUERY_STATS'
-  | 'KEY_QUERY_STATS';
+  | 'KEY_QUERY_STATS'
+  | 'WORD_QUERY_STATS'
+  | 'TOTAL_SAMPLES';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

@@ -24,20 +24,33 @@ export const getSamplesByQuery = () => {
     return [];
   }
 
-  const { bpms, keys } = query;
+  const { bpms, keys, words } = query;
   const bpmsClause = bpms
     .map((bpm) => SqlString.format(`samples.bpm = ?`, [bpm]))
     .join(' OR ');
   const keysClause = keys
     .map((key) => SqlString.format(`samples.key = ?`, [key]))
     .join(' OR ');
+  const wordsClause = words
+    .map((word) => SqlString.format(`samples_words.word = ?`, [word]))
+    .join(' OR ');
 
   const whereClause = activeDirsWhereClause(activeDirs, [
     bpmsClause,
     keysClause,
+    wordsClause,
   ]);
 
-  let fullClause = 'SELECT * FROM samples';
+  let fullClause = `SELECT DISTINCT
+  samples.path as path,
+  samples.bpm as bpm,
+  samples.key as key
+  FROM samples`;
+
+  if (words.length > 0) {
+    fullClause = `${fullClause} JOIN samples_words ON samples.path = samples_words.path`;
+  }
+
   if (whereClause) {
     fullClause = `${fullClause} WHERE ${whereClause}`;
   }

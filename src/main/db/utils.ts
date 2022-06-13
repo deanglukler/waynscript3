@@ -3,7 +3,7 @@ import { Directory, Query } from '../types';
 import db from './db';
 
 export const logQuery = (q: string) => {
-  console.log(`\nSQL Query:`);
+  console.log(`\nSQL:`);
   console.log(`${q}\n`);
 };
 
@@ -50,17 +50,18 @@ export const activeDirsWhereClause = (
     .join(' OR ');
 };
 
-export const initQuery: Query = { bpms: [], keys: [] };
+export const initQuery: Query = { bpms: [], keys: [], words: [] };
 
 export const resetDatabase = () => {
+  runQuery(`DROP TABLE IF EXISTS samples_words;`);
+
   // samples
   runQuery(`DROP TABLE IF EXISTS samples;`);
   const createSamples = `CREATE TABLE "samples" (
-    "id"	INTEGER NOT NULL UNIQUE,
     "path"	TEXT NOT NULL,
     "bpm"	INTEGER,
     "key"	TEXT,
-    PRIMARY KEY("id" AUTOINCREMENT),
+    PRIMARY KEY("path"),
     UNIQUE("path") ON CONFLICT REPLACE
   );`;
   runQuery(createSamples);
@@ -68,10 +69,9 @@ export const resetDatabase = () => {
   // directories
   runQuery(`DROP TABLE IF EXISTS directories;`);
   const createDirs = `CREATE TABLE "directories" (
-    "id"	INTEGER NOT NULL UNIQUE,
     "path"	TEXT NOT NULL,
     "active"	INTEGER NOT NULL,
-    PRIMARY KEY("id" AUTOINCREMENT),
+    PRIMARY KEY("path"),
     UNIQUE("path") ON CONFLICT REPLACE
   );`;
   runQuery(createDirs);
@@ -90,6 +90,23 @@ export const resetDatabase = () => {
       JSON.stringify(initQuery),
     ])
   );
+
+  // words
+  runQuery(`DROP TABLE IF EXISTS words;`);
+  const createWords = `CREATE TABLE "words" (
+    "word"	TEXT NOT NULL UNIQUE,
+    "favorite "	INTEGER,
+    PRIMARY KEY("word"),
+    UNIQUE("word") ON CONFLICT IGNORE
+  );`;
+  runQuery(createWords);
+
+  // samples_words
+  const createSamplesWords = `CREATE TABLE "samples_words" (
+    "path"	TEXT NOT NULL REFERENCES samples("path"),
+    "word"	TEXT NOT NULL REFERENCES words("word")
+  );`;
+  runQuery(createSamplesWords);
 
   // // windows
   // runQuery(`DROP TABLE IF EXISTS windows;`);

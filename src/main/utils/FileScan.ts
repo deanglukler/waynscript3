@@ -3,10 +3,12 @@ import _ from 'lodash';
 import path from 'path';
 
 import { insertSamples } from '../db/samples';
-import { Sample, ScanProgress } from '../types';
+import { insertWordsAndSamples } from '../db/words';
+import { SampleAnalysis, ScanProgress } from '../types';
 import { BpmAnalysis } from './BpmAnalysis';
 import { KeyAnalysis } from './KeyAnalysis';
 import Windows from './Windows';
+import { WordsAnalysis } from './WordsAnalysis';
 
 export const audioExts = ['.wav', '.aiff', '.mp3'];
 
@@ -36,14 +38,26 @@ export const allAudioFilesInDir = (dir: string): string[] => {
   return recursiveFileList(dir, audioExts, false);
 };
 
-const analyzeFile = (filePath: string): Sample => {
+const analyzeFile = (filePath: string): SampleAnalysis => {
+  const { name } = path.parse(filePath);
   // we may find bpm info in the whole path?
   const bpm = new BpmAnalysis(filePath);
-  const key = new KeyAnalysis(path.basename(filePath));
+  const key = new KeyAnalysis(name);
+  const words = new WordsAnalysis(name).words.map((word) => {
+    return {
+      word,
+      sampleWord: {
+        path: filePath,
+        word,
+      },
+    };
+  });
+
   return {
     path: filePath,
     bpm: bpm.bpm,
     key: key.key,
+    words,
   };
 };
 
@@ -77,12 +91,13 @@ export default class FileScan {
       const asyncAnalysis = (chunks: string[][]) => {
         if (chunks.length > 0) {
           setTimeout(() => {
-            const analyzedFiles: Sample[] = [];
+            const analyzedFiles: SampleAnalysis[] = [];
             chunks[0].forEach((file) => {
               analyzedFiles.push(analyzeFile(file));
               this.totalFilesAnalyzed++;
             });
             insertSamples(analyzedFiles);
+            insertWordsAndSamples(analyzedFiles);
             chunks.shift();
             asyncAnalysis(chunks);
             this.updateProgress();

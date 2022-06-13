@@ -35,6 +35,7 @@ export const useQueryParamsInit = () => {
 export const useQueryParamsUpdate = () => {
   const bpms = useStoreState((state) => state.bpms);
   const keys = useStoreState((state) => state.keys);
+  const words = useStoreState((state) => state.words);
   const initializing = useStoreState((state) => state.initializing);
   useEffect(() => {
     if (initializing) {
@@ -44,8 +45,9 @@ export const useQueryParamsUpdate = () => {
     const query: Query = {
       bpms: [...bpms],
       keys: [...keys],
+      words: [...words],
     };
 
     window.electron.ipcRenderer.sendMessage('SYNC_QUERY', [query]);
-  }, [bpms, keys, initializing]);
+  }, [bpms, keys, words, initializing]);
 };
