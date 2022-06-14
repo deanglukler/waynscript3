@@ -9,9 +9,9 @@ export function QueryParams(): JSX.Element {
   useQueryParamsUpdate();
   return (
     <Box>
-      <WordList />
       <BPMList />
       <KeyList />
+      <WordList />
     </Box>
   );
 }

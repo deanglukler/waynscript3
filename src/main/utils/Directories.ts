@@ -26,8 +26,9 @@ export default class Directories {
       refreshQueryStats();
     }
 
-    function scan(path: string) {
-      const fScan = new FileScan(path, windows);
+    function scan() {
+      const fScan = new FileScan(windows);
+      fScan.cleanFiles();
       // eslint-disable-next-line promise/catch-or-return
       fScan.analyzeFiles().then(() => {
         sync();
@@ -50,7 +51,7 @@ export default class Directories {
 
       addDirectory(path);
       sync();
-      scan(path);
+      scan();
     });
 
     ipcMain.on('REMOVE_DIR', (event, arg) => {
@@ -79,11 +80,10 @@ export default class Directories {
       sync();
     });
 
-    ipcMain.on('SCAN_DIR', (event, arg) => {
-      logMainOn(arg, 'SCAN_DIR');
-      const path = arg[0];
+    ipcMain.on('SCAN_DIRS', (event, arg) => {
+      logMainOn(arg, 'SCAN_DIRS');
       sync();
-      scan(path);
+      scan();
     });
   }
 }

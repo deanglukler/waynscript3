@@ -2,9 +2,17 @@ import SqlString from 'sqlstring-sqlite';
 import { Directory, Query } from '../types';
 import db from './db';
 
+let timeLogID = 0;
+
 export const logQuery = (q: string) => {
   console.log(`\nSQL:`);
-  console.log(`${q}\n`);
+  console.log(`${q}`);
+  console.time(`sql time${timeLogID}`);
+};
+
+const logQueryTime = () => {
+  console.timeEnd(`sql time${timeLogID}`);
+  timeLogID++;
 };
 
 export const runQuery = (q: string) => {
@@ -12,6 +20,7 @@ export const runQuery = (q: string) => {
   logQuery(sql);
   const stmt = db.prepare(sql);
   const res = stmt.run();
+  logQueryTime();
   return res;
 };
 
@@ -20,6 +29,7 @@ export const getQuery = <T>(q: string) => {
   logQuery(sql);
   const stmt = db.prepare(sql);
   const res = stmt.get();
+  logQueryTime();
   return res as T;
 };
 
@@ -28,6 +38,7 @@ export const allQuery = <T>(q: string) => {
   logQuery(sql);
   const stmt = db.prepare(sql);
   const res = stmt.all();
+  logQueryTime();
   return res as T[];
 };
 
@@ -52,6 +63,17 @@ export const activeDirsWhereClause = (
 
 export const initQuery: Query = { bpms: [], keys: [], words: [] };
 
+export const cleanDatabase = () => {
+  // clean duplicate samples_words
+  runQuery(`DELETE FROM samples_words
+  WHERE EXISTS (
+    SELECT 1 FROM samples_words sw
+    WHERE samples_words.path = sw.path
+    AND samples_words.word = sw.word
+    AND samples_words.id > sw.id
+  );`);
+};
+
 export const resetDatabase = () => {
   runQuery(`DROP TABLE IF EXISTS samples_words;`);
 
@@ -62,9 +84,13 @@ export const resetDatabase = () => {
     "bpm"	INTEGER,
     "key"	TEXT,
     PRIMARY KEY("path"),
-    UNIQUE("path") ON CONFLICT REPLACE
+    UNIQUE("path") ON CONFLICT IGNORE
   );`;
   runQuery(createSamples);
+  const samplesIndex = `CREATE INDEX IF NOT EXISTS "" ON "samples" (
+    "path"
+  );`;
+  runQuery(samplesIndex);
 
   // directories
   runQuery(`DROP TABLE IF EXISTS directories;`);
@@ -72,7 +98,7 @@ export const resetDatabase = () => {
     "path"	TEXT NOT NULL,
     "active"	INTEGER NOT NULL,
     PRIMARY KEY("path"),
-    UNIQUE("path") ON CONFLICT REPLACE
+    UNIQUE("path") ON CONFLICT IGNORE
   );`;
   runQuery(createDirs);
 
@@ -100,13 +126,23 @@ export const resetDatabase = () => {
     UNIQUE("word") ON CONFLICT IGNORE
   );`;
   runQuery(createWords);
+  const wordsIndex = `CREATE INDEX IF NOT EXISTS "" ON "words" (
+    "word"
+  );`;
+  runQuery(wordsIndex);
 
   // samples_words
   const createSamplesWords = `CREATE TABLE "samples_words" (
+    "id"	INTEGER NOT NULL UNIQUE,
     "path"	TEXT NOT NULL REFERENCES samples("path"),
-    "word"	TEXT NOT NULL REFERENCES words("word")
+    "word"	TEXT NOT NULL REFERENCES words("word"),
+    PRIMARY KEY("id" AUTOINCREMENT)
   );`;
   runQuery(createSamplesWords);
+  const samplesWordsIndex = `CREATE INDEX IF NOT EXISTS "" ON "samples_words" (
+    "path"
+  );`;
+  runQuery(samplesWordsIndex);
 
   // // windows
   // runQuery(`DROP TABLE IF EXISTS windows;`);

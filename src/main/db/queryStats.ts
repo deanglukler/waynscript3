@@ -24,9 +24,13 @@ export const getBpmStats = (): BpmStats => {
     wordsClause,
   ]);
 
-  const sql = `SELECT samples.bpm FROM samples
-  JOIN samples_words ON samples.path = samples_words.path
-  WHERE ${whereClause}`;
+  let sql = `SELECT samples.bpm FROM samples`;
+
+  if (wordsClause) {
+    sql = `${sql} JOIN samples_words ON samples.path = samples_words.path`;
+  }
+
+  sql = `${sql} WHERE ${whereClause}`;
 
   const res = allQuery<{ bpm: number }>(sql);
   const bpmStats: BpmStats = {};
@@ -57,9 +61,13 @@ export const getKeyStats = (): KeyStats => {
     wordsClause,
   ]);
 
-  const sql = `SELECT samples.key FROM samples
-  JOIN samples_words ON samples.path = samples_words.path
-  WHERE ${whereClause}`;
+  let sql = `SELECT samples.bpm FROM samples`;
+
+  if (wordsClause) {
+    sql = `${sql} JOIN samples_words ON samples.path = samples_words.path`;
+  }
+
+  sql = `${sql} WHERE ${whereClause}`;
 
   const res = allQuery<{ key: string }>(sql);
   const keyStats: KeyStats = {};

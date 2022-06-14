@@ -16,6 +16,10 @@ export const insertSamples = (samples: Sample[]) => {
   return runQuery(sql);
 };
 
+export const getAllSamples = () => {
+  return allQuery<{ path: string }>(`SELECT path FROM samples`);
+};
+
 export const getSamplesByQuery = () => {
   const query = getLastQuery();
   const activeDirs = getActiveDirectories();
@@ -57,4 +61,18 @@ export const getSamplesByQuery = () => {
   fullClause = `${fullClause} ORDER BY RANDOM() LIMIT 50;`;
 
   return allQuery<Sample>(fullClause);
+};
+
+export const deleteSamples = (paths: string[]) => {
+  if (paths.length === 0) return;
+  const samplesWordsSQL = SqlString.format(
+    `DELETE FROM samples_words WHERE path IN ( ? )`,
+    [paths]
+  );
+  runQuery(samplesWordsSQL);
+  const samplesSQL = SqlString.format(
+    `DELETE FROM samples WHERE path IN ( ? )`,
+    [paths]
+  );
+  runQuery(samplesSQL);
 };

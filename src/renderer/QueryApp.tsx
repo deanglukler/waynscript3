@@ -10,9 +10,13 @@ export default function QueryApp() {
     // https://github.com/ctrlplusb/easy-peasy/issues/741
     // issue with react 18 apparently
     <StoreProvider store={store}>
-      <Box>
-        <Filebrowse />
-        <QueryParams />
+      <Box display="flex">
+        <Box flex="0 0 100px">
+          <Filebrowse />
+        </Box>
+        <Box flex="1 0 500px">
+          <QueryParams />
+        </Box>
       </Box>
     </StoreProvider>
   );

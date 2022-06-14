@@ -58,6 +58,15 @@ export function Filebrowse(): JSX.Element {
       {renderProgress()}
       <button onClick={handleDBReset}>Reset DB</button>
       <button onClick={handleFolderSelect}>Add Folder</button>
+      <Button
+        component="span"
+        color="secondary"
+        onClick={() =>
+          window.electron.ipcRenderer.sendMessage('SCAN_DIRS', null)
+        }
+      >
+        SCAN
+      </Button>
       {dirs.map((dir) => {
         return (
           <div key={dir.path}>
@@ -92,15 +101,6 @@ export function Filebrowse(): JSX.Element {
               }
             >
               HIDE
-            </Button>
-            <Button
-              component="span"
-              color="secondary"
-              onClick={() =>
-                window.electron.ipcRenderer.sendMessage('SCAN_DIR', [dir.path])
-              }
-            >
-              SCAN
             </Button>
 
             <Typography>{dir.path}</Typography>

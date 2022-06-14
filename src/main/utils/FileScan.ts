@@ -1,8 +1,9 @@
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
+import { getDirectories } from '../db/directories';
 
-import { insertSamples } from '../db/samples';
+import { deleteSamples, getAllSamples, insertSamples } from '../db/samples';
 import { insertWordsAndSamples } from '../db/words';
 import { SampleAnalysis, ScanProgress } from '../types';
 import { BpmAnalysis } from './BpmAnalysis';
@@ -61,10 +62,12 @@ const analyzeFile = (filePath: string): SampleAnalysis => {
   };
 };
 
-const ANALISIS_CHUNK_SIZE = 1000;
+const ANALISIS_CHUNK_SIZE = 800;
 
 export default class FileScan {
-  public audioFilePaths: string[] = [];
+  public filesToScan: string[] = [];
+
+  public filesToClean: string[] = [];
 
   public totalFiles: number = 0;
 
@@ -72,15 +75,35 @@ export default class FileScan {
 
   public scanActive: boolean = false;
 
-  constructor(public dirPath: string, public windows: Windows) {
-    this.audioFilePaths = allAudioFilesInDir(dirPath);
-    this.totalFiles = this.audioFilePaths.length;
+  constructor(public windows: Windows) {
+    const directories = getDirectories();
+    const activePathsMap: { [key: string]: string } = {};
+    directories.forEach((dir) => {
+      const audioFilePathsInDir = allAudioFilesInDir(dir.path);
+      audioFilePathsInDir.forEach((filepath) => {
+        activePathsMap[filepath] = filepath;
+      });
+    });
+    const activePaths = _.keys(activePathsMap);
+    const cachedPaths = getAllSamples().map(({ path: sPath }) => sPath);
+
+    this.filesToScan = [...activePaths];
+    _.pullAll(this.filesToScan, cachedPaths);
+
+    this.filesToClean = [...cachedPaths];
+    _.pullAll(this.filesToClean, activePaths);
+
+    this.totalFiles = this.filesToScan.length;
+  }
+
+  public cleanFiles() {
+    deleteSamples(this.filesToClean);
   }
 
   public analyzeFiles() {
     this.scanActive = true;
 
-    const fileChunks = _.chunk(this.audioFilePaths, ANALISIS_CHUNK_SIZE);
+    const fileChunks = _.chunk(this.filesToScan, ANALISIS_CHUNK_SIZE);
     const fileChunksLength = _.size(fileChunks);
 
     console.log(
