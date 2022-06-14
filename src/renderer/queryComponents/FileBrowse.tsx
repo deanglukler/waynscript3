@@ -1,4 +1,5 @@
 import { Box, Button, LinearProgress, Typography } from '@mui/material';
+import path from 'path';
 import { useEffect, useState } from 'react';
 
 import { Directory, ScanProgress } from '../../main/types';
@@ -56,6 +57,12 @@ export function Filebrowse(): JSX.Element {
   return (
     <Box>
       {renderProgress()}
+      <Typography
+        variant="h2"
+        sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}
+      >
+        directories
+      </Typography>
       <button onClick={handleDBReset}>Reset DB</button>
       <button onClick={handleFolderSelect}>Add Folder</button>
       <Button
@@ -67,9 +74,11 @@ export function Filebrowse(): JSX.Element {
       >
         SCAN
       </Button>
+
       {dirs.map((dir) => {
+        const { name } = path.parse(dir.path);
         return (
-          <div key={dir.path}>
+          <Box key={dir.path}>
             <Button
               component="span"
               onClick={() =>
@@ -103,8 +112,10 @@ export function Filebrowse(): JSX.Element {
               HIDE
             </Button>
 
-            <Typography>{dir.path}</Typography>
-          </div>
+            <Typography variant="h3" noWrap>
+              {name}
+            </Typography>
+          </Box>
         );
       })}
     </Box>

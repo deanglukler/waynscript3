@@ -1,8 +1,10 @@
-import { Box } from '@mui/material';
+import { Box, CssBaseline, Paper, ThemeProvider } from '@mui/material';
 import { StoreProvider } from 'easy-peasy';
 import { Filebrowse } from './queryComponents/FileBrowse';
 import { QueryParams } from './queryComponents/QueryParams';
 import { store } from './queryStore';
+import { theme } from './theme';
+import '../../assets/mukta-font/mukta-fontface.css';
 
 export default function QueryApp() {
   return (
@@ -10,14 +12,24 @@ export default function QueryApp() {
     // https://github.com/ctrlplusb/easy-peasy/issues/741
     // issue with react 18 apparently
     <StoreProvider store={store}>
-      <Box display="flex">
-        <Box flex="0 0 100px">
-          <Filebrowse />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box display="flex">
+          <Box sx={{ width: 300, minHeight: '100vh', display: 'flex' }}>
+            <Paper
+              elevation={0}
+              variant="outlined"
+              square
+              sx={{ padding: 2, width: 1 }}
+            >
+              <Filebrowse />
+            </Paper>
+          </Box>
+          <Box flex="1 0 500px">
+            <QueryParams />
+          </Box>
         </Box>
-        <Box flex="1 0 500px">
-          <QueryParams />
-        </Box>
-      </Box>
+      </ThemeProvider>
     </StoreProvider>
   );
 }
