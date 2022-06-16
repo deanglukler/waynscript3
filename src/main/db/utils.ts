@@ -15,12 +15,12 @@ const logQueryTime = () => {
   timeLogID++;
 };
 
-export const runQuery = (q: string) => {
+export const runQuery = (q: string, cancelLog?: boolean) => {
   const sql = q;
-  logQuery(sql);
+  if (!cancelLog) logQuery(sql);
   const stmt = db.prepare(sql);
   const res = stmt.run();
-  logQueryTime();
+  if (!cancelLog) logQueryTime();
   return res;
 };
 
@@ -75,7 +75,27 @@ export const cleanDatabase = () => {
 };
 
 export const resetDatabase = () => {
-  runQuery(`DROP TABLE IF EXISTS samples_words;`);
+  // directories
+  runQuery(`DROP TABLE IF EXISTS directory_childs`);
+  runQuery(`DROP TABLE IF EXISTS directories;`);
+  const createDirs = `CREATE TABLE "directories" (
+     "id"	INTEGER NOT NULL UNIQUE,
+     "path"	TEXT NOT NULL,
+     "viewing"	INTEGER NOT NULL,
+     "top_level"	INTEGER NOT NULL,
+     "last_child" INTEGER,
+     "total_samples" INTEGER,
+     PRIMARY KEY("id" AUTOINCREMENT),
+     UNIQUE("path") ON CONFLICT IGNORE
+   );`;
+  runQuery(createDirs);
+
+  const createDirChilds = `CREATE TABLE "directory_childs" (
+    "id"	INTEGER NOT NULL REFERENCES directories("id"),
+    "child_id"	INTEGER NOT NULL UNIQUE REFERENCES directories("id"),
+    PRIMARY KEY("child_id")
+  );`;
+  runQuery(createDirChilds);
 
   // samples
   runQuery(`DROP TABLE IF EXISTS samples;`);
@@ -83,6 +103,7 @@ export const resetDatabase = () => {
     "path"	TEXT NOT NULL,
     "bpm"	INTEGER,
     "key"	TEXT,
+    "ancestor_id" INTEGER NOT NULL REFERENCES directories("id"),
     PRIMARY KEY("path"),
     UNIQUE("path") ON CONFLICT IGNORE
   );`;
@@ -91,16 +112,6 @@ export const resetDatabase = () => {
     "path"
   );`;
   runQuery(samplesIndex);
-
-  // directories
-  runQuery(`DROP TABLE IF EXISTS directories;`);
-  const createDirs = `CREATE TABLE "directories" (
-    "path"	TEXT NOT NULL,
-    "active"	INTEGER NOT NULL,
-    PRIMARY KEY("path"),
-    UNIQUE("path") ON CONFLICT IGNORE
-  );`;
-  runQuery(createDirs);
 
   // queries
   runQuery(`DROP TABLE IF EXISTS queries;`);
@@ -130,19 +141,6 @@ export const resetDatabase = () => {
     "word"
   );`;
   runQuery(wordsIndex);
-
-  // samples_words
-  const createSamplesWords = `CREATE TABLE "samples_words" (
-    "id"	INTEGER NOT NULL UNIQUE,
-    "path"	TEXT NOT NULL REFERENCES samples("path"),
-    "word"	TEXT NOT NULL REFERENCES words("word"),
-    PRIMARY KEY("id" AUTOINCREMENT)
-  );`;
-  runQuery(createSamplesWords);
-  const samplesWordsIndex = `CREATE INDEX IF NOT EXISTS "" ON "samples_words" (
-    "path"
-  );`;
-  runQuery(samplesWordsIndex);
 
   // // windows
   // runQuery(`DROP TABLE IF EXISTS windows;`);

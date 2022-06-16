@@ -20,7 +20,11 @@ export type Channels =
   | 'BPM_QUERY_STATS'
   | 'KEY_QUERY_STATS'
   | 'WORD_QUERY_STATS'
-  | 'TOTAL_SAMPLES';
+  | 'TOTAL_SAMPLES'
+  | 'SYNC_DIRS'
+  | 'ACTIVATE_VIEW_DIR'
+  | 'DEACTIVATE_VIEW_DIR'
+  | 'RECEIVE_DIR_SYNC';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

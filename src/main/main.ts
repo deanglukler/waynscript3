@@ -11,7 +11,14 @@
  */
 import { app } from 'electron';
 import App from './App';
+import { resetDatabase } from './db/utils';
+import { DirectoryScan } from './utils/DirectoryScan';
 import Windows from './utils/Windows';
+
+if (process.env.RESET_APP === 'true') {
+  resetDatabase();
+  new DirectoryScan().scan();
+}
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -43,7 +50,7 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
-    windows.createListWindow();
+    // windows.createListWindow();
     windows.createQueryWindow();
     app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the
@@ -52,7 +59,7 @@ app
         windows.createQueryWindow();
       }
       if (windows.windows.listWindow === null) {
-        windows.createListWindow();
+        // windows.createListWindow();
       }
     });
   })

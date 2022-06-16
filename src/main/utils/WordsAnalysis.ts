@@ -7,6 +7,7 @@ export class WordsAnalysis {
     const noSymbolName = name
       .replace(/[^0-9a-zA-Z]+/g, ' ')
       .replace(/(?!808)\b\d+\b/g, '')
+      .toLowerCase()
       .trim();
 
     // sometimes there will be multiple spaces between words
