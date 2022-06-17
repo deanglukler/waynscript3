@@ -22,6 +22,7 @@ export const themeOptions: ThemeOptions = {
     error: {
       main: '#d32f2f',
     },
+    divider: 'rgba(256,256,256,0.3)',
   },
   typography: {
     fontFamily: 'Mukta',

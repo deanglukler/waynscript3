@@ -46,6 +46,7 @@ export default class Directories {
           return {
             id: childDir.child_id,
             path: childDir.child_path,
+            active: childDir.active,
             top_level: childDir.top_level,
             viewing: childDir.viewing,
             last_child: childDir.last_child,
@@ -103,10 +104,6 @@ export default class Directories {
       }
 
       const path = selectedPaths[0];
-
-      addDirectory(path);
-      sync();
-      scan();
     });
 
     ipcMain.on('REMOVE_DIR', (event, arg) => {
@@ -123,16 +120,18 @@ export default class Directories {
 
     ipcMain.on('ACTIVATE_DIR', (event, arg) => {
       logMainOn(arg, 'ACTIVATE_DIR');
-      const path = arg[0];
-      activateDir(path);
-      sync();
+      const id = arg[0];
+      activateDir(id);
+      syncDirectories();
+      // sync();
     });
 
     ipcMain.on('DEACTIVATE_DIR', (event, arg) => {
       logMainOn(arg, 'DEACTIVATE_DIR');
-      const path = arg[0];
-      deActivateDir(path);
-      sync();
+      const id = arg[0];
+      deActivateDir(id);
+      syncDirectories();
+      // sync();
     });
 
     ipcMain.on('SCAN_DIRS', (event, arg) => {

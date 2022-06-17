@@ -5,8 +5,6 @@ export type Channels =
   | 'REMOVE_DIR'
   | 'DIR_LIST'
   | 'SYNC_FILE_BROWSE'
-  | 'ACTIVATE_DIR'
-  | 'DEACTIVATE_DIR'
   | 'SCAN_DIRS'
   | 'UPDATE_SCAN_PROGRESS'
   | 'RESET_DB'
@@ -22,6 +20,8 @@ export type Channels =
   | 'WORD_QUERY_STATS'
   | 'TOTAL_SAMPLES'
   | 'SYNC_DIRS'
+  | 'ACTIVATE_DIR'
+  | 'DEACTIVATE_DIR'
   | 'ACTIVATE_VIEW_DIR'
   | 'DEACTIVATE_VIEW_DIR'
   | 'RECEIVE_DIR_SYNC';

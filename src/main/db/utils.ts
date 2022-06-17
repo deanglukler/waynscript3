@@ -81,6 +81,7 @@ export const resetDatabase = () => {
   const createDirs = `CREATE TABLE "directories" (
      "id"	INTEGER NOT NULL UNIQUE,
      "path"	TEXT NOT NULL,
+     "active" INTEGER NOT NULL,
      "viewing"	INTEGER NOT NULL,
      "top_level"	INTEGER NOT NULL,
      "last_child" INTEGER,

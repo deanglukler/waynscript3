@@ -1,7 +1,13 @@
 import { createTypedHooks } from 'easy-peasy';
 import _ from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import { Directory, DirectoryMap, Query, QueryStoreModel } from '../main/types';
+import React, {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { DirectoryMap, Query, QueryStoreModel } from '../main/types';
 
 const typedHooks = createTypedHooks<QueryStoreModel>();
 
@@ -80,6 +86,18 @@ export const useDirectorySync = () => {
     window.electron.ipcRenderer.sendMessage('DEACTIVATE_VIEW_DIR', [id]);
   }, []);
 
+  const activateDir = useCallback(
+    (id: number) =>
+      window.electron.ipcRenderer.sendMessage('ACTIVATE_DIR', [id]),
+    []
+  );
+
+  const deactivateDir = useCallback(
+    (id: number) =>
+      window.electron.ipcRenderer.sendMessage('DEACTIVATE_DIR', [id]),
+    []
+  );
+
   const totalTopLevelSamples = dirMaps.reduce((count, dirMap) => {
     return count + dirMap.total_samples;
   }, 0);
@@ -92,7 +110,45 @@ export const useDirectorySync = () => {
     dirMaps,
     activateViewDir,
     deactivateViewDir,
+    activateDir,
+    deactivateDir,
     totalTopLevelSamples,
     averageTopLevelTotal,
   };
 };
+
+// Hook
+// T - could be any type of HTML element like: HTMLDivElement, HTMLParagraphElement and etc.
+// hook returns tuple(array) with type [any, boolean]
+export function useHover<T>(): [MutableRefObject<T>, boolean] {
+  const [value, setValue] = useState<boolean>(false);
+
+  const ref: any = useRef<T | null>(null);
+
+  const handleMouseOver = (e: React.MouseEvent): void => {
+    setValue(true);
+    e.stopPropagation();
+  };
+  const handleMouseOut = (e: React.MouseEvent): void => {
+    setValue(false);
+    e.stopPropagation();
+  };
+
+  useEffect(
+    () => {
+      const node: any = ref.current;
+      if (node) {
+        node.addEventListener('mouseover', handleMouseOver);
+        node.addEventListener('mouseout', handleMouseOut);
+
+        return () => {
+          node.removeEventListener('mouseover', handleMouseOver);
+          node.removeEventListener('mouseout', handleMouseOut);
+        };
+      }
+    },
+    [ref.current] // Recall only if ref changes
+  );
+
+  return [ref, value];
+}

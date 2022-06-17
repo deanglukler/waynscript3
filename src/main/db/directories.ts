@@ -16,8 +16,8 @@ export const getActiveDirectories = () =>
 
 export const addDirectory = (dirPath: string, totalSamples: number) => {
   const sql = SqlString.format(
-    'INSERT INTO directories (path, viewing, top_level, last_child, total_samples) VALUES (?, ?, ?, ?, ?)',
-    [dirPath, false, false, false, totalSamples]
+    'INSERT INTO directories (path, active, viewing, top_level, last_child, total_samples) VALUES (?, ?, ?, ?, ?, ?)',
+    [dirPath, false, false, false, false, totalSamples]
   );
   return runQuery(sql, true);
 };
@@ -33,11 +33,7 @@ export const getRootDirectory = (rootPath: string) =>
   );
 
 export const makeRootDirectory = (rootPath: string) => {
-  const sql = SqlString.format(
-    'INSERT INTO directories (path, viewing, top_level, last_child, total_samples) VALUES (?, ?, ?, ?, ?)',
-    [rootPath, true, false, true, 0]
-  );
-  runQuery(sql);
+  addDirectory(rootPath, 0);
   return getRootDirectory(rootPath);
 };
 
@@ -56,18 +52,18 @@ export const removeDirectory = (dirPath: string) => {
   return runQuery(sql);
 };
 
-export const activateDir = (dirPath: string) => {
+export const activateDir = (id: number) => {
   const sql = SqlString.format(
-    'UPDATE directories SET active=TRUE WHERE path = ?',
-    [dirPath]
+    'UPDATE directories SET active=TRUE WHERE id = ?',
+    [id]
   );
   return runQuery(sql);
 };
 
-export const deActivateDir = (dirPath: string) => {
+export const deActivateDir = (id: number) => {
   const sql = SqlString.format(
-    'UPDATE directories SET active=FALSE WHERE path = ?',
-    [dirPath]
+    'UPDATE directories SET active=FALSE WHERE id = ?',
+    [id]
   );
   return runQuery(sql);
 };
@@ -84,15 +80,17 @@ export const addDirectoryChilds = (values: [number, number][]) => {
 export const getVisibleChildDirs = () =>
   allQuery<{
     child_id: number;
+    child_path: string;
+    active: 0 | 1;
     parent_id: number;
     viewing: 0 | 1;
     top_level: 0 | 1;
     last_child: 0 | 1;
-    child_path: string;
     total_samples: number;
   }>(`SELECT
   directories.id as child_id,
   directories.path as child_path,
+  directories.active as active,
   directories.viewing as viewing,
   directories.top_level as top_level,
   directories.last_child as last_child,

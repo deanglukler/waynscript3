@@ -9,6 +9,7 @@ export interface AvailableWindows {
 export interface Directory {
   id: number;
   path: string;
+  active: 0 | 1;
   viewing: 0 | 1;
   last_child: 0 | 1;
   top_level: 0 | 1;
