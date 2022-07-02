@@ -8,28 +8,16 @@ import {
   Typography,
 } from '@mui/material';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
-import { BpmStats } from '../../main/types';
-import { useStoreActions, useStoreState } from '../queryHooks';
+import { useBPMStats, useStoreActions, useStoreState } from '../queryHooks';
 
 export function BPMList(): JSX.Element {
   const bpms = useStoreState((state) => state.bpms);
   const toggleBpm = useStoreActions((actions) => actions.toggleBpm);
-  const [bpmStats, setBpmStats] = useState<BpmStats | null>(null);
+  const bpmStats = useBPMStats();
 
   const handleToggle = (value: number) => () => {
     toggleBpm(value);
   };
-
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on(
-      'BPM_QUERY_STATS',
-      (stats) => {
-        setBpmStats(stats as BpmStats);
-      }
-    );
-    return cleanup;
-  }, []);
 
   if (!bpmStats || _.keys(bpmStats).length === 0) {
     return <Typography>No BPMs found</Typography>;

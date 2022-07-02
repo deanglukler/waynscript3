@@ -22,12 +22,9 @@ export interface DirectoryMap extends Directory {
 
 export interface Sample {
   path: string;
+  dir_id: number;
   bpm: number | null;
   key: string | null;
-}
-
-export interface SampleAnalysis extends Sample {
-  words: WordAndSampleAnalysis[];
 }
 
 export interface ScanProgress {
@@ -43,11 +40,6 @@ export interface WindowInfo {
   height: number;
   x: number | undefined;
   y: number | undefined;
-}
-
-export interface WordAndSampleAnalysis {
-  word: string;
-  sampleWord: SampleWord;
 }
 
 export interface Word {

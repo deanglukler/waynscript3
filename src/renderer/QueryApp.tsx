@@ -1,6 +1,5 @@
 import { Box, CssBaseline, Paper, ThemeProvider } from '@mui/material';
 import { StoreProvider } from 'easy-peasy';
-import { Filebrowse } from './queryComponents/FileBrowse';
 import { QueryParams } from './queryComponents/QueryParams';
 import { store } from './queryStore';
 import { theme } from './theme';

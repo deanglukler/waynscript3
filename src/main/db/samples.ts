@@ -9,15 +9,31 @@ export const insertSamples = (samples: Sample[]) => {
     sample.path,
     sample.bpm,
     sample.key,
+    sample.dir_id,
   ]);
-  const sql = SqlString.format('INSERT INTO samples (path,bpm,key) VALUES ?', [
-    samplesSQL,
-  ]);
+  const sql = SqlString.format(
+    'INSERT INTO samples (path,bpm,key,dir_id) VALUES ?',
+    [samplesSQL]
+  );
   return runQuery(sql);
 };
 
 export const getAllSamples = () => {
   return allQuery<{ path: string }>(`SELECT path FROM samples`);
+};
+
+export const getSamplesInActiveDirs = () => {
+  const activeDirs = getActiveDirectories();
+  if (activeDirs.length === 0) {
+    console.log('\nNO ACTIVE DIRS\n');
+    return [];
+  }
+
+  const whereClause = activeDirsWhereClause(activeDirs, []);
+
+  const fullClause = `SELECT path FROM samples WHERE ${whereClause}`;
+
+  return allQuery<{ path: string }>(fullClause);
 };
 
 export const getSamplesByQuery = () => {

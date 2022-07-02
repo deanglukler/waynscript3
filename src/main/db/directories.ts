@@ -6,11 +6,6 @@ import { allQuery, getQuery, runQuery } from './utils';
 export const getDirectories = () =>
   allQuery<Directory>(`SELECT * FROM directories;`);
 
-export const getSubdirectories = (id: number) =>
-  allQuery<Directory>(
-    SqlString.format(`SELECT * FROM directories WHERE ancestor_id = ?;`, [id])
-  );
-
 export const getActiveDirectories = () =>
   allQuery<Directory>(`SELECT * FROM directories WHERE active=TRUE`);
 

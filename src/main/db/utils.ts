@@ -77,6 +77,7 @@ export const cleanDatabase = () => {
 export const resetDatabase = () => {
   // directories
   runQuery(`DROP TABLE IF EXISTS directory_childs`);
+  runQuery(`DROP TABLE IF EXISTS samples;`);
   runQuery(`DROP TABLE IF EXISTS directories;`);
   const createDirs = `CREATE TABLE "directories" (
      "id"	INTEGER NOT NULL UNIQUE,
@@ -99,12 +100,11 @@ export const resetDatabase = () => {
   runQuery(createDirChilds);
 
   // samples
-  runQuery(`DROP TABLE IF EXISTS samples;`);
   const createSamples = `CREATE TABLE "samples" (
     "path"	TEXT NOT NULL,
     "bpm"	INTEGER,
     "key"	TEXT,
-    "ancestor_id" INTEGER NOT NULL REFERENCES directories("id"),
+    "dir_id" INTEGER NOT NULL REFERENCES directories("id"),
     PRIMARY KEY("path"),
     UNIQUE("path") ON CONFLICT IGNORE
   );`;

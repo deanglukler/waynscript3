@@ -13,11 +13,21 @@ import { app } from 'electron';
 import App from './App';
 import { resetDatabase } from './db/utils';
 import { DirectoryScan } from './utils/DirectoryScan';
+import FileScan from './utils/FileScan';
 import Windows from './utils/Windows';
 
 if (process.env.RESET_APP === 'true') {
+  console.log('\nRESETTING DATABASE');
+  console.log('---------------');
   resetDatabase();
-  new DirectoryScan().scan();
+  const asdf = new DirectoryScan().scan();
+  asdf.then(() => {
+    new FileScan(null).analyzeFiles();
+  });
+}
+
+if (process.env.NO_RUN === 'true') {
+  process.exit();
 }
 
 if (process.env.NODE_ENV === 'production') {

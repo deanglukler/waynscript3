@@ -2,16 +2,12 @@ import { dialog, ipcMain } from 'electron';
 import _ from 'lodash';
 import {
   activateDir,
-  addDirectory,
   deActivateDir,
-  getDirectories,
   getVisibleChildDirs,
   getTopLevelDirs,
-  removeDirectory,
   setViewDir,
 } from '../db/directories';
-import { Directory, DirectoryMap } from '../types';
-import FileScan from './FileScan';
+import { DirectoryMap } from '../types';
 import { logMainOn } from './log';
 import Windows from './Windows';
 
@@ -21,16 +17,6 @@ export default class Directories {
     refreshSampleList: () => void,
     refreshQueryStats: () => void
   ) {
-    function refreshRendererDirList() {
-      windows.sendWindowMessage('queryWindow', 'DIR_LIST', getDirectories());
-    }
-
-    function sync() {
-      refreshRendererDirList();
-      refreshSampleList();
-      refreshQueryStats();
-    }
-
     function syncDirectories() {
       const topLevelDirs = getTopLevelDirs();
       const relevantDirs = getVisibleChildDirs();
@@ -65,34 +51,45 @@ export default class Directories {
       windows.sendWindowMessage('queryWindow', 'RECEIVE_DIR_SYNC', dirMaps);
     }
 
-    function scan() {
-      const fScan = new FileScan(windows);
-      fScan.cleanFiles();
-      // eslint-disable-next-line promise/catch-or-return
-      fScan.analyzeFiles().then(() => {
-        sync();
-        return null;
-      });
-    }
-
-    ipcMain.on('SYNC_DIRS', (event, arg) => {
+    ipcMain.on('SYNC_DIRS', (_event, arg) => {
       logMainOn(arg, 'SYNC_DIRS');
       syncDirectories();
+      refreshSampleList();
+      refreshQueryStats();
     });
 
-    ipcMain.on(`ACTIVATE_VIEW_DIR`, (event, arg) => {
+    ipcMain.on(`ACTIVATE_VIEW_DIR`, (_event, arg) => {
       const id = arg[0] as number;
       setViewDir(id, true);
       syncDirectories();
     });
 
-    ipcMain.on(`DEACTIVATE_VIEW_DIR`, (event, arg) => {
+    ipcMain.on(`DEACTIVATE_VIEW_DIR`, (_event, arg) => {
       const id = arg[0] as number;
       setViewDir(id, false);
       syncDirectories();
     });
 
-    ipcMain.on('CHOOSE_DIR', (event, arg) => {
+    ipcMain.on('ACTIVATE_DIR', (_event, arg) => {
+      logMainOn(arg, 'ACTIVATE_DIR');
+      const id = arg[0];
+      activateDir(id);
+      syncDirectories();
+      refreshSampleList();
+      refreshQueryStats();
+    });
+
+    ipcMain.on('DEACTIVATE_DIR', (_event, arg) => {
+      logMainOn(arg, 'DEACTIVATE_DIR');
+      const id = arg[0];
+      deActivateDir(id);
+      syncDirectories();
+      refreshSampleList();
+      refreshQueryStats();
+    });
+
+    // may potentially reuse this logic in future dialogues
+    ipcMain.on('CHOOSE_DIR', (_event, arg) => {
       logMainOn(arg, 'CHOOSE_DIR');
       const selectedPaths = dialog.showOpenDialogSync({
         properties: ['openDirectory', 'multiSelections'],
@@ -104,40 +101,6 @@ export default class Directories {
       }
 
       const path = selectedPaths[0];
-    });
-
-    ipcMain.on('REMOVE_DIR', (event, arg) => {
-      logMainOn(arg, 'REMOVE_DIR');
-      const path = arg[0];
-      removeDirectory(path);
-      sync();
-    });
-
-    ipcMain.on('SYNC_FILE_BROWSE', (event, arg) => {
-      logMainOn(arg, 'SYNC_FILE_BROWSE');
-      sync();
-    });
-
-    ipcMain.on('ACTIVATE_DIR', (event, arg) => {
-      logMainOn(arg, 'ACTIVATE_DIR');
-      const id = arg[0];
-      activateDir(id);
-      syncDirectories();
-      // sync();
-    });
-
-    ipcMain.on('DEACTIVATE_DIR', (event, arg) => {
-      logMainOn(arg, 'DEACTIVATE_DIR');
-      const id = arg[0];
-      deActivateDir(id);
-      syncDirectories();
-      // sync();
-    });
-
-    ipcMain.on('SCAN_DIRS', (event, arg) => {
-      logMainOn(arg, 'SCAN_DIRS');
-      sync();
-      scan();
     });
   }
 }

@@ -7,7 +7,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { DirectoryMap, Query, QueryStoreModel } from '../main/types';
+import {
+  BpmStats,
+  DirectoryMap,
+  KeyStats,
+  Query,
+  QueryStoreModel,
+  ScanProgress,
+} from '../main/types';
 
 const typedHooks = createTypedHooks<QueryStoreModel>();
 
@@ -26,7 +33,7 @@ export const useQueryParamsInit = () => {
       initialized();
     });
 
-    const cleanupQueryParams = window.electron.ipcRenderer.on(
+    const cleanupListener = window.electron.ipcRenderer.on(
       'RECEIVE_QUERY',
       (arg) => {
         updateQueryParams(arg as Query);
@@ -35,7 +42,7 @@ export const useQueryParamsInit = () => {
 
     window.electron.ipcRenderer.sendMessage('INIT_QUERY_PARAMS', []);
 
-    return cleanupQueryParams;
+    return cleanupListener;
   }, [updateQueryParams, initialized]);
 };
 
@@ -57,6 +64,54 @@ export const useQueryParamsUpdate = () => {
 
     window.electron.ipcRenderer.sendMessage('SYNC_QUERY', [query]);
   }, [bpms, keys, words, initializing]);
+};
+
+export const useBPMStats = () => {
+  const [bpmStats, setBpmStats] = useState<BpmStats | null>(null);
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'BPM_QUERY_STATS',
+      (stats) => {
+        setBpmStats(stats as BpmStats);
+      }
+    );
+    return cleanup;
+  }, []);
+  return bpmStats;
+};
+
+export const useKeyStats = () => {
+  const [keyStats, setKeyStats] = useState<KeyStats | null>(null);
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'KEY_QUERY_STATS',
+      (stats) => {
+        setKeyStats(stats as KeyStats);
+      }
+    );
+    return cleanup;
+  }, []);
+  return keyStats;
+};
+
+export const useScanProgress = () => {
+  const [scanProgress, setScanProgress] = useState<ScanProgress | null>(null);
+
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'UPDATE_SCAN_PROGRESS',
+      (arg) => {
+        const scanProgressInfo = arg as ScanProgress;
+        if (scanProgressInfo.finished) {
+          setScanProgress(null);
+        } else {
+          setScanProgress(scanProgressInfo);
+        }
+      }
+    );
+    return cleanup;
+  }, []);
+  return scanProgress;
 };
 
 export const useDirectorySync = () => {

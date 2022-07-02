@@ -1,73 +1,82 @@
-import fs from 'fs';
+import { readdir } from 'node:fs/promises';
 import _ from 'lodash';
 import path from 'path';
-import { getDirectories } from '../db/directories';
+import { getActiveDirectories, getDirectories } from '../db/directories';
 
-import { deleteSamples, getAllSamples, insertSamples } from '../db/samples';
-import { insertWordsAndSamples } from '../db/words';
-import { SampleAnalysis, ScanProgress } from '../types';
+import { getSamplesInActiveDirs, insertSamples } from '../db/samples';
+import { Directory, Sample, ScanProgress } from '../types';
 import { BpmAnalysis } from './BpmAnalysis';
 import { KeyAnalysis } from './KeyAnalysis';
 import Windows from './Windows';
-import { WordsAnalysis } from './WordsAnalysis';
+import { audioExts } from './constants';
 
-export const audioExts = ['.wav', '.aiff', '.mp3'];
-
-const recursiveFileList = (
+const recursiveFileList = async (
   directoryPath: string,
   includeExts: string[],
   includeAnyExt: boolean
-): string[] => {
+): Promise<string[]> => {
   let filelist: string[] = [];
-  fs.readdirSync(directoryPath, { withFileTypes: true }).forEach((file) => {
-    if (file.isDirectory()) {
-      const recursivePath = path.resolve(directoryPath, file.name);
-      filelist = filelist.concat(
-        recursiveFileList(recursivePath, includeExts, includeAnyExt)
-      );
-    }
-    const ext = path.extname(file.name);
-    if (!includeAnyExt && !includeExts.includes(ext)) {
-      return;
-    }
-    filelist.push(path.resolve(directoryPath, file.name));
-  });
+  const files = await readdir(directoryPath, { withFileTypes: true });
+  await Promise.all(
+    files.map(async (file) => {
+      if (file.isDirectory()) {
+        const recursivePath = path.resolve(directoryPath, file.name);
+        try {
+          const recusiveList = await recursiveFileList(
+            recursivePath,
+            includeExts,
+            includeAnyExt
+          );
+          filelist = filelist.concat(recusiveList);
+        } catch (error) {
+          console.log('ERROR READING FILE LIST!');
+          console.log(error);
+        }
+      }
+      const ext = path.extname(file.name);
+      if (!includeAnyExt && !includeExts.includes(ext)) {
+        return null;
+      }
+      filelist.push(path.resolve(directoryPath, file.name));
+      return null;
+    })
+  );
   return filelist;
 };
 
-export const allAudioFilesInDir = (dir: string): string[] => {
+export const allAudioFilesInDir = (dir: string): Promise<string[]> => {
   return recursiveFileList(dir, audioExts, false);
 };
 
-const analyzeFile = (filePath: string): SampleAnalysis => {
-  const { name } = path.parse(filePath);
-  // we may find bpm info in the whole path?
-  const bpm = new BpmAnalysis(filePath);
-  const key = new KeyAnalysis(name);
-  const words = new WordsAnalysis(name).words.map((word) => {
-    return {
-      word,
-      sampleWord: {
-        path: filePath,
-        word,
-      },
-    };
-  });
-
-  return {
-    path: filePath,
-    bpm: bpm.bpm,
-    key: key.key,
-    words,
-  };
+export const allAudioFilesInDirsList = async (
+  dirs: string[]
+): Promise<string[]> => {
+  const filelist: string[] = [];
+  await Promise.all(
+    dirs.map(async (directoryPath) => {
+      const files = await readdir(directoryPath, { withFileTypes: true });
+      files.forEach((file) => {
+        if (file.isDirectory()) {
+          return;
+        }
+        const ext = path.extname(file.name);
+        if (audioExts.includes(ext)) {
+          filelist.push(path.resolve(directoryPath, file.name));
+        }
+      });
+    })
+  );
+  return filelist;
 };
 
 const ANALISIS_CHUNK_SIZE = 800;
 
+interface DirMap {
+  [key: string]: Directory;
+}
+
 export default class FileScan {
   public filesToScan: string[] = [];
-
-  public filesToClean: string[] = [];
 
   public totalFiles: number = 0;
 
@@ -75,32 +84,53 @@ export default class FileScan {
 
   public scanActive: boolean = false;
 
-  constructor(public windows: Windows) {
-    const directories = getDirectories();
-    const activePathsMap: { [key: string]: string } = {};
-    directories.forEach((dir) => {
-      const audioFilePathsInDir = allAudioFilesInDir(dir.path);
-      audioFilePathsInDir.forEach((filepath) => {
-        activePathsMap[filepath] = filepath;
-      });
+  public allDirectoriesMap: DirMap = {};
+
+  constructor(public windows: Windows) {}
+
+  private analyzeFile(filePath: string): Sample {
+    const { name, dir } = path.parse(filePath);
+    // we may find bpm info in the whole path?
+    const bpm = new BpmAnalysis(filePath);
+    const key = new KeyAnalysis(name);
+
+    if (!this.allDirectoriesMap[dir]) {
+      console.log('\nUNDEFINED DIR');
+      console.log(dir);
+    }
+
+    if (!this.allDirectoriesMap[dir]) {
+      console.log(
+        '\nWARNING: directory of file path does not exist in database'
+      );
+    }
+    const dirId = this.allDirectoriesMap[dir]?.id || 0;
+
+    return {
+      dir_id: dirId,
+      path: filePath,
+      bpm: bpm.bpm,
+      key: key.key,
+    };
+  }
+
+  private async analyzeFilesToScan() {
+    // const activeDirs = getActiveDirectories();
+    const allDirs = getDirectories();
+    allDirs.forEach((dir) => {
+      this.allDirectoriesMap[dir.path] = dir;
     });
-    const activePaths = _.keys(activePathsMap);
-    const cachedPaths = getAllSamples().map(({ path: sPath }) => sPath);
 
-    this.filesToScan = [...activePaths];
-    _.pullAll(this.filesToScan, cachedPaths);
-
-    this.filesToClean = [...cachedPaths];
-    _.pullAll(this.filesToClean, activePaths);
+    this.filesToScan = await allAudioFilesInDirsList(
+      allDirs.map((dir) => dir.path)
+    );
 
     this.totalFiles = this.filesToScan.length;
   }
 
-  public cleanFiles() {
-    deleteSamples(this.filesToClean);
-  }
+  public async analyzeFiles() {
+    await this.analyzeFilesToScan();
 
-  public analyzeFiles() {
     this.scanActive = true;
 
     const fileChunks = _.chunk(this.filesToScan, ANALISIS_CHUNK_SIZE);
@@ -114,17 +144,16 @@ export default class FileScan {
       const asyncAnalysis = (chunks: string[][]) => {
         if (chunks.length > 0) {
           setTimeout(() => {
-            const analyzedFiles: SampleAnalysis[] = [];
+            const analyzedFiles: Sample[] = [];
             chunks[0].forEach((file) => {
-              analyzedFiles.push(analyzeFile(file));
+              analyzedFiles.push(this.analyzeFile(file));
               this.totalFilesAnalyzed++;
             });
             insertSamples(analyzedFiles);
-            insertWordsAndSamples(analyzedFiles);
             chunks.shift();
             asyncAnalysis(chunks);
             this.updateProgress();
-          }, 10);
+          }, 1);
         } else {
           this.scanActive = false;
           this.updateProgress();

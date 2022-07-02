@@ -17,6 +17,7 @@ module.exports = {
     'no-console': 'off',
     radix: 'off',
     'react/jsx-props-no-spreading': 'off',
+    'promise/catch-or-return': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

@@ -17,7 +17,7 @@ import {
   updateTotalSamples,
 } from '../db/directories';
 import { Directory } from '../types';
-import { audioExts } from './FileScan';
+import { audioExts } from './constants';
 
 const { username } = os.userInfo();
 

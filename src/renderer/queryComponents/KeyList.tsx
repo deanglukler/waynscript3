@@ -8,29 +8,16 @@ import {
   Typography,
 } from '@mui/material';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
-import { KeyStats } from '../../main/types';
-import { useStoreActions, useStoreState } from '../queryHooks';
+import { useKeyStats, useStoreActions, useStoreState } from '../queryHooks';
 
 export function KeyList() {
   const keys = useStoreState((state) => state.keys);
-
   const toggleKey = useStoreActions((actions) => actions.toggleKey);
-  const [keyStats, setKeyStats] = useState<KeyStats | null>(null);
+  const keyStats = useKeyStats();
 
   const handleToggle = (value: string) => () => {
     toggleKey(value);
   };
-
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on(
-      'KEY_QUERY_STATS',
-      (stats) => {
-        setKeyStats(stats as KeyStats);
-      }
-    );
-    return cleanup;
-  }, []);
 
   if (!keyStats || _.keys(keyStats).length === 0) {
     return <Typography>No Keys found</Typography>;
