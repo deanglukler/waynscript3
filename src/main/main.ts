@@ -16,7 +16,12 @@ import { DirectoryScan } from './utils/DirectoryScan';
 import FileScan from './utils/FileScan';
 import Windows from './utils/Windows';
 
-if (process.env.RESET_APP === 'true') {
+require('dotenv').config();
+
+if (
+  process.env.RESET_APP === 'true' ||
+  process.env.RESET_WHEN_STARTING === 'true'
+) {
   console.log('\nRESETTING DATABASE');
   console.log('---------------');
   resetDatabase();

@@ -105,8 +105,12 @@ export default function DirectoryList() {
           cursor: 'pointer',
         }}
       >
-        <Typography>{name}</Typography>
-        <Typography variant="caption">{dir}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', paddingTop: '10px' }}>
+          <Typography sx={{ fontWeight: 600 }}>{name}</Typography>
+          <Typography noWrap variant="caption" sx={{ paddingLeft: '5px' }}>
+            {dir}/{name}
+          </Typography>
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -125,9 +129,9 @@ export default function DirectoryList() {
 
   return (
     <>
-      <AppBar position="fixed">
+      <Box sx={{ position: 'fixed', bottom: 0 }}>
         <Typography>{infoBar}</Typography>
-      </AppBar>
+      </Box>
       <Typography>Total Found: {totalTopLevelSamples}</Typography>
       <Box>{dirMaps.map(renderTopLvlDir)}</Box>
     </>
