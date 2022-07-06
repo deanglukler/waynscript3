@@ -61,7 +61,7 @@ export const getKeyStats = (): KeyStats => {
     wordsClause,
   ]);
 
-  let sql = `SELECT samples.bpm FROM samples`;
+  let sql = `SELECT samples.key FROM samples`;
 
   if (wordsClause) {
     sql = `${sql} JOIN samples_words ON samples.path = samples_words.path`;

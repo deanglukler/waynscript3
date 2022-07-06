@@ -11,7 +11,7 @@ export const themeOptions: ThemeOptions = {
     },
     background: {
       default: '#171717',
-      paper: '#242424',
+      paper: '#1c1c1c',
     },
     info: {
       main: '#64b5f6',

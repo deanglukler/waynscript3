@@ -48,7 +48,7 @@ export function KeyList() {
               </ListItemIcon>
               <ListItemText
                 id={labelId}
-                primary={`${value} bpm`}
+                primary={`${value}`}
                 secondary={`found: ${stats.amount}`}
               />
             </ListItemButton>

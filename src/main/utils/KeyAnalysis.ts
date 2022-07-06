@@ -82,7 +82,7 @@ export class KeyAnalysis {
     if (this.minor) {
       key = `${key}MIN`;
     } else {
-      key = `${key}MAX`;
+      key = `${key}MAJ`;
     }
 
     this.key = key;
