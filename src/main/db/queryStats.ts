@@ -1,12 +1,12 @@
 import _ from 'lodash';
 import SqlString from 'sqlstring-sqlite';
+import { Stats } from '../types';
 
-import { BpmStats, KeyStats, WordStats } from '../types';
 import { getActiveDirectories } from './directories';
 import { getLastQuery } from './queries';
 import { activeDirsWhereClause, allQuery } from './utils';
 
-export const getBpmStats = (): BpmStats => {
+export const getBpmStats = (): Stats => {
   const activeDirs = getActiveDirectories();
   if (activeDirs.length === 0) return {};
 
@@ -33,7 +33,7 @@ export const getBpmStats = (): BpmStats => {
   sql = `${sql} WHERE ${whereClause}`;
 
   const res = allQuery<{ bpm: number }>(sql);
-  const bpmStats: BpmStats = {};
+  const bpmStats: Stats = {};
   return res.reduce((stats, next) => {
     if (!stats[next.bpm]) {
       stats[next.bpm] = { amount: 0 };
@@ -43,7 +43,7 @@ export const getBpmStats = (): BpmStats => {
   }, bpmStats);
 };
 
-export const getKeyStats = (): KeyStats => {
+export const getKeyStats = (): Stats => {
   const activeDirs = getActiveDirectories();
   if (activeDirs.length === 0) return {};
 
@@ -70,7 +70,7 @@ export const getKeyStats = (): KeyStats => {
   sql = `${sql} WHERE ${whereClause}`;
 
   const res = allQuery<{ key: string }>(sql);
-  const keyStats: KeyStats = {};
+  const keyStats: Stats = {};
   return res.reduce((stats, next) => {
     if (!stats[next.key]) {
       stats[next.key] = { amount: 0 };
@@ -80,7 +80,7 @@ export const getKeyStats = (): KeyStats => {
   }, keyStats);
 };
 
-export const getWordStats = (): WordStats => {
+export const getWordStats = (): Stats => {
   const activeDirs = getActiveDirectories();
   if (activeDirs.length === 0) return {};
 
@@ -116,7 +116,7 @@ export const getWordStats = (): WordStats => {
   console.log(`STANDARD DEVIATION: ${standardDeviation}`);
   console.log('');
 
-  const filteredWordStats: WordStats = {};
+  const filteredWordStats: Stats = {};
   results.forEach((result) => {
     const { amount } = result;
     if (amount > average) {

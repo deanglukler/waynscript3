@@ -14,18 +14,26 @@ export default function QueryApp() {
     <StoreProvider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box display="flex">
-          <Box sx={{ width: 300, minHeight: '100vh', display: 'flex' }}>
-            <Paper
-              elevation={0}
-              variant="outlined"
-              square
-              sx={{ padding: 2, width: 1 }}
-            >
-              <DirectoryList />
-            </Paper>
+        <Box display="flex" sx={{ height: '100vh' }}>
+          <Box
+            sx={{
+              width: 300,
+              height: 1,
+              overflow: 'scroll',
+              padding: 2,
+              borderRight: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <DirectoryList />
           </Box>
-          <Box flex="1 0 500px">
+          <Box
+            sx={{
+              flex: '1 0 0',
+              height: 1,
+              overflow: 'scroll',
+            }}
+          >
             <QueryParams />
           </Box>
         </Box>

@@ -81,23 +81,15 @@ export interface QueryRow {
 
 export type Total = number;
 
-export interface Stats {
+export interface Stat {
   amount: number;
 }
 
-export interface BpmStats {
-  [key: number]: Stats;
-}
-
-export interface KeyStats {
-  [key: string]: Stats;
-}
-
-export interface WordStats {
-  [key: string]: Stats;
+export interface Stats {
+  [key: string]: Stat;
 }
 
 export interface AllWordStats {
-  stats: WordStats;
+  stats: Stats;
   average: number;
 }

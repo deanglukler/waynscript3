@@ -1,14 +1,8 @@
-import {
-  Checkbox,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import _ from 'lodash';
 import { useKeyStats, useStoreActions, useStoreState } from '../queryHooks';
+import { QueryCheckboxList } from './QueryCheckboxList';
+import { StickyListHeader } from './StickyListHeader';
 
 export function KeyList() {
   const keys = useStoreState((state) => state.keys);
@@ -23,38 +17,31 @@ export function KeyList() {
     return <Typography>No Keys found</Typography>;
   }
 
-  return (
-    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      {_.keys(keyStats).map((key) => {
-        const value = key;
-        const stats = keyStats[key];
-        const labelId = `checkbox-list-label-${value}`;
+  const renderList = () => {
+    return (
+      <QueryCheckboxList
+        stats={keyStats}
+        handleToggle={handleToggle}
+        selected={keys}
+        primaryTextConverter={(original: string) => {
+          let visible = original;
 
-        return (
-          <ListItem key={value} disablePadding>
-            <ListItemButton
-              role={undefined}
-              onClick={handleToggle(value)}
-              dense
-            >
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={keys.includes(value)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                id={labelId}
-                primary={`${value}`}
-                secondary={`found: ${stats.amount}`}
-              />
-            </ListItemButton>
-          </ListItem>
-        );
-      })}
-    </List>
+          visible = visible.replace('_NAT_', ' ');
+          visible = visible.replace('_SHARP_', '♯ ');
+          visible = visible.replace('_FLAT_', '♭ ');
+          visible = visible.replace('MAJ', ' Maj ');
+          visible = visible.replace('MIN', ' min ');
+
+          return visible;
+        }}
+      />
+    );
+  };
+
+  return (
+    <Box>
+      <StickyListHeader header="Keys" />
+      {renderList()}
+    </Box>
   );
 }
