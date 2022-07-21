@@ -1,9 +1,9 @@
 import { readdir } from 'node:fs/promises';
 import _ from 'lodash';
 import path from 'path';
-import { getActiveDirectories, getDirectories } from '../db/directories';
+import { getDirectories } from '../db/directories';
 
-import { getSamplesInActiveDirs, insertSamples } from '../db/samples';
+import { insertSamples } from '../db/samples';
 import { Directory, Sample, ScanProgress } from '../types';
 import { BpmAnalysis } from './BpmAnalysis';
 import { KeyAnalysis } from './KeyAnalysis';

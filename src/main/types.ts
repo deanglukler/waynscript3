@@ -27,6 +27,11 @@ export interface Sample {
   key: string | null;
 }
 
+export interface Word {
+  word: string;
+  path: string;
+}
+
 export interface ScanProgress {
   finished: boolean;
   scanned: number;
@@ -40,11 +45,6 @@ export interface WindowInfo {
   height: number;
   x: number | undefined;
   y: number | undefined;
-}
-
-export interface Word {
-  word: string;
-  favorite: boolean;
 }
 
 export interface SampleWord {

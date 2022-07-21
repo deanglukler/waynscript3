@@ -4,6 +4,7 @@ import { Stats } from '../types';
 
 import { getActiveDirectories } from './directories';
 import { getLastQuery } from './queries';
+import { wordsClause } from './samples';
 import { activeDirsWhereClause, allQuery } from './utils';
 
 export const getBpmStats = (): Stats => {
@@ -14,20 +15,16 @@ export const getBpmStats = (): Stats => {
   const keysClause = keys
     .map((key) => SqlString.format(`samples.key = ?`, [key]))
     .join(' OR ');
-  const wordsClause = words
-    .map((word) => SqlString.format(`samples_words.word = ?`, [word]))
-    .join(' OR ');
 
   const whereClause = activeDirsWhereClause(activeDirs, [
     `samples.bpm IS NOT NULL`,
     keysClause,
-    wordsClause,
+    wordsClause(words),
   ]);
 
   let sql = `SELECT samples.bpm FROM samples`;
-
-  if (wordsClause) {
-    sql = `${sql} JOIN samples_words ON samples.path = samples_words.path`;
+  if (wordsClause(words)) {
+    sql = `${sql} JOIN words ON words.path = samples.path`;
   }
 
   sql = `${sql} WHERE ${whereClause}`;
@@ -51,20 +48,16 @@ export const getKeyStats = (): Stats => {
   const bpmsClause = bpms
     .map((bpm) => SqlString.format(`samples.bpm = ?`, [bpm]))
     .join(' OR ');
-  const wordsClause = words
-    .map((word) => SqlString.format(`samples_words.word = ?`, [word]))
-    .join(' OR ');
 
   const whereClause = activeDirsWhereClause(activeDirs, [
     `samples.key IS NOT NULL`,
     bpmsClause,
-    wordsClause,
+    wordsClause(words),
   ]);
 
   let sql = `SELECT samples.key FROM samples`;
-
-  if (wordsClause) {
-    sql = `${sql} JOIN samples_words ON samples.path = samples_words.path`;
+  if (wordsClause(words)) {
+    sql = `${sql} JOIN words ON words.path = samples.path`;
   }
 
   sql = `${sql} WHERE ${whereClause}`;
@@ -80,7 +73,7 @@ export const getKeyStats = (): Stats => {
   }, keyStats);
 };
 
-export const getWordStats = (): Stats => {
+export const getWordStats = async (): Promise<Stats> => {
   const activeDirs = getActiveDirectories();
   if (activeDirs.length === 0) return {};
 
@@ -92,19 +85,24 @@ export const getWordStats = (): Stats => {
     .map((key) => SqlString.format(`samples.key = ?`, [key]))
     .join(' OR ');
 
-  const samplesWhereSQL = activeDirsWhereClause(activeDirs, [
+  const whereClause = activeDirsWhereClause(activeDirs, [
     keysClause,
     bpmsClause,
   ]);
-  const sql = `SELECT DISTINCT samples_words.word as word, COUNT(samples_words.word) as amount
-  FROM samples
-  JOIN samples_words ON samples.path = samples_words.path
-  WHERE ${samplesWhereSQL}
-  GROUP BY samples_words.word`;
+  const sql = `SELECT words.word FROM samples
+  JOIN words ON words.path = samples.path
+  WHERE ${whereClause}`;
 
-  const results = allQuery<{ word: string; amount: number }>(sql);
+  const results = allQuery<{ word: string }>(sql);
 
-  const amountValues = results.map(({ amount }) => amount);
+  const wordStats: Stats = {};
+
+  results.forEach(({ word }) => {
+    _.defaults(wordStats, { [word]: { amount: 0 } });
+    wordStats[word].amount++;
+  });
+
+  const amountValues = _.values(wordStats).map(({ amount }) => amount);
   const average = _.mean(amountValues);
   const standardDeviation = Math.sqrt(
     _.sum(_.map(amountValues, (i) => (i - average) ** 2)) / amountValues.length
@@ -117,12 +115,10 @@ export const getWordStats = (): Stats => {
   console.log('');
 
   const filteredWordStats: Stats = {};
-  results.forEach((result) => {
-    const { amount } = result;
+  Object.entries(wordStats).forEach(([key, val]) => {
+    const { amount } = val;
     if (amount > average) {
-      filteredWordStats[result.word] = {
-        amount,
-      };
+      filteredWordStats[key] = val;
     }
   });
 

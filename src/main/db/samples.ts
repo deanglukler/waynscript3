@@ -4,6 +4,9 @@ import { getActiveDirectories } from './directories';
 import { getLastQuery } from './queries';
 import { activeDirsWhereClause, allQuery, runQuery } from './utils';
 
+export const wordsClause = (words: string[]) =>
+  words.map((word) => SqlString.format(`words.word = ?`, [word])).join(' OR ');
+
 export const insertSamples = (samples: Sample[]) => {
   const samplesSQL = samples.map((sample) => [
     sample.path,
@@ -51,14 +54,11 @@ export const getSamplesByQuery = () => {
   const keysClause = keys
     .map((key) => SqlString.format(`samples.key = ?`, [key]))
     .join(' OR ');
-  const wordsClause = words
-    .map((word) => SqlString.format(`samples_words.word = ?`, [word]))
-    .join(' OR ');
 
   const whereClause = activeDirsWhereClause(activeDirs, [
     bpmsClause,
     keysClause,
-    wordsClause,
+    wordsClause(words),
   ]);
 
   let fullClause = `SELECT DISTINCT
@@ -67,13 +67,14 @@ export const getSamplesByQuery = () => {
   samples.key as key
   FROM samples`;
 
-  if (words.length > 0) {
-    fullClause = `${fullClause} JOIN samples_words ON samples.path = samples_words.path`;
+  if (wordsClause(words)) {
+    fullClause = `${fullClause} JOIN words ON words.path = samples.path`;
   }
 
   if (whereClause) {
     fullClause = `${fullClause} WHERE ${whereClause}`;
   }
+
   fullClause = `${fullClause} ORDER BY RANDOM() LIMIT 50;`;
 
   return allQuery<Sample>(fullClause);

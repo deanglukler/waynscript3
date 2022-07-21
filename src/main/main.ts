@@ -15,6 +15,7 @@ import { resetDatabase } from './db/utils';
 import { DirectoryScan } from './utils/DirectoryScan';
 import FileScan from './utils/FileScan';
 import Windows from './utils/Windows';
+import { WordsAnalysis } from './utils/WordsAnalysis';
 
 require('dotenv').config();
 
@@ -26,8 +27,9 @@ if (
   console.log('---------------');
   resetDatabase();
   const asdf = new DirectoryScan().scan();
-  asdf.then(() => {
-    new FileScan(null).analyzeFiles();
+  asdf.then(async () => {
+    await new FileScan(null).analyzeFiles();
+    new WordsAnalysis().analyzeWordsAsync();
   });
 }
 

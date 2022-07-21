@@ -48,7 +48,7 @@ export const activeDirsWhereClause = (
 ): string => {
   return activeDirs
     .map((dir) => {
-      let pathClause = `samples.path LIKE ${SqlString.escape(`%${dir.path}%`)}`;
+      let pathClause = `samples.path LIKE ${SqlString.escape(`${dir.path}%`)}`;
       if (andClauses.length > 0) {
         andClauses.forEach((sql) => {
           if (!sql) return;
@@ -77,6 +77,7 @@ export const cleanDatabase = () => {
 export const resetDatabase = () => {
   // directories
   runQuery(`DROP TABLE IF EXISTS directory_childs`);
+  runQuery(`DROP TABLE IF EXISTS words;`);
   runQuery(`DROP TABLE IF EXISTS samples;`);
   runQuery(`DROP TABLE IF EXISTS directories;`);
   const createDirs = `CREATE TABLE "directories" (
@@ -130,12 +131,11 @@ export const resetDatabase = () => {
   );
 
   // words
-  runQuery(`DROP TABLE IF EXISTS words;`);
   const createWords = `CREATE TABLE "words" (
-    "word"	TEXT NOT NULL UNIQUE,
-    "favorite "	INTEGER,
-    PRIMARY KEY("word"),
-    UNIQUE("word") ON CONFLICT IGNORE
+    "id"	INTEGER NOT NULL UNIQUE,
+    "word"	TEXT NOT NULL,
+    "path"	TEXT NOT NULL REFERENCES samples("path"),
+    PRIMARY KEY("id" AUTOINCREMENT)
   );`;
   runQuery(createWords);
   const wordsIndex = `CREATE INDEX IF NOT EXISTS "" ON "words" (

@@ -1,6 +1,4 @@
-import _ from 'lodash';
 import { getBpmStats, getKeyStats, getWordStats } from '../db/queryStats';
-import { AllWordStats } from '../types';
 import Windows from './Windows';
 
 export default class QueryStats {
@@ -18,15 +16,12 @@ export default class QueryStats {
     windows.sendWindowMessage('queryWindow', 'KEY_QUERY_STATS', stats);
   }
 
-  static getWordStatsAndSendToQuery(windows: Windows) {
-    // console.log('\nSTATS: getting WORD stats');
-    // console.log('- - - - - - - - - - - - -');
-    // const stats = getWordStats();
-    // const amountValues = _.values(stats).map(({ amount }) => amount);
-    // const average = _.mean(amountValues);
-    // windows.sendWindowMessage('queryWindow', 'WORD_QUERY_STATS', {
-    //   stats,
-    //   average,
-    // } as AllWordStats);
+  static async getWordStatsAndSendToQuery(windows: Windows) {
+    console.log('\nSTATS: STARTING ASYNC getting WORD stats');
+    console.log('- - - - - - - - - - - - -');
+    const stats = await getWordStats();
+    windows.sendWindowMessage('queryWindow', 'WORD_QUERY_STATS', stats);
+    console.log('\nSTATS: FINISHED ASYNC getting WORD stats');
+    console.log('- - - - - - - - - - - - -');
   }
 }

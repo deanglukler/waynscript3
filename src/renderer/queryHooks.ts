@@ -8,12 +8,11 @@ import React, {
   useState,
 } from 'react';
 import {
-  BpmStats,
   DirectoryMap,
-  KeyStats,
   Query,
   QueryStoreModel,
   ScanProgress,
+  Stats,
 } from '../main/types';
 
 const typedHooks = createTypedHooks<QueryStoreModel>();
@@ -67,12 +66,12 @@ export const useQueryParamsUpdate = () => {
 };
 
 export const useBPMStats = () => {
-  const [bpmStats, setBpmStats] = useState<BpmStats | null>(null);
+  const [bpmStats, setBpmStats] = useState<Stats | null>(null);
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on(
       'BPM_QUERY_STATS',
       (stats) => {
-        setBpmStats(stats as BpmStats);
+        setBpmStats(stats as Stats);
       }
     );
     return cleanup;
@@ -81,17 +80,32 @@ export const useBPMStats = () => {
 };
 
 export const useKeyStats = () => {
-  const [keyStats, setKeyStats] = useState<KeyStats | null>(null);
+  const [keyStats, setKeyStats] = useState<Stats | null>(null);
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on(
       'KEY_QUERY_STATS',
       (stats) => {
-        setKeyStats(stats as KeyStats);
+        setKeyStats(stats as Stats);
       }
     );
     return cleanup;
   }, []);
   return keyStats;
+};
+
+export const useWordStats = () => {
+  const [wordStats, setWordStats] = useState<Stats | null>(null);
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'WORD_QUERY_STATS',
+      (allStats) => {
+        const stats = allStats as Stats;
+        setWordStats(stats);
+      }
+    );
+    return cleanup;
+  }, []);
+  return wordStats;
 };
 
 export const useScanProgress = () => {
