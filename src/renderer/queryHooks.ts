@@ -7,23 +7,18 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  DirectoryMap,
-  Query,
-  QueryStoreModel,
-  ScanProgress,
-  Stats,
-} from '../main/types';
+import { DirectoryMap, Query, QueryStoreModel, Stats } from '../main/types';
+import { Progress } from '../main/utils/Progress';
 
 const typedHooks = createTypedHooks<QueryStoreModel>();
 
-export const { useStoreState, useStoreDispatch, useStoreActions } = typedHooks;
+export const { useStoreState, useStoreActions } = typedHooks;
 
 export const useQueryParamsInit = () => {
   const updateQueryParams = useStoreActions(
     (actions) => actions.updateQueryParams
   );
-  const initialized = useStoreActions((actions) => actions.initialized);
+  const initialized = useStoreActions((actions) => actions.initializedQuery);
 
   useEffect(() => {
     console.log('initializing query params');
@@ -108,24 +103,45 @@ export const useWordStats = () => {
   return wordStats;
 };
 
-export const useScanProgress = () => {
-  const [scanProgress, setScanProgress] = useState<ScanProgress | null>(null);
+export const useFileScanProgress = () => {
+  const [scanProgress, setScanProgress] = useState<Progress | null>(null);
 
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on(
-      'UPDATE_SCAN_PROGRESS',
+      'UPDATE_FILESCAN_PROGRESS',
       (arg) => {
-        const scanProgressInfo = arg as ScanProgress;
-        if (scanProgressInfo.finished) {
-          setScanProgress(null);
-        } else {
-          setScanProgress(scanProgressInfo);
-        }
+        const scanProgressInfo = arg as Progress;
+        setScanProgress(scanProgressInfo);
       }
     );
     return cleanup;
   }, []);
   return scanProgress;
+};
+
+export const useWordAnalProgress = () => {
+  const [scanProgress, setScanProgress] = useState<Progress | null>(null);
+
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'UPDATE_WORDANAL_PROGRESS',
+      (arg) => {
+        const scanProgressInfo = arg as Progress;
+        setScanProgress(scanProgressInfo);
+      }
+    );
+    return cleanup;
+  }, []);
+  return scanProgress;
+};
+
+export const useAppInit = () => {
+  const appInitFinished = useStoreActions((actions) => actions.appInitFinished);
+  useEffect(() => {
+    window.electron.ipcRenderer.on('APP_INIT_FINISHED', () => {
+      appInitFinished();
+    });
+  });
 };
 
 export const useDirectorySync = () => {

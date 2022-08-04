@@ -11,31 +11,12 @@
  */
 import { app } from 'electron';
 import App from './App';
-import { resetDatabase } from './db/utils';
 import { DirectoryScan } from './utils/DirectoryScan';
 import FileScan from './utils/FileScan';
 import Windows from './utils/Windows';
 import { WordsAnalysis } from './utils/WordsAnalysis';
 
 require('dotenv').config();
-
-if (
-  process.env.RESET_APP === 'true' ||
-  process.env.RESET_WHEN_STARTING === 'true'
-) {
-  console.log('\nRESETTING DATABASE');
-  console.log('---------------');
-  resetDatabase();
-  const asdf = new DirectoryScan().scan();
-  asdf.then(async () => {
-    await new FileScan(null).analyzeFiles();
-    new WordsAnalysis().analyzeWordsAsync();
-  });
-}
-
-if (process.env.NO_RUN === 'true') {
-  process.exit();
-}
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -50,6 +31,16 @@ if (isDebug) {
 }
 
 const windows = new Windows(isDebug);
+
+if (process.env.RESCAN_FILES === 'true') {
+  const asdf = new DirectoryScan().scan();
+  asdf.then(async () => {
+    await new FileScan(windows).analyzeFiles();
+    await new WordsAnalysis(windows).analyzeWordsAsync();
+    windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
+  });
+}
+
 new App(windows);
 
 /**

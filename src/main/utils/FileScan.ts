@@ -4,11 +4,12 @@ import path from 'path';
 import { getDirectories } from '../db/directories';
 
 import { insertSamples } from '../db/samples';
-import { Directory, Sample, ScanProgress } from '../types';
+import { Directory, Sample } from '../types';
 import { BpmAnalysis } from './BpmAnalysis';
 import { KeyAnalysis } from './KeyAnalysis';
 import Windows from './Windows';
 import { audioExts } from './constants';
+import { Progress } from './Progress';
 
 const recursiveFileList = async (
   directoryPath: string,
@@ -78,13 +79,9 @@ interface DirMap {
 export default class FileScan {
   public filesToScan: string[] = [];
 
-  public totalFiles: number = 0;
-
-  public totalFilesAnalyzed: number = 0;
-
-  public scanActive: boolean = false;
-
   public allDirectoriesMap: DirMap = {};
+
+  public progress: Progress = new Progress();
 
   constructor(public windows: Windows) {}
 
@@ -125,13 +122,11 @@ export default class FileScan {
       allDirs.map((dir) => dir.path)
     );
 
-    this.totalFiles = this.filesToScan.length;
+    this.progress.total = this.filesToScan.length;
   }
 
   public async analyzeFiles() {
     await this.analyzeFilesToScan();
-
-    this.scanActive = true;
 
     const fileChunks = _.chunk(this.filesToScan, ANALISIS_CHUNK_SIZE);
     const fileChunksLength = _.size(fileChunks);
@@ -147,16 +142,15 @@ export default class FileScan {
             const analyzedFiles: Sample[] = [];
             chunks[0].forEach((file) => {
               analyzedFiles.push(this.analyzeFile(file));
-              this.totalFilesAnalyzed++;
+              this.progress.incrementProcessed(1);
             });
             insertSamples(analyzedFiles);
             chunks.shift();
             asyncAnalysis(chunks);
-            this.updateProgress();
+            this.updateRendererProgress();
           }, 1);
         } else {
-          this.scanActive = false;
-          this.updateProgress();
+          this.updateRendererProgress();
           resolve();
         }
       };
@@ -165,19 +159,13 @@ export default class FileScan {
     });
   }
 
-  private updateProgress(): void {
+  private updateRendererProgress(): void {
     if (!this.windows) return;
-
-    const scanProgress: ScanProgress = {
-      total: this.totalFiles,
-      finished: !this.scanActive,
-      scanned: this.totalFilesAnalyzed,
-    };
 
     this.windows.sendWindowMessage(
       'queryWindow',
-      'UPDATE_SCAN_PROGRESS',
-      scanProgress
+      'UPDATE_FILESCAN_PROGRESS',
+      this.progress
     );
   }
 }

@@ -32,12 +32,6 @@ export interface Word {
   path: string;
 }
 
-export interface ScanProgress {
-  finished: boolean;
-  scanned: number;
-  total: number;
-}
-
 export interface WindowInfo {
   id?: number;
   name?: string;
@@ -57,8 +51,10 @@ type Keys = string[];
 type Words = string[];
 
 export interface QueryStoreModel {
-  initializing: boolean;
-  initialized: Action<QueryStoreModel>;
+  appInit: { finished: boolean };
+  appInitFinished: Action<QueryStoreModel>;
+  initializingQuery: boolean;
+  initializedQuery: Action<QueryStoreModel>;
   updateQueryParams: Action<QueryStoreModel, Query>;
   bpms: Bpms;
   toggleBpm: Action<QueryStoreModel, number>;

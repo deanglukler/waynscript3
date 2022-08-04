@@ -18,7 +18,7 @@ export const insertSamples = (samples: Sample[]) => {
     'INSERT INTO samples (path,bpm,key,dir_id) VALUES ?',
     [samplesSQL]
   );
-  return runQuery(sql);
+  return runQuery(sql, true);
 };
 
 export const getAllSamples = () => {

@@ -1,7 +1,10 @@
+import _ from 'lodash';
 import path from 'path';
 import { getAllSamples } from '../db/samples';
 import { insertWords } from '../db/words';
 import { Word } from '../types';
+import { Progress } from './Progress';
+import Windows from './Windows';
 
 interface WordLinks {
   [key: string]: { paths: string[]; amount: number };
@@ -16,7 +19,9 @@ export class WordsAnalysis {
 
   public samples: string[];
 
-  constructor() {
+  public progress: Progress = new Progress();
+
+  constructor(public windows: Windows) {
     this.samples = getAllSamples().map((sample) => sample.path);
   }
 
@@ -85,23 +90,63 @@ export class WordsAnalysis {
   }
 
   public async analyzeWordsAsync() {
+    console.time('finding words in samples');
     await Promise.all(this.samples.map((str) => this.findWordsAsync(str)));
+    console.timeEnd('finding words in samples');
 
+    console.time('filtering words');
     Object.entries(this.wordLinks).forEach(([key, val]) => {
       const { amount } = val;
       if (amount >= MIN_COMMON_AMOUNT) {
         this.commonWordLinks[key] = val;
       }
     });
+    console.timeEnd('filtering words');
 
     const wordPaths: Word[] = [];
 
+    console.time('building word paths array');
     Object.entries(this.commonWordLinks).forEach(([key, val]) => {
       val.paths.forEach((filepath) => {
         wordPaths.push({ path: filepath, word: key });
       });
     });
+    console.timeEnd('building word paths array');
 
-    insertWords(wordPaths);
+    const insertWordsChunks = async (chunks: Word[][]): Promise<null> => {
+      const insertWordsChunkAsync = (chunk: Word[]) => {
+        return new Promise<null>((resolve) => {
+          setTimeout(() => {
+            insertWords(chunk);
+            resolve(null);
+          }, 0);
+        });
+      };
+      const nextChunk = [...chunks[0]];
+      chunks.shift();
+      const nextChunkPromise = await insertWordsChunkAsync(nextChunk);
+      this.progress.incrementProcessed(1);
+      this.updateRendererProgress();
+      if (chunks.length > 0) {
+        return insertWordsChunks(chunks);
+      }
+      return nextChunkPromise;
+    };
+
+    const wordPathsChunks = _.chunk(wordPaths, 10000);
+    this.progress.total = wordPathsChunks.length;
+
+    const insertWordsPromise = await insertWordsChunks(wordPathsChunks);
+    return insertWordsPromise;
+  }
+
+  private updateRendererProgress(): void {
+    if (!this.windows) return;
+
+    this.windows.sendWindowMessage(
+      'queryWindow',
+      'UPDATE_WORDANAL_PROGRESS',
+      this.progress
+    );
   }
 }

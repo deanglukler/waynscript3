@@ -2,7 +2,9 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
   | 'CHOOSE_DIR'
-  | 'UPDATE_SCAN_PROGRESS'
+  | 'UPDATE_FILESCAN_PROGRESS'
+  | 'UPDATE_WORDANAL_PROGRESS'
+  | 'APP_INIT_FINISHED'
   | 'RESET_DB'
   | 'SYNC_QUERY'
   | 'INIT_QUERY_PARAMS'

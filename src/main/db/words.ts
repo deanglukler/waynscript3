@@ -7,5 +7,5 @@ export const insertWords = (words: Word[]) => {
   const sql = SqlString.format('INSERT INTO words (word, path) VALUES ?', [
     wordsSQL,
   ]);
-  return runQuery(sql);
+  return runQuery(sql, true);
 };
