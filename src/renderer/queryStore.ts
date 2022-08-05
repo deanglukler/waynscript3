@@ -3,9 +3,12 @@ import _ from 'lodash';
 import { QueryStoreModel } from '../main/types';
 
 export const store = createStore<QueryStoreModel>({
-  appInit: { finished: false },
+  appInit: { finished: true },
   appInitFinished: action((state) => {
     state.appInit.finished = true;
+  }),
+  appInitStarting: action((state) => {
+    state.appInit.finished = false;
   }),
   initializingQuery: true,
   initializedQuery: action((state) => {

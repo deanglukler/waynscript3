@@ -1,5 +1,8 @@
 import { createTheme, ThemeOptions } from '@mui/material';
 
+const backgroundDefault = '#171717';
+const backgroundPaper = '#1c1c1c';
+
 export const themeOptions: ThemeOptions = {
   palette: {
     mode: 'dark',
@@ -10,8 +13,8 @@ export const themeOptions: ThemeOptions = {
       main: '#e6ee9c',
     },
     background: {
-      default: '#171717',
-      paper: '#1c1c1c',
+      default: backgroundDefault,
+      paper: backgroundPaper,
     },
     info: {
       main: '#64b5f6',
@@ -76,6 +79,37 @@ export const themeOptions: ThemeOptions = {
     borderRadius: 4,
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          scrollbarColor: '#6b6b6b #2b2b2b',
+          '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
+            backgroundColor: backgroundPaper,
+          },
+          '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
+            borderRadius: 8,
+            backgroundColor: '#6b6b6b',
+            minHeight: 24,
+            border: '3px solid #2b2b2b',
+          },
+          '&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus':
+            {
+              backgroundColor: '#959595',
+            },
+          '&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active':
+            {
+              backgroundColor: '#959595',
+            },
+          '&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover':
+            {
+              backgroundColor: '#959595',
+            },
+          '&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner': {
+            backgroundColor: '#2b2b2b',
+          },
+        },
+      },
+    },
     MuiAppBar: {
       defaultProps: {
         color: 'default',

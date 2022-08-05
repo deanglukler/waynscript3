@@ -137,9 +137,15 @@ export const useWordAnalProgress = () => {
 
 export const useAppInit = () => {
   const appInitFinished = useStoreActions((actions) => actions.appInitFinished);
+  const appInitStarting = useStoreActions((actions) => actions.appInitStarting);
   useEffect(() => {
-    window.electron.ipcRenderer.on('APP_INIT_FINISHED', () => {
+    return window.electron.ipcRenderer.on('APP_INIT_FINISHED', () => {
       appInitFinished();
+    });
+  });
+  useEffect(() => {
+    return window.electron.ipcRenderer.on('APP_INIT_STARTING', () => {
+      appInitStarting();
     });
   });
 };

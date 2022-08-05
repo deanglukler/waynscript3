@@ -32,15 +32,6 @@ if (isDebug) {
 
 const windows = new Windows(isDebug);
 
-if (process.env.RESCAN_FILES === 'true') {
-  const asdf = new DirectoryScan().scan();
-  asdf.then(async () => {
-    await new FileScan(windows).analyzeFiles();
-    await new WordsAnalysis(windows).analyzeWordsAsync();
-    windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
-  });
-}
-
 new App(windows);
 
 /**
@@ -58,8 +49,17 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
-    windows.createListWindow();
-    windows.createQueryWindow();
+    await windows.createListWindow();
+    await windows.createQueryWindow();
+
+    if (process.env.RESCAN_FILES === 'true') {
+      windows.sendWindowMessage('queryWindow', 'APP_INIT_STARTING', null);
+      await new DirectoryScan().scan();
+      await new FileScan(windows).analyzeFiles();
+      await new WordsAnalysis(windows).analyzeWordsAsync();
+      windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
+    }
+
     app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.

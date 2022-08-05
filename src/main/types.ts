@@ -53,6 +53,7 @@ type Words = string[];
 export interface QueryStoreModel {
   appInit: { finished: boolean };
   appInitFinished: Action<QueryStoreModel>;
+  appInitStarting: Action<QueryStoreModel>;
   initializingQuery: boolean;
   initializedQuery: Action<QueryStoreModel>;
   updateQueryParams: Action<QueryStoreModel, Query>;
