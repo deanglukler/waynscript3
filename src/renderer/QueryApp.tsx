@@ -1,11 +1,10 @@
 import { Box, CssBaseline, ThemeProvider } from '@mui/material';
 import { StoreProvider } from 'easy-peasy';
-import { QueryParams } from './queryComponents/QueryParams';
 import { store } from './queryStore';
 import { theme } from './theme';
 import '../../assets/mukta-font/mukta-fontface.css';
-import DirectoryList from './queryComponents/DirectoryList';
 import { AppInitDialog } from './AppInitDialog';
+import { QueryPage } from './QueryPage';
 
 export default function QueryApp() {
   return (
@@ -17,27 +16,7 @@ export default function QueryApp() {
         <CssBaseline />
         <AppInitDialog />
         <Box display="flex" sx={{ height: '100vh' }}>
-          <Box
-            sx={{
-              width: 300,
-              height: 1,
-              overflow: 'scroll',
-              padding: 2,
-              borderRight: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <DirectoryList />
-          </Box>
-          <Box
-            sx={{
-              flex: '1 0 0',
-              height: 1,
-              overflow: 'scroll',
-            }}
-          >
-            <QueryParams />
-          </Box>
+          <QueryPage />
         </Box>
       </ThemeProvider>
     </StoreProvider>

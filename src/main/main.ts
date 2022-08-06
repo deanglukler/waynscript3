@@ -11,12 +11,25 @@
  */
 import { app } from 'electron';
 import App from './App';
+import { createDirsTables, dropDirsTables } from './db/directories';
+import { createSamplesTable, dropSamplesTable } from './db/samples';
+import { createWordsTable, dropWordsTable } from './db/words';
 import { DirectoryScan } from './utils/DirectoryScan';
 import FileScan from './utils/FileScan';
 import Windows from './utils/Windows';
 import { WordsAnalysis } from './utils/WordsAnalysis';
 
+const electronIpcLog = require('electron-ipc-log');
+
 require('dotenv').config();
+
+electronIpcLog((event) => {
+  const { channel, data, sent, sync } = event;
+  const args = [sent ? '⬆️' : '⬇️', channel, ...data];
+  if (sync) args.unshift('ipc:sync');
+  else args.unshift('ipc');
+  console.log(...args);
+});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -52,13 +65,21 @@ app
     await windows.createListWindow();
     await windows.createQueryWindow();
 
-    if (process.env.RESCAN_FILES === 'true') {
-      windows.sendWindowMessage('queryWindow', 'APP_INIT_STARTING', null);
-      await new DirectoryScan().scan();
+    if (
+      process.env.RESCAN_FILES === 'true' ||
+      process.env.NODE_ENV === 'production'
+    ) {
+      dropWordsTable();
+      dropSamplesTable();
+      dropDirsTables();
+      createDirsTables();
+      createSamplesTable();
+      createWordsTable();
+      await new DirectoryScan(windows).scan();
       await new FileScan(windows).analyzeFiles();
       await new WordsAnalysis(windows).analyzeWordsAsync();
-      windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
     }
+    windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
 
     app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the

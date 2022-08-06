@@ -2,6 +2,7 @@ import SqlString from 'sqlstring-sqlite';
 import { Sample } from '../types';
 import { getActiveDirectories } from './directories';
 import { getLastQuery } from './queries';
+import { createSamplesSQL, dropSamplesSQL } from './reset';
 import { activeDirsWhereClause, allQuery, runQuery } from './utils';
 
 export const wordsClause = (words: string[]) =>
@@ -92,4 +93,12 @@ export const deleteSamples = (paths: string[]) => {
     [paths]
   );
   runQuery(samplesSQL);
+};
+
+export const dropSamplesTable = () => {
+  runQuery(dropSamplesSQL);
+};
+
+export const createSamplesTable = () => {
+  runQuery(createSamplesSQL);
 };

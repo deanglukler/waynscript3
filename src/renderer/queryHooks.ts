@@ -135,6 +135,55 @@ export const useWordAnalProgress = () => {
   return scanProgress;
 };
 
+export const useScanningProgress = () => {
+  const [fileScanProgress, setFileScanProgress] = useState<Progress | null>(
+    null
+  );
+  const [wordsScanProgress, setWordsScanProgress] = useState<Progress | null>(
+    null
+  );
+  const [dirScanProgress, setDirScanProgress] = useState<Progress | null>(null);
+
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'UPDATE_FILESCAN_PROGRESS',
+      (arg) => {
+        const scanProgressInfo = arg as Progress;
+        setFileScanProgress(scanProgressInfo);
+      }
+    );
+    return cleanup;
+  }, []);
+
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'UPDATE_WORDANAL_PROGRESS',
+      (arg) => {
+        const scanProgressInfo = arg as Progress;
+        setWordsScanProgress(scanProgressInfo);
+      }
+    );
+    return cleanup;
+  }, []);
+
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on(
+      'UPDATE_DIRSCAN_PROGRESS',
+      (arg) => {
+        const scanProgressInfo = arg as Progress;
+        setDirScanProgress(scanProgressInfo);
+      }
+    );
+    return cleanup;
+  }, []);
+
+  return {
+    fileScanProgress,
+    wordsScanProgress,
+    dirScanProgress,
+  };
+};
+
 export const useAppInit = () => {
   const appInitFinished = useStoreActions((actions) => actions.appInitFinished);
   const appInitStarting = useStoreActions((actions) => actions.appInitStarting);

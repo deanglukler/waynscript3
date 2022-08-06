@@ -1,5 +1,40 @@
 import SqlString from 'sqlstring-sqlite';
 
+export const dropDirectoryChildsSQL = `DROP TABLE IF EXISTS directory_childs`;
+export const createDirChildsSQL = `CREATE TABLE "directory_childs" (
+  "id"	INTEGER NOT NULL REFERENCES directories("id"),
+  "child_id"	INTEGER NOT NULL UNIQUE REFERENCES directories("id"),
+  PRIMARY KEY("child_id")
+);`;
+export const dropDirectoriesSQL = `DROP TABLE IF EXISTS directories;`;
+export const createDirsSQL = `CREATE TABLE "directories" (
+  "id"	INTEGER NOT NULL UNIQUE,
+  "path"	TEXT NOT NULL,
+  "active" INTEGER NOT NULL,
+  "viewing"	INTEGER NOT NULL,
+  "top_level"	INTEGER NOT NULL,
+  "last_child" INTEGER,
+  "total_samples" INTEGER,
+  PRIMARY KEY("id" AUTOINCREMENT),
+  UNIQUE("path") ON CONFLICT IGNORE
+);`;
+
+export const dropWordsSQL = `DROP TABLE IF EXISTS words;`;
+export const dropSamplesSQL = `DROP TABLE IF EXISTS samples;`;
+export const createSamplesSQL = `CREATE TABLE "samples" (
+  "path"	TEXT NOT NULL,
+  "bpm"	INTEGER,
+  "key"	TEXT,
+  "dir_id" INTEGER NOT NULL REFERENCES directories("id"),
+  PRIMARY KEY("path"),
+  UNIQUE("path") ON CONFLICT IGNORE
+);`;
+export const createWordsSQL = `CREATE TABLE "words" (
+    "id"	INTEGER NOT NULL UNIQUE,
+    "word"	TEXT NOT NULL,
+    "path"	TEXT NOT NULL REFERENCES samples("path"),
+    PRIMARY KEY("id" AUTOINCREMENT)
+  );`;
 export const resetDatabase = (db) => {
   console.log('\nRESETTING DATABASE');
 
@@ -11,41 +46,16 @@ export const resetDatabase = (db) => {
   };
 
   // directories
-  runQuery(`DROP TABLE IF EXISTS directory_childs`);
-  runQuery(`DROP TABLE IF EXISTS words;`);
-  runQuery(`DROP TABLE IF EXISTS samples;`);
-  runQuery(`DROP TABLE IF EXISTS directories;`);
+  runQuery(dropDirectoryChildsSQL);
+  runQuery(dropDirectoriesSQL);
+  runQuery(dropWordsSQL);
+  runQuery(dropSamplesSQL);
   runQuery(`DROP TABLE IF EXISTS windows;`);
-  const createDirs = `CREATE TABLE "directories" (
-     "id"	INTEGER NOT NULL UNIQUE,
-     "path"	TEXT NOT NULL,
-     "active" INTEGER NOT NULL,
-     "viewing"	INTEGER NOT NULL,
-     "top_level"	INTEGER NOT NULL,
-     "last_child" INTEGER,
-     "total_samples" INTEGER,
-     PRIMARY KEY("id" AUTOINCREMENT),
-     UNIQUE("path") ON CONFLICT IGNORE
-   );`;
-  runQuery(createDirs);
-
-  const createDirChilds = `CREATE TABLE "directory_childs" (
-    "id"	INTEGER NOT NULL REFERENCES directories("id"),
-    "child_id"	INTEGER NOT NULL UNIQUE REFERENCES directories("id"),
-    PRIMARY KEY("child_id")
-  );`;
-  runQuery(createDirChilds);
+  runQuery(createDirsSQL);
+  runQuery(createDirChildsSQL);
 
   // samples
-  const createSamples = `CREATE TABLE "samples" (
-    "path"	TEXT NOT NULL,
-    "bpm"	INTEGER,
-    "key"	TEXT,
-    "dir_id" INTEGER NOT NULL REFERENCES directories("id"),
-    PRIMARY KEY("path"),
-    UNIQUE("path") ON CONFLICT IGNORE
-  );`;
-  runQuery(createSamples);
+  runQuery(createSamplesSQL);
   const samplesIndex = `CREATE INDEX IF NOT EXISTS "" ON "samples" (
     "path"
   );`;
@@ -67,13 +77,7 @@ export const resetDatabase = (db) => {
   );
 
   // words
-  const createWords = `CREATE TABLE "words" (
-    "id"	INTEGER NOT NULL UNIQUE,
-    "word"	TEXT NOT NULL,
-    "path"	TEXT NOT NULL REFERENCES samples("path"),
-    PRIMARY KEY("id" AUTOINCREMENT)
-  );`;
-  runQuery(createWords);
+  runQuery(createWordsSQL);
   const wordsIndex = `CREATE INDEX IF NOT EXISTS "" ON "words" (
     "word"
   );`;

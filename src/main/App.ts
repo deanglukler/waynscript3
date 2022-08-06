@@ -1,5 +1,4 @@
 import { getActiveDirectories } from './db/directories';
-import Database from './utils/Database';
 import Directories from './utils/Directories';
 import Queries from './utils/Queries';
 import QueryStats from './utils/QueryStats';
@@ -18,7 +17,6 @@ export default class App {
       this.refreshSampleList.bind(this),
       this.refreshQueryStats.bind(this)
     );
-    Database.initIPC();
     Samples.initIPC(windows, this.refreshSampleList.bind(this));
   }
 

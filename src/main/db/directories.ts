@@ -1,6 +1,12 @@
 import SqlString from 'sqlstring-sqlite';
 
 import { Directory } from '../types';
+import {
+  createDirChildsSQL,
+  createDirsSQL,
+  dropDirectoriesSQL,
+  dropDirectoryChildsSQL,
+} from './reset';
 import { allQuery, getQuery, runQuery } from './utils';
 
 export const getDirectories = () =>
@@ -142,3 +148,13 @@ export const setAllLastChildDirs = () =>
   runQuery(`UPDATE directories SET last_child = TRUE
   WHERE id NOT IN
   (SELECT id FROM directory_childs)`);
+
+export const dropDirsTables = () => {
+  runQuery(dropDirectoryChildsSQL);
+  runQuery(dropDirectoriesSQL);
+};
+
+export const createDirsTables = () => {
+  runQuery(createDirsSQL);
+  runQuery(createDirChildsSQL);
+};

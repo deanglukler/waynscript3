@@ -18,18 +18,34 @@ import {
 } from '../db/directories';
 import { Directory } from '../types';
 import { audioExts } from './constants';
+import { Progress } from './Progress';
+import Windows from './Windows';
 
 const { username } = os.userInfo();
 
+const IGNORED_DIRECTORIES = [`/users/${username}/Library`];
+
+interface ScanDirResults {
+  totalSamplesInDirAndChilds: number;
+  dirOrChildsHaveSamples: boolean;
+  dirID: number | null;
+}
+interface CurrentDirScan {
+  isSampleDir: boolean;
+  childDirs: string[];
+  totalAudioFiles: number;
+  filesScanned: number;
+  isRootDir: boolean;
+}
+
 export class DirectoryScan {
   public rootDirPath: string = path.join(`/users/${username}`);
-  // public rootDirPath: string = path.join(
-  //   `/Users/nice/__stuff/__life/_music_production/_samples/z_random`
-  // );
 
   public rootDir: Directory | null = null;
 
-  constructor() {
+  public progress: Progress = new Progress();
+
+  constructor(public windows: Windows) {
     this.rootDir = getRootDirectory(this.rootDirPath);
     if (!this.rootDir) {
       this.rootDir = makeRootDirectory(this.rootDirPath);
@@ -39,6 +55,10 @@ export class DirectoryScan {
   public async scan() {
     if (!this.rootDir) throw new Error('expected a rootDir');
     await this.scanDir(this.rootDir.path);
+
+    this.progress.processed = this.progress.total;
+    this.updateRendererProgress();
+
     this.setTopLevelDirs();
     DirectoryScan.setInitViewDirs();
     setAllLastChildDirs();
@@ -66,124 +86,172 @@ export class DirectoryScan {
     setAllDirsToViewWithTotalAbove(standardDeviation);
   }
 
-  private async scanDir(dirPath: string): Promise<{
-    totalSamples: number;
-    childLeadsToSamples: boolean;
-    dirID: number | null;
-  }> {
-    const isRootDir = this.rootDir?.path === dirPath;
-    let totalSamplesInAndBelowDir = 0;
-    let isSampleDir = true;
-    let currentChildDirLeadsToSamples = false;
-    const childDirs: string[] = [];
-    let filesScanedInCurrentDir = 0;
-    let totalAudioFilesInCurrentDir = 0;
-    let dirID: null | number = null;
+  private async scanDir(dirPath: string): Promise<ScanDirResults> {
+    const scanResults: ScanDirResults = {
+      totalSamplesInDirAndChilds: 0,
+      dirOrChildsHaveSamples: false,
+      dirID: null,
+    };
 
-    if ([`/users/${username}/Library`].includes(dirPath)) {
-      return {
-        totalSamples: totalSamplesInAndBelowDir,
-        childLeadsToSamples: false,
-        dirID,
-      };
+    if (directoryShouldNotBeIncluded(dirPath)) {
+      return scanResults;
     }
 
     let directoryFiles: Dirent[] = [];
     try {
       directoryFiles = await fs.readdir(dirPath, { withFileTypes: true });
-      directoryFiles = directoryFiles.filter(
-        (item) => !/(^|\/)\.[^/.]/g.test(item.name)
-      );
+      directoryFiles = filterDotFiles(directoryFiles);
     } catch (error) {
       console.log('\nERROR: scanning directory. (this error was caught)');
       console.log(error);
     }
 
-    directoryFiles.forEach((file) => {
-      const filePath = path.join(dirPath, file.name);
-      if (file.isDirectory()) {
-        childDirs.push(filePath);
-      } else if (file.isFile()) {
-        if (!isSampleDir) return;
+    const currentDir: CurrentDirScan = {
+      isSampleDir: true,
+      childDirs: [],
+      totalAudioFiles: 0,
+      filesScanned: 0,
+      isRootDir: this.rootDir?.path === dirPath,
+    };
 
-        const { ext } = path.parse(filePath);
-        if (audioExts.includes(ext)) {
-          totalAudioFilesInCurrentDir++;
-        }
-        filesScanedInCurrentDir++;
-      }
+    directoryFiles.forEach(scanFileForAudio(dirPath, currentDir));
 
-      if (filesScanedInCurrentDir > 10 && totalAudioFilesInCurrentDir < 5) {
-        isSampleDir = false;
-      }
-    });
-
-    if (
-      filesScanedInCurrentDir === 0 ||
-      totalAudioFilesInCurrentDir / filesScanedInCurrentDir < 0.5
-    ) {
-      isSampleDir = false;
-    } else {
-      totalSamplesInAndBelowDir += totalAudioFilesInCurrentDir;
-      currentChildDirLeadsToSamples = true;
-    }
-
-    if (isRootDir) {
-      totalSamplesInAndBelowDir += totalAudioFilesInCurrentDir;
-    }
+    addTotalAudioFiles(currentDir, scanResults);
 
     const childs = await Promise.all(
-      childDirs.map(async (childDir) => {
+      currentDir.childDirs.map(async (childDir) => {
+        this.progress.total += 1;
         const child = await this.scanDir(childDir);
-        const { totalSamples, childLeadsToSamples } = child;
-        if (childLeadsToSamples) {
-          currentChildDirLeadsToSamples = true;
+        this.progress.incrementProcessed(1);
+        this.updateRendererProgress();
+        const { totalSamplesInDirAndChilds, dirOrChildsHaveSamples } = child;
+        if (dirOrChildsHaveSamples) {
+          scanResults.dirOrChildsHaveSamples = true;
         }
-        totalSamplesInAndBelowDir += totalSamples;
+        scanResults.totalSamplesInDirAndChilds += totalSamplesInDirAndChilds;
         return child;
       })
     );
 
-    // if (anyChildLeadsToSamples || isSampleDir) {
-    //   updateTotalSamples(currentParentID, totalChildSamples);
-    // } else {
-    //   deleteDirectory(currentParentID);
-    // }
-
-    const dirShouldBeSaved =
-      currentChildDirLeadsToSamples || isSampleDir || isRootDir;
-
-    if (dirShouldBeSaved) {
-      if (isRootDir) {
-        console.log('found root dir..');
-        if (!this.rootDir?.id) {
-          throw new Error('wtf');
-        }
-        dirID = this.rootDir.id;
-        updateTotalSamples(dirID, totalSamplesInAndBelowDir);
+    if (dirShouldBeSaved(scanResults, currentDir)) {
+      if (currentDir.isRootDir) {
+        this.saveRootDirectory(scanResults);
       } else {
-        const { lastInsertRowid } = addDirectory(
-          dirPath,
-          totalSamplesInAndBelowDir
-        );
-        dirID = lastInsertRowid as number;
+        saveNonRootDirectory(dirPath, scanResults);
       }
-
-      const directoryChildsValues = childs
-        .filter((child) => child.dirID != null)
-        .map((child) => {
-          if (!dirID || !child.dirID) {
-            throw new Error('directory ids should never be null here');
-          }
-          return [dirID, child.dirID] as [number, number];
-        });
-      addDirectoryChilds(directoryChildsValues);
+      saveDirectoryChildLinks(childs, scanResults);
     }
 
-    return {
-      totalSamples: totalSamplesInAndBelowDir,
-      childLeadsToSamples: currentChildDirLeadsToSamples,
-      dirID,
-    };
+    return scanResults;
   }
+
+  private saveRootDirectory(scanResults: ScanDirResults) {
+    console.log('found root dir..');
+    if (!this.rootDir?.id) {
+      throw new Error('wtf');
+    }
+    scanResults.dirID = this.rootDir.id;
+    updateTotalSamples(
+      scanResults.dirID,
+      scanResults.totalSamplesInDirAndChilds
+    );
+  }
+
+  private updateRendererProgress(): void {
+    if (!this.windows) return;
+
+    this.windows.sendWindowMessage(
+      'queryWindow',
+      'UPDATE_DIRSCAN_PROGRESS',
+      this.progress
+    );
+  }
+}
+function scanFileForAudio(
+  dirPath: string,
+  currentDir: CurrentDirScan
+): (value: Dirent, index: number, array: Dirent[]) => void {
+  return (file) => {
+    const filePath = path.join(dirPath, file.name);
+    if (file.isDirectory()) {
+      currentDir.childDirs.push(filePath);
+    } else if (file.isFile()) {
+      if (!currentDir.isSampleDir) return;
+
+      const { ext } = path.parse(filePath);
+      if (audioExts.includes(ext)) {
+        currentDir.totalAudioFiles++;
+      }
+      currentDir.filesScanned++;
+    }
+
+    checkMajorityOfFilesAreAudio(currentDir);
+  };
+}
+
+function saveDirectoryChildLinks(
+  childs: ScanDirResults[],
+  scanResults: ScanDirResults
+) {
+  const directoryChildsValues = childs
+    .filter((child) => child.dirID != null)
+    .map((child) => {
+      if (scanResults.dirID == null || child.dirID == null) {
+        throw new Error('directory ids should never be null here');
+      }
+      return [scanResults.dirID, child.dirID] as [number, number];
+    });
+  addDirectoryChilds(directoryChildsValues);
+}
+
+function saveNonRootDirectory(dirPath: string, scanResults: ScanDirResults) {
+  const { lastInsertRowid } = addDirectory(
+    dirPath,
+    scanResults.totalSamplesInDirAndChilds
+  );
+  scanResults.dirID = lastInsertRowid as number;
+}
+
+function dirShouldBeSaved(
+  scanResults: ScanDirResults,
+  currentDir: CurrentDirScan
+) {
+  return (
+    scanResults.dirOrChildsHaveSamples ||
+    currentDir.isSampleDir ||
+    currentDir.isRootDir
+  );
+}
+
+function addTotalAudioFiles(
+  currentDir: CurrentDirScan,
+  scanResults: ScanDirResults
+) {
+  if (
+    currentDir.filesScanned === 0 ||
+    currentDir.totalAudioFiles / currentDir.filesScanned < 0.5
+  ) {
+    currentDir.isSampleDir = false;
+  } else {
+    scanResults.totalSamplesInDirAndChilds += currentDir.totalAudioFiles;
+    scanResults.dirOrChildsHaveSamples = true;
+  }
+
+  if (currentDir.isRootDir) {
+    scanResults.totalSamplesInDirAndChilds += currentDir.totalAudioFiles;
+  }
+}
+
+function checkMajorityOfFilesAreAudio(currentDir: CurrentDirScan) {
+  if (currentDir.filesScanned > 10 && currentDir.totalAudioFiles < 5) {
+    currentDir.isSampleDir = false;
+  }
+}
+
+function directoryShouldNotBeIncluded(dirPath: string) {
+  return IGNORED_DIRECTORIES.includes(dirPath);
+}
+
+function filterDotFiles(directoryFiles: Dirent[]): Dirent[] {
+  return directoryFiles.filter((item) => !/(^|\/)\.[^/.]/g.test(item.name));
 }
