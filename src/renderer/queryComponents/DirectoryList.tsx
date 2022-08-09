@@ -132,7 +132,7 @@ export default function DirectoryList() {
       <Box sx={{ position: 'fixed', bottom: 0 }}>
         <Typography>{infoBar}</Typography>
       </Box>
-      <Typography>Total Found: {totalTopLevelSamples}</Typography>
+      <Typography>{totalTopLevelSamples} Samples Found</Typography>
       <Box>{dirMaps.map(renderTopLvlDir)}</Box>
     </>
   );

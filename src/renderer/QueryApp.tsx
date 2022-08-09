@@ -5,6 +5,7 @@ import { theme } from './theme';
 import '../../assets/mukta-font/mukta-fontface.css';
 import { AppInitDialog } from './AppInitDialog';
 import { QueryPage } from './QueryPage';
+import { QueryLoading } from './QueryLoading';
 
 export default function QueryApp() {
   return (
@@ -15,6 +16,7 @@ export default function QueryApp() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppInitDialog />
+        <QueryLoading />
         <Box display="flex" sx={{ height: '100vh' }}>
           <QueryPage />
         </Box>

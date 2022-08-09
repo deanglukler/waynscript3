@@ -44,7 +44,7 @@ export const useQueryParamsUpdate = () => {
   const bpms = useStoreState((state) => state.bpms);
   const keys = useStoreState((state) => state.keys);
   const words = useStoreState((state) => state.words);
-  const initializing = useStoreState((state) => state.initializing);
+  const initializing = useStoreState((state) => state.query.initializingQuery);
   useEffect(() => {
     if (initializing) {
       return;
@@ -58,6 +58,30 @@ export const useQueryParamsUpdate = () => {
 
     window.electron.ipcRenderer.sendMessage('SYNC_QUERY', [query]);
   }, [bpms, keys, words, initializing]);
+};
+
+export const useQueryLoading = () => {
+  const loading = useStoreState((state) => state.query.loadingQuery);
+  const loadingQueryStart = useStoreActions(
+    (actions) => actions.loadingQueryStart
+  );
+  const loadingQueryFinish = useStoreActions(
+    (actions) => actions.loadingQueryFinish
+  );
+
+  useEffect(() => {
+    return window.electron.ipcRenderer.on('QUERY_LOADING_START', () =>
+      loadingQueryStart()
+    );
+  }, [loadingQueryStart]);
+
+  useEffect(() => {
+    return window.electron.ipcRenderer.on('QUERY_LOADING_FINISH', () =>
+      loadingQueryFinish()
+    );
+  }, [loadingQueryFinish]);
+
+  return loading;
 };
 
 export const useBPMStats = () => {

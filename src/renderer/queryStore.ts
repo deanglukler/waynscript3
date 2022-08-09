@@ -10,9 +10,18 @@ export const store = createStore<QueryStoreModel>({
   appInitStarting: action((state) => {
     state.appInit.finished = false;
   }),
-  initializingQuery: true,
+  query: {
+    initializingQuery: true,
+    loadingQuery: false,
+  },
   initializedQuery: action((state) => {
-    state.initializingQuery = false;
+    state.query.initializingQuery = false;
+  }),
+  loadingQueryStart: action((state) => {
+    state.query.loadingQuery = true;
+  }),
+  loadingQueryFinish: action((state) => {
+    state.query.loadingQuery = false;
   }),
   updateQueryParams: action((state, payload) => {
     return { ...state, ...payload }; // <-- nice one bruv

@@ -54,8 +54,13 @@ export interface QueryStoreModel {
   appInit: { finished: boolean };
   appInitFinished: Action<QueryStoreModel>;
   appInitStarting: Action<QueryStoreModel>;
-  initializingQuery: boolean;
+  query: {
+    initializingQuery: boolean;
+    loadingQuery: boolean;
+  };
   initializedQuery: Action<QueryStoreModel>;
+  loadingQueryStart: Action<QueryStoreModel>;
+  loadingQueryFinish: Action<QueryStoreModel>;
   updateQueryParams: Action<QueryStoreModel, Query>;
   bpms: Bpms;
   toggleBpm: Action<QueryStoreModel, number>;

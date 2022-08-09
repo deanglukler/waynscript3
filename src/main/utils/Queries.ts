@@ -14,9 +14,11 @@ export default class Queries {
       logMainOn(arg, 'SYNC_QUERY');
       const query = arg[0];
 
+      windows.sendWindowMessage('queryWindow', 'QUERY_LOADING_START', null);
       addQuery(query);
       refreshSampleList();
       refreshQueryStats();
+      windows.sendWindowMessage('queryWindow', 'QUERY_LOADING_FINISH', null);
     });
 
     ipcMain.on('INIT_QUERY_PARAMS', (event, arg) => {
