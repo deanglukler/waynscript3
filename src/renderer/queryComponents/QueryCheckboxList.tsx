@@ -1,17 +1,13 @@
-import {
-  Checkbox,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  Typography,
-} from '@mui/material';
+import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import _ from 'lodash';
 import { Stats } from '../../main/types';
+import { centerContent } from '../utils/centerContent';
+import { StyledCheckboxListItem } from './StyledCheckboxListItem';
+import { StyledList } from './StyledList';
 
 interface Props {
-  stats: Stats;
+  stats: Stats | null;
   selected: string[];
   handleToggle: (stat: string) => () => void;
   primaryTextConverter?: (original: string) => string;
@@ -23,47 +19,27 @@ export function QueryCheckboxList({
   selected,
   primaryTextConverter,
 }: Props): JSX.Element {
-  return (
-    <List
-      sx={{
-        bgcolor: 'background.paper',
-        display: 'flex',
-        flexWrap: 'wrap',
-        '& .MuiListItemIcon-root': {
-          minWidth: '20px',
-        },
-      }}
-    >
-      {_.keys(stats).map((statName) => {
-        const stat = stats[statName];
-        const labelId = `checkbox-list-label-${statName}`;
+  function render() {
+    if (!stats || _.keys(stats).length === 0) {
+      return (
+        <Box sx={{ ...centerContent }}>
+          <Typography variant="lg-grey-bg-text">None</Typography>
+        </Box>
+      );
+    }
 
-        return (
-          <ListItem
-            key={statName}
-            disablePadding
-            sx={{
-              flex: '0 0 auto',
-              width: 'max-content',
-              '& .Mui-focusVisible': {
-                backgroundColor: 'unset',
-              },
-            }}
-          >
-            <ListItemButton
-              role={undefined}
-              onClick={handleToggle(statName)}
-              dense
+    return (
+      <StyledList>
+        {_.keys(stats).map((statName) => {
+          const stat = stats[statName];
+
+          return (
+            <StyledCheckboxListItem
+              key={statName}
+              itemName={statName}
+              selected={selected}
+              handleToggle={handleToggle}
             >
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={selected.includes(statName)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
-              </ListItemIcon>
               <Box sx={{ display: 'flex' }}>
                 <Typography
                   color={selected.includes(statName) ? 'primary' : 'grey.100'}
@@ -81,12 +57,14 @@ export function QueryCheckboxList({
                   sx={{ paddingLeft: '3px' }}
                 >{`(${stat.amount} ♬)`}</Typography>
               </Box>
-            </ListItemButton>
-          </ListItem>
-        );
-      })}
-    </List>
-  );
+            </StyledCheckboxListItem>
+          );
+        })}
+      </StyledList>
+    );
+  }
+
+  return render();
 }
 
 QueryCheckboxList.defaultProps = {

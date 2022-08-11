@@ -26,7 +26,8 @@ export function QueryPage(): JSX.Element {
         sx={{
           flex: '1 0 0',
           height: 1,
-          overflow: 'scroll',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <QueryParams />

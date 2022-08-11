@@ -1,5 +1,11 @@
 import { createTheme, ThemeOptions } from '@mui/material';
 
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    ['lg-grey-bg-text']: true;
+  }
+}
+
 const backgroundDefault = '#171717';
 const backgroundPaper = '#1c1c1c';
 
@@ -109,6 +115,17 @@ export const themeOptions: ThemeOptions = {
           },
         },
       },
+    },
+    MuiTypography: {
+      variants: [
+        {
+          props: { variant: 'lg-grey-bg-text' },
+          style: {
+            fontSize: '30px',
+            color: '#555',
+          },
+        },
+      ],
     },
     MuiAppBar: {
       defaultProps: {

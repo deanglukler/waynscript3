@@ -127,6 +127,35 @@ export const useWordStats = () => {
   return wordStats;
 };
 
+export const useQueryListControls = () => {
+  const bpms = useStoreState((state) => state.bpms);
+  const toggleBpm = useStoreActions((actions) => actions.toggleBpm);
+  const handleToggleBPM = (value: string) => () => {
+    toggleBpm(parseInt(value));
+  };
+
+  const keys = useStoreState((state) => state.keys);
+  const toggleKey = useStoreActions((actions) => actions.toggleKey);
+  const handleToggleKey = (value: string) => () => {
+    toggleKey(value);
+  };
+
+  const words = useStoreState((state) => state.words);
+  const toggleWord = useStoreActions((actions) => actions.toggleWord);
+  const handleToggleWord = (value: string) => () => {
+    toggleWord(value);
+  };
+
+  return {
+    selectedBPMS: bpms.map((bpm) => bpm.toString()),
+    handleToggleBPM,
+    selectedKeys: keys,
+    handleToggleKey,
+    selectedWords: words,
+    handleToggleWord,
+  };
+};
+
 export const useFileScanProgress = () => {
   const [scanProgress, setScanProgress] = useState<Progress | null>(null);
 
