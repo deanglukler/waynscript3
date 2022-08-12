@@ -21,7 +21,7 @@ import { WordsAnalysis } from './utils/WordsAnalysis';
 
 const electronIpcLog = require('electron-ipc-log');
 
-require('dotenv').config();
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
 electronIpcLog((event) => {
   const { channel, data, sent, sync } = event;

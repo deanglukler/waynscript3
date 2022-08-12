@@ -30,4 +30,5 @@ npm-debug.log.*
 
 assets/database.dev.db
 
-.env
+.env.development
+.env.production

@@ -3,7 +3,7 @@ import SQLite from 'better-sqlite3-with-prebuilds';
 import { dbPath } from '../constants';
 import { resetDatabase } from './reset';
 
-require('dotenv').config();
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
 if (process.env.RESET_DB === 'true') {
   console.log('\nDELETING DATABASE');
