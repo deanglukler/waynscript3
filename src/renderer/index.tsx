@@ -13,10 +13,3 @@ if (queryContainer) {
   const root = createRoot(queryContainer);
   root.render(<QueryApp />);
 }
-
-// calling IPC exposed from preload script
-window.electron.ipcRenderer.once('ipc-example', (arg) => {
-  // eslint-disable-next-line no-console
-  console.log(arg);
-});
-window.electron.ipcRenderer.sendMessage('ipc-example', ['ping from query']);

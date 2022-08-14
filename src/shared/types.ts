@@ -72,6 +72,7 @@ export interface QueryStoreModel {
 
 export interface ListStoreModel {
   files: Sample[];
+  setFiles: Action<ListStoreModel, Sample[]>;
 }
 
 export interface Query {

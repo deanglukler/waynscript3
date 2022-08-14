@@ -11,43 +11,16 @@ import {
   Stack,
 } from '@mui/material';
 import path from 'path';
-import React, { useCallback, useEffect, useState } from 'react';
-import scrollIntoView from 'scroll-into-view-if-needed';
-import { Sample } from '../../../shared/types';
-import { useHowlManager, useListNavigator } from '../listHooks';
+import { useDrag, useHowlManager, useIPC, useList } from '../listHooks';
 
 export function SampleList() {
-  const [files, setFiles] = useState<Sample[]>([]);
-
+  useIPC();
   const { handlePlaySample, playingFile, volume, handleSetVolume } =
     useHowlManager();
-  const [selected, setSelected] = useListNavigator(files, handlePlaySample);
+  const { focused, setFocused, files, focusedNode } = useList(handlePlaySample);
 
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on('RECEIVE_SAMPLES', (arg) => {
-      setFiles(arg as Sample[]);
-    });
+  const { handleDragSample } = useDrag();
 
-    return cleanup;
-  }, []);
-
-  function handleDragSample(event: React.DragEvent, filepath: string) {
-    event.preventDefault();
-    window.electron.ipcRenderer.sendMessage('FILE_DRAG', [filepath]);
-  }
-
-  const handleClickListItem = useCallback(setSelected, [setSelected]);
-
-  const selectedNode = useCallback((node: HTMLElement) => {
-    if (node !== null) {
-      node.focus();
-      scrollIntoView(node, {
-        scrollMode: 'if-needed',
-        block: 'nearest',
-        inline: 'nearest',
-      });
-    }
-  }, []);
   return (
     <Box>
       <List dense>
@@ -55,15 +28,16 @@ export function SampleList() {
           return (
             <ListItemButton
               key={file.path}
+              component="a"
               draggable
-              selected={index === selected}
-              onDragStart={(e) => {
+              selected={index === focused}
+              onDragStart={(e: React.DragEvent) => {
                 handleDragSample(e, file.path);
               }}
               onClick={() => {
-                handleClickListItem(index);
+                setFocused(index);
               }}
-              ref={index === selected ? selectedNode : null}
+              ref={index === focused ? focusedNode : null}
             >
               <ListItemIcon
                 onClick={() => {

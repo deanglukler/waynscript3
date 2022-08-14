@@ -1,8 +1,14 @@
+import { createTypedHooks } from 'easy-peasy';
 import { Howl } from 'howler';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
-import React, { useEffect, useState } from 'react';
-import { Sample } from '../../shared/types';
+import { useCallback, useEffect, useState } from 'react';
+import scrollIntoView from 'scroll-into-view-if-needed';
+import { ListStoreModel, Sample } from '../../shared/types';
+
+const typedHooks = createTypedHooks<ListStoreModel>();
+
+export const { useStoreState, useStoreActions } = typedHooks;
 
 export const useHowlManager = () => {
   const [howl, setHowl] = useState<Howl | null>(null);
@@ -58,38 +64,66 @@ export const useHowlManager = () => {
   return { handlePlaySample, playingFile, volume, handleSetVolume };
 };
 
-export const useListNavigator = (
-  files: Sample[],
-  handlePlaySample: (file: Sample) => void
-): [null | number, React.Dispatch<React.SetStateAction<number | null>>] => {
-  const [selected, setSelected] = useState<number | null>(null);
+export const useList = (handlePlaySample: (file: Sample) => void) => {
+  const files = useStoreState((state) => state.files);
+  const [focused, setFocused] = useState<number | null>(null);
 
   useEffect(() => {
-    if (selected == null) return Mousetrap.reset;
+    if (focused == null) return Mousetrap.reset;
     Mousetrap.bind('down', (e) => {
       e.preventDefault(); // prevent scroll
-      if (selected === _.keys(files).length - 1) return;
-      setSelected(selected + 1);
+      if (focused === _.keys(files).length - 1) return;
+      setFocused(focused + 1);
     });
 
     Mousetrap.bind('up', (e) => {
       e.preventDefault();
-      if (selected === 0) return;
-      setSelected(selected - 1);
+      if (focused === 0) return;
+      setFocused(focused - 1);
     });
 
     Mousetrap.bind('space', () => {
-      handlePlaySample(_.values(files)[selected]);
+      handlePlaySample(_.values(files)[focused]);
     });
 
     Mousetrap.bind('esc', () => {
-      setSelected(null);
+      setFocused(null);
     });
 
     return () => {
       Mousetrap.reset();
     };
-  }, [setSelected, selected, files, handlePlaySample]);
+  }, [setFocused, focused, files, handlePlaySample]);
 
-  return [selected, setSelected];
+  const focusedNode = useCallback((node: HTMLAnchorElement) => {
+    if (node !== null) {
+      node.focus();
+      scrollIntoView(node, {
+        scrollMode: 'if-needed',
+        block: 'nearest',
+        inline: 'nearest',
+      });
+    }
+  }, []);
+
+  return { focused, setFocused, files, focusedNode };
+};
+
+export const useDrag = () => {
+  function handleDragSample(event: React.DragEvent, filepath: string) {
+    event.preventDefault();
+    window.electron.ipcRenderer.sendMessage('FILE_DRAG', [filepath]);
+  }
+  return { handleDragSample };
+};
+
+export const useIPC = () => {
+  const setFiles = useStoreActions((actions) => actions.setFiles);
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on('RECEIVE_SAMPLES', (arg) => {
+      setFiles(arg as Sample[]);
+    });
+
+    return cleanup;
+  }, [setFiles]);
 };
