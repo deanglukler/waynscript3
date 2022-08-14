@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { useKeyStats, useQueryListControls } from '../queryHooks';
-import { visibleKeyText } from '../utils/visibleKeyText';
+import { visibleKeyText } from '../../shared/visibleKeyText';
 import { QueryCheckboxList } from './QueryCheckboxList';
 import { StickyListHeader } from './StickyListHeader';
 

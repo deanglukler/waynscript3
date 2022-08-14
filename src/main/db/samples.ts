@@ -1,5 +1,5 @@
 import SqlString from 'sqlstring-sqlite';
-import { Sample } from '../types';
+import { Sample } from '../../shared/types';
 import { getActiveDirectories } from './directories';
 import { getLastQuery } from './queries';
 import { createSamplesSQL, dropSamplesSQL } from './reset';

@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
-import ListApp from './ListApp';
-import QueryApp from './QueryApp';
+import ListApp from './list/ListApp';
+import QueryApp from './query/QueryApp';
 
 const listContainer = document.getElementById('list-root')!;
 if (listContainer) {

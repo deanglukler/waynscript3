@@ -1,6 +1,6 @@
 import { action, createStore } from 'easy-peasy';
 import _ from 'lodash';
-import { QueryStoreModel } from '../main/types';
+import { QueryStoreModel } from '../../shared/types';
 
 export const store = createStore<QueryStoreModel>({
   appInit: { finished: false },

@@ -13,7 +13,7 @@ import {
 import path from 'path';
 import React, { useCallback, useEffect, useState } from 'react';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import { Sample } from '../../main/types';
+import { Sample } from '../../../shared/types';
 import { useHowlManager, useListNavigator } from '../listHooks';
 
 export function SampleList() {

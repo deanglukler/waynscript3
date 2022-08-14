@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { addQuery, getLastQuery } from '../db/queries';
-import { Query } from '../types';
+import { Query } from '../../shared/types';
 import { logMainOn } from './log';
 import Windows from './Windows';
 

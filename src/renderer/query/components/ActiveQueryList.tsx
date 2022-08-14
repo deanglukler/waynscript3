@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { useQueryListControls } from '../queryHooks';
-import { visibleKeyText } from '../utils/visibleKeyText';
+import { visibleKeyText } from '../../shared/visibleKeyText';
 import { StyledCheckboxListItem } from './StyledCheckboxListItem';
 import { StyledList } from './StyledList';
 

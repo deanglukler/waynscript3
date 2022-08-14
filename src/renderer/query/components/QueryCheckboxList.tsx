@@ -1,8 +1,8 @@
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import _ from 'lodash';
-import { Stats } from '../../main/types';
-import { centerContent } from '../utils/centerContent';
+import { Stats } from '../../../shared/types';
+import { centerContent } from '../../shared/centerContent';
 import { StyledCheckboxListItem } from './StyledCheckboxListItem';
 import { StyledList } from './StyledList';
 

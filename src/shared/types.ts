@@ -70,6 +70,10 @@ export interface QueryStoreModel {
   toggleWord: Action<QueryStoreModel, string>;
 }
 
+export interface ListStoreModel {
+  files: Sample[];
+}
+
 export interface Query {
   bpms: Bpms;
   keys: Keys;

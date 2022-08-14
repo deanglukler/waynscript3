@@ -2,7 +2,7 @@ import { Howl } from 'howler';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 import React, { useEffect, useState } from 'react';
-import { Sample } from '../main/types';
+import { Sample } from '../../shared/types';
 
 export const useHowlManager = () => {
   const [howl, setHowl] = useState<Howl | null>(null);

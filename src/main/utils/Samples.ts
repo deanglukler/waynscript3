@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { getSamplesByQuery } from '../db/samples';
-import { Sample } from '../types';
+import { Sample } from '../../shared/types';
 import getAssetPath from './getAssetPath';
 import { logMainOn } from './log';
 import Windows from './Windows';

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import SqlString from 'sqlstring-sqlite';
-import { Stats } from '../types';
+import { Stats } from '../../shared/types';
 
 import { getActiveDirectories } from './directories';
 import { getLastQuery } from './queries';
