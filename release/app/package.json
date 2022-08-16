@@ -1,6 +1,6 @@
 {
   "name": "scrub",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "find new samples",
   "license": "none",
   "author": {
@@ -17,6 +17,5 @@
   "dependencies": {
     "@bugsnag/electron": "^7.17.0",
     "better-sqlite3-with-prebuilds": "^7.4.3"
-
   }
 }
