@@ -11,15 +11,41 @@ import {
   Stack,
 } from '@mui/material';
 import path from 'path';
+import React from 'react';
 import { useDrag, useHowlManager, useIPC, useList } from '../listHooks';
+import { BackgroundAnimBox } from './BackgroundAnimBox';
 
 export function SampleList() {
   useIPC();
   const { handlePlaySample, playingFile, volume, handleSetVolume } =
     useHowlManager();
-  const { focused, setFocused, files, focusedNode } = useList(handlePlaySample);
+  const {
+    focused,
+    setFocused,
+    files,
+    focusedNode,
+    selectedPaths,
+    handleSampleClick,
+  } = useList(handlePlaySample);
 
-  const { handleDragSample } = useDrag();
+  const { handleDragFilepaths } = useDrag();
+
+  function renderFocussedBox(focussed: boolean) {
+    if (!focussed) return null;
+    return (
+      <Box
+        sx={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        }}
+      >
+        <BackgroundAnimBox />
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -30,15 +56,21 @@ export function SampleList() {
               key={file.path}
               component="a"
               draggable
-              selected={index === focused}
+              selected={selectedPaths.includes(file.path)}
               onDragStart={(e: React.DragEvent) => {
-                handleDragSample(e, file.path);
+                handleDragFilepaths(
+                  e,
+                  files.map((f) => f.path)
+                );
               }}
-              onClick={() => {
+              onClick={(e: React.MouseEvent) => {
+                handleSampleClick(e, file);
                 setFocused(index);
               }}
               ref={index === focused ? focusedNode : null}
+              sx={{ position: 'relative' }}
             >
+              {renderFocussedBox(index === focused)}
               <ListItemIcon
                 onClick={() => {
                   handlePlaySample(file);

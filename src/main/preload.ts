@@ -17,6 +17,7 @@ export type Channels =
   | 'SYNC_SAMPLES'
   | 'RECEIVE_SAMPLES'
   | 'FILE_DRAG'
+  | 'DRAG_FILEPATHS'
   | 'BPM_QUERY_STATS'
   | 'KEY_QUERY_STATS'
   | 'WORD_QUERY_STATS'

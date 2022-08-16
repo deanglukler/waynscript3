@@ -2,9 +2,9 @@ import { createTypedHooks } from 'easy-peasy';
 import { Howl } from 'howler';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import { ListStoreModel, Sample } from '../../shared/types';
+import { FilePath, ListStoreModel, Sample } from '../../shared/types';
 
 const typedHooks = createTypedHooks<ListStoreModel>();
 
@@ -67,6 +67,51 @@ export const useHowlManager = () => {
 export const useList = (handlePlaySample: (file: Sample) => void) => {
   const files = useStoreState((state) => state.files);
   const [focused, setFocused] = useState<number | null>(null);
+  const [selectedPaths, setSelectedPaths] = useState<FilePath[]>([]);
+
+  const handleSampleClick = useCallback(
+    (e: React.MouseEvent, fileClicked: Sample) => {
+      const clickedWithMetaKey = e.metaKey;
+      if (clickedWithMetaKey) {
+        setSelectedPaths(_.xor(selectedPaths, [fileClicked.path]));
+        return;
+      }
+      const getFileIndexByPath = (filePath: FilePath) => {
+        const foundIndex = files.findIndex(
+          (sample) => sample.path === filePath
+        );
+        if (foundIndex === -1) {
+          return null;
+        }
+        return foundIndex;
+      };
+      const clickedWithShiftKey = e.shiftKey;
+      if (clickedWithShiftKey) {
+        const currentClickedFilePath = getFileIndexByPath(fileClicked.path);
+        const previouslyClickedFilePath = getFileIndexByPath(
+          selectedPaths[selectedPaths.length - 1]
+        );
+        const maxIndex = _.max([
+          currentClickedFilePath,
+          previouslyClickedFilePath,
+        ]);
+        const minIndex = _.min([
+          currentClickedFilePath,
+          previouslyClickedFilePath,
+        ]);
+        if (minIndex == null || maxIndex == null) {
+          throw new Error('this should not have happened ??');
+        }
+        for (let i = minIndex; i <= maxIndex; i++) {
+          console.log(i);
+          setSelectedPaths((prevState) => prevState.concat([files[i].path]));
+        }
+        return;
+      }
+      setSelectedPaths([fileClicked.path]);
+    },
+    [selectedPaths, files]
+  );
 
   useEffect(() => {
     if (focused == null) return Mousetrap.reset;
@@ -106,7 +151,14 @@ export const useList = (handlePlaySample: (file: Sample) => void) => {
     }
   }, []);
 
-  return { focused, setFocused, files, focusedNode };
+  return {
+    focused,
+    setFocused,
+    files,
+    focusedNode,
+    selectedPaths,
+    handleSampleClick,
+  };
 };
 
 export const useDrag = () => {
@@ -114,7 +166,11 @@ export const useDrag = () => {
     event.preventDefault();
     window.electron.ipcRenderer.sendMessage('FILE_DRAG', [filepath]);
   }
-  return { handleDragSample };
+  function handleDragFilepaths(event: React.DragEvent, filepaths: string[]) {
+    event.preventDefault();
+    window.electron.ipcRenderer.sendMessage('DRAG_FILEPATHS', [filepaths]);
+  }
+  return { handleDragSample, handleDragFilepaths };
 };
 
 export const useIPC = () => {

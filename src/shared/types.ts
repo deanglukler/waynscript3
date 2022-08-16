@@ -46,6 +46,8 @@ export interface SampleWord {
   path: string;
 }
 
+export type FilePath = string;
+
 type Bpms = number[];
 type Keys = string[];
 type Words = string[];
