@@ -68,15 +68,21 @@ export const useList = (handlePlaySample: (file: Sample) => void) => {
   const files = useStoreState((state) => state.files);
   const [focused, setFocused] = useState<number | null>(null);
   const [selectedPaths, setSelectedPaths] = useState<FilePath[]>([]);
+  const [firstClickedFilePath, setFirstClickedFilePath] =
+    useState<FilePath | null>(null);
 
   const handleSampleClick = useCallback(
-    (e: React.MouseEvent, fileClicked: Sample) => {
+    (e: React.MouseEvent, fileClicked: Sample, index: number) => {
       const clickedWithMetaKey = e.metaKey;
       if (clickedWithMetaKey) {
+        if (!selectedPaths.includes(fileClicked.path)) {
+          setFirstClickedFilePath(fileClicked.path);
+          setFocused(index);
+        }
         setSelectedPaths(_.xor(selectedPaths, [fileClicked.path]));
         return;
       }
-      const getFileIndexByPath = (filePath: FilePath) => {
+      const getFileIndexByPath = (filePath: FilePath | null) => {
         const foundIndex = files.findIndex(
           (sample) => sample.path === filePath
         );
@@ -87,30 +93,28 @@ export const useList = (handlePlaySample: (file: Sample) => void) => {
       };
       const clickedWithShiftKey = e.shiftKey;
       if (clickedWithShiftKey) {
-        const currentClickedFilePath = getFileIndexByPath(fileClicked.path);
-        const previouslyClickedFilePath = getFileIndexByPath(
-          selectedPaths[selectedPaths.length - 1]
-        );
-        const maxIndex = _.max([
-          currentClickedFilePath,
-          previouslyClickedFilePath,
-        ]);
-        const minIndex = _.min([
-          currentClickedFilePath,
-          previouslyClickedFilePath,
-        ]);
-        if (minIndex == null || maxIndex == null) {
+        const currentClickedIndex = getFileIndexByPath(fileClicked.path);
+        const firstClickedIndex = getFileIndexByPath(firstClickedFilePath);
+        const maxIndex = _.max([currentClickedIndex, firstClickedIndex]);
+        const minIndex = _.min([currentClickedIndex, firstClickedIndex]);
+        if (typeof minIndex !== 'number' || typeof maxIndex !== 'number') {
           throw new Error('this should not have happened ??');
         }
-        for (let i = minIndex; i <= maxIndex; i++) {
-          console.log(i);
-          setSelectedPaths((prevState) => prevState.concat([files[i].path]));
+        let nextSelectedPathsState: FilePath[] = [];
+        for (let i: number = minIndex; i <= maxIndex; i++) {
+          nextSelectedPathsState = nextSelectedPathsState.concat([
+            files[i].path,
+          ]);
         }
+        setSelectedPaths(selectedPaths.concat(nextSelectedPathsState));
+        setFocused(index);
         return;
       }
       setSelectedPaths([fileClicked.path]);
+      setFirstClickedFilePath(fileClicked.path);
+      setFocused(index);
     },
-    [selectedPaths, files]
+    [selectedPaths, files, firstClickedFilePath]
   );
 
   useEffect(() => {
@@ -133,6 +137,10 @@ export const useList = (handlePlaySample: (file: Sample) => void) => {
 
     Mousetrap.bind('esc', () => {
       setFocused(null);
+    });
+
+    Mousetrap.bind('meta+a', () => {
+      setSelectedPaths(files.map((file) => file.path));
     });
 
     return () => {

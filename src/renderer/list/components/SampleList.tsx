@@ -19,14 +19,8 @@ export function SampleList() {
   useIPC();
   const { handlePlaySample, playingFile, volume, handleSetVolume } =
     useHowlManager();
-  const {
-    focused,
-    setFocused,
-    files,
-    focusedNode,
-    selectedPaths,
-    handleSampleClick,
-  } = useList(handlePlaySample);
+  const { focused, files, focusedNode, selectedPaths, handleSampleClick } =
+    useList(handlePlaySample);
 
   const { handleDragFilepaths } = useDrag();
 
@@ -64,8 +58,8 @@ export function SampleList() {
                 );
               }}
               onClick={(e: React.MouseEvent) => {
-                handleSampleClick(e, file);
-                setFocused(index);
+                // somehow this also captures "enter" button press
+                handleSampleClick(e, file, index);
               }}
               ref={index === focused ? focusedNode : null}
               sx={{ position: 'relative' }}
