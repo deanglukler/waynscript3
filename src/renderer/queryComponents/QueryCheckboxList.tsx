@@ -33,31 +33,18 @@ export function QueryCheckboxList({
         {_.keys(stats).map((statName) => {
           const stat = stats[statName];
 
+          const displayText = primaryTextConverter
+            ? primaryTextConverter(statName)
+            : statName;
+
           return (
             <StyledCheckboxListItem
               key={statName}
-              itemName={statName}
-              selected={selected}
+              displayText={displayText}
+              selected={selected.includes(statName)}
+              amount={stat.amount}
               handleToggle={handleToggle}
-            >
-              <Box sx={{ display: 'flex' }}>
-                <Typography
-                  color={selected.includes(statName) ? 'primary' : 'grey.100'}
-                  variant="body1"
-                >{`${
-                  primaryTextConverter
-                    ? primaryTextConverter(statName)
-                    : statName
-                }`}</Typography>
-                <Typography
-                  color={
-                    selected.includes(statName) ? 'primary' : 'text.primary'
-                  }
-                  variant="caption"
-                  sx={{ paddingLeft: '3px' }}
-                >{`(${stat.amount} ♬)`}</Typography>
-              </Box>
-            </StyledCheckboxListItem>
+            />
           );
         })}
       </StyledList>

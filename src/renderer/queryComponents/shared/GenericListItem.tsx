@@ -4,20 +4,21 @@ interface Props {
   displayText: string;
   selected: boolean;
   amount: number;
-  handleToggle: (itemName: string) => () => void;
+  handleToggle: () => void;
 }
 
-export function StyledCheckboxListItem({
+export function GenericListItem({
   displayText,
   selected,
   amount,
   handleToggle,
 }: Props): JSX.Element {
-  let textStyles = {
-    fontSize: '15px',
+  const textStyles: any = {
+    fontSize: 15,
   };
   if (selected) {
-    textStyles = { ...textStyles, fontWeight: 600 };
+    textStyles.fontWeight = 600;
+    textStyles.fontSize = 20;
   }
   return (
     <ListItem
@@ -32,10 +33,7 @@ export function StyledCheckboxListItem({
       }}
     >
       <Box sx={{ padding: '5px' }}>
-        <Box
-          sx={{ cursor: 'pointer', display: 'flex' }}
-          onClick={handleToggle(displayText)}
-        >
+        <Box sx={{ cursor: 'pointer', display: 'flex' }} onClick={handleToggle}>
           <Typography
             color={selected ? 'primary' : 'grey.100'}
             sx={textStyles}

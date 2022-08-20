@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import { useQueryParamsInit, useQueryParamsUpdate } from '../queryHooks';
 import { ActiveQueryList } from './ActiveQueryList';
-import { BPMList } from './BPMList';
-import { KeyList } from './KeyList';
+import { BPMList } from './BpmList/BPMList';
+import { KeyList } from './KeyList/KeyList';
 import { WordList } from './WordList';
 
 export function QueryParams(): JSX.Element {

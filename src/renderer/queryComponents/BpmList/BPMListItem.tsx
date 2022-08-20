@@ -7,17 +7,18 @@ interface Props {
   handleToggle: (itemName: string) => () => void;
 }
 
-export function StyledCheckboxListItem({
+export function BPMListItem({
   displayText,
   selected,
   amount,
   handleToggle,
 }: Props): JSX.Element {
-  let textStyles = {
-    fontSize: '15px',
+  const textStyles: any = {
+    fontSize: 15,
   };
   if (selected) {
-    textStyles = { ...textStyles, fontWeight: 600 };
+    textStyles.fontWeight = 600;
+    textStyles.fontSize = 20;
   }
   return (
     <ListItem
