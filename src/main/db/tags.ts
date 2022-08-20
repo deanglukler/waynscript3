@@ -9,7 +9,7 @@ export const insertTags = (tags: Tag[]) => {
   const sql = SqlString.format('INSERT INTO tags (tag, path) VALUES ?', [
     tagsSQL,
   ]);
-  return runQuery(sql, false);
+  return runQuery(sql, true);
 };
 
 export const dropTagsTable = () => {
