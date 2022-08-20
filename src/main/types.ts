@@ -32,7 +32,30 @@ export interface Word {
   path: string;
 }
 
-export type TagType = 'kick' | 'snare' | 'clap';
+export type TagType =
+  | 'kick'
+  | 'snare'
+  | 'clap'
+  | 'snare_roll'
+  | 'hihat'
+  | 'open_hihat'
+  | 'closed_hihat'
+  | 'crash'
+  | 'tom'
+  | 'clave'
+  | 'perc'
+  | 'break'
+  | 'ride'
+  | 'shaker'
+  | '808'
+  | 'conga'
+  | 'rim'
+  | 'bongo'
+  | 'tam'
+  | 'snap'
+  | 'fill'
+  | 'bell'
+  | 'cajon';
 
 export interface Tag {
   tagType: TagType;

@@ -50,4 +50,101 @@ const tagData: { tagType: TagType; possibleMatches: RegExp[] }[] = [
     tagType: 'clap',
     possibleMatches: [/\bcla?p/i, /cla?p[zs]?\d*\b/i],
   },
+  {
+    tagType: 'snare',
+    possibleMatches: [/snare[zs]?/i, /\bsnare[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'snare_roll',
+    possibleMatches: [/\broll/i, /roll[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'hihat',
+    possibleMatches: [/(hi\s?)?hat[zs]?\d*/i, /\bhh\b/i, /hat[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'closed_hihat',
+    possibleMatches: [
+      /closed\s?(((hi)?\s?hat)[zs]?|(hh\b))/i,
+      /((\bhh)|((hi)?\s?hat))[zs]?\s?closed/i,
+      /\bclosed\s?(((hi)?\s?hat)|(hh\b))[zs]?\b/i,
+      /\b((\bhh)|((hi)?\s?hat))[zs]?\s?closed\b/i,
+      /(hi\s?)hat[zs]?\d*\(closed\)/i,
+    ],
+  },
+  {
+    tagType: 'open_hihat',
+    possibleMatches: [
+      /open\s?(((hi)?\s?hat)[zs]?|(hh\b))/i,
+      /((\bhh)|((hi)?\s?hat))[zs]?\s?open/i,
+      /\bopen\s?(((hi)?\s?hat)|(hh\b))[zs]?\b/i,
+      /\b((\bhh)|((hi)?\s?hat))[zs]?\s?open\b/i,
+      /(hi\s?)hat[zs]?\d*\(open\)/i,
+    ],
+  },
+
+  {
+    tagType: 'crash',
+    possibleMatches: [/\bcrash[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'tom',
+    possibleMatches: [/\btom[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'clave',
+    possibleMatches: [/\bclave[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'perc',
+    possibleMatches: [/\bperc(ussion)?[zs]?\d*/i],
+  },
+  {
+    tagType: 'break',
+    possibleMatches: [/\bbreak[zs]?\d*/i],
+  },
+  {
+    tagType: 'ride',
+    possibleMatches: [/\bride[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'shaker',
+    possibleMatches: [/\bshaker[zs]?\d*\b/i],
+  },
+  {
+    tagType: '808',
+    possibleMatches: [/\b808[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'conga',
+    possibleMatches: [/\bconga[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'rim',
+    possibleMatches: [/\brim(shot)?[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'bongo',
+    possibleMatches: [/\bbongo[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'tam',
+    possibleMatches: [/\btam(b)?(ourine)?[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'snap',
+    possibleMatches: [/\bsnap[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'fill',
+    possibleMatches: [/\bfill[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'bell',
+    possibleMatches: [/\bbell[zs]?\d*\b/i],
+  },
+  {
+    tagType: 'cajon',
+    possibleMatches: [/\bcajon[zs]?\d*\b/i],
+  },
 ];
