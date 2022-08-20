@@ -1,3 +1,9 @@
+Database Location: `/Users/{user}/Library/Application Support/database.db`
+
+## Electron React Boilerplate follows..
+
+<br>
+
 <img src=".erb/img/erb-banner.svg" width="100%" />
 
 <br>

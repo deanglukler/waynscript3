@@ -19,6 +19,7 @@ export type Channels =
   | 'FILE_DRAG'
   | 'BPM_QUERY_STATS'
   | 'KEY_QUERY_STATS'
+  | 'TAG_QUERY_STATS'
   | 'WORD_QUERY_STATS'
   | 'TOTAL_SAMPLES'
   | 'SYNC_DIRS'

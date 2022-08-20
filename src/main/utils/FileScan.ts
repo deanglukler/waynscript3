@@ -10,6 +10,7 @@ import { KeyAnalysis } from './KeyAnalysis';
 import Windows from './Windows';
 import { audioExts } from './constants';
 import { Progress } from './Progress';
+import { TagAnalysis } from './TagAnalysis';
 
 const recursiveFileList = async (
   directoryPath: string,
@@ -145,6 +146,7 @@ export default class FileScan {
               this.progress.incrementProcessed(1);
             });
             insertSamples(analyzedFiles);
+            TagAnalysis.analyze(chunks[0]);
             chunks.shift();
             asyncAnalysis(chunks);
             this.updateRendererProgress();

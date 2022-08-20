@@ -31,6 +31,7 @@ export default class App {
     }
     QueryStats.getBpmStatsAndSendToQuery(this.windows);
     QueryStats.getKeyStatsAndSendToQuery(this.windows);
+    QueryStats.getTagStatsAndSendToQuery(this.windows);
     QueryStats.getWordStatsAndSendToQuery(this.windows);
   }
 }

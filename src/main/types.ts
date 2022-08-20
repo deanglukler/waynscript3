@@ -32,6 +32,13 @@ export interface Word {
   path: string;
 }
 
+export type TagType = 'kick' | 'snare' | 'clap';
+
+export interface Tag {
+  tagType: TagType;
+  path: string;
+}
+
 export interface WindowInfo {
   id?: number;
   name?: string;
@@ -49,6 +56,7 @@ export interface SampleWord {
 type Bpms = number[];
 type Keys = string[];
 type Words = string[];
+type Tags = string[];
 
 export interface QueryStoreModel {
   appInit: { finished: boolean };
@@ -68,12 +76,15 @@ export interface QueryStoreModel {
   toggleKey: Action<QueryStoreModel, string>;
   words: Words;
   toggleWord: Action<QueryStoreModel, string>;
+  tags: Tags;
+  toggleTag: Action<QueryStoreModel, string>;
 }
 
 export interface Query {
   bpms: Bpms;
   keys: Keys;
   words: Words;
+  tags: Tags;
 }
 
 export interface QueryRow {

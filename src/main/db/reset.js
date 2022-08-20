@@ -20,6 +20,7 @@ export const createDirsSQL = `CREATE TABLE "directories" (
 );`;
 
 export const dropWordsSQL = `DROP TABLE IF EXISTS words;`;
+export const dropTagsSQL = `DROP TABLE IF EXISTS tags;`;
 export const dropSamplesSQL = `DROP TABLE IF EXISTS samples;`;
 export const createSamplesSQL = `CREATE TABLE "samples" (
   "path"	TEXT NOT NULL,
@@ -35,6 +36,14 @@ export const createWordsSQL = `CREATE TABLE "words" (
     "path"	TEXT NOT NULL REFERENCES samples("path"),
     PRIMARY KEY("id" AUTOINCREMENT)
   );`;
+
+export const createTagsSQL = `CREATE TABLE "tags" (
+  "id" INTEGER NOT NULL UNIQUE,
+  "tag" TEXT NOT NULL,
+  "path" TEXT NOT NULL REFERENCES samples("path"),
+  PRIMARY KEY("id" AUTOINCREMENT)
+);`;
+
 export const resetDatabase = (db) => {
   console.log('\nRESETTING DATABASE');
 
@@ -49,6 +58,7 @@ export const resetDatabase = (db) => {
   runQuery(dropDirectoryChildsSQL);
   runQuery(dropDirectoriesSQL);
   runQuery(dropWordsSQL);
+  runQuery(dropTagsSQL);
   runQuery(dropSamplesSQL);
   runQuery(`DROP TABLE IF EXISTS windows;`);
   runQuery(createDirsSQL);
@@ -82,6 +92,9 @@ export const resetDatabase = (db) => {
     "word"
   );`;
   runQuery(wordsIndex);
+
+  // percussion
+  runQuery(createTagsSQL);
 
   // windows
   const windowsSQL = `CREATE TABLE "windows" (

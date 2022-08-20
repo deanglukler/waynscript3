@@ -13,6 +13,7 @@ import { app } from 'electron';
 import App from './App';
 import { createDirsTables, dropDirsTables } from './db/directories';
 import { createSamplesTable, dropSamplesTable } from './db/samples';
+import { createTagsTable, dropTagsTable } from './db/tags';
 import { createWordsTable, dropWordsTable } from './db/words';
 import { DirectoryScan } from './utils/DirectoryScan';
 import FileScan from './utils/FileScan';
@@ -89,11 +90,13 @@ app
       process.env.NODE_ENV === 'production'
     ) {
       dropWordsTable();
+      dropTagsTable();
       dropSamplesTable();
       dropDirsTables();
       createDirsTables();
       createSamplesTable();
       createWordsTable();
+      createTagsTable();
       await new DirectoryScan(windows).scan();
       await new FileScan(windows).analyzeFiles();
       await new WordsAnalysis(windows).analyzeWordsAsync();

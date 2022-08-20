@@ -12,6 +12,8 @@ export function ActiveQueryList(): JSX.Element {
     selectedKeys,
     selectedWords,
     handleToggleWord,
+    selectedTags,
+    handleToggleTag,
   } = useQueryListControls();
 
   let listItems: JSX.Element[] = [];
@@ -39,6 +41,20 @@ export function ActiveQueryList(): JSX.Element {
           handleToggle={handleToggleKey}
         >
           <Typography>{visibleKeyText(key)}</Typography>
+        </StyledCheckboxListItem>
+      );
+    })
+  );
+  listItems = listItems.concat(
+    selectedTags.map((tag) => {
+      return (
+        <StyledCheckboxListItem
+          key={tag}
+          itemName={tag}
+          selected={selectedTags}
+          handleToggle={handleToggleTag}
+        >
+          <Typography>{visibleKeyText(tag)}</Typography>
         </StyledCheckboxListItem>
       );
     })
