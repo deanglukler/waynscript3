@@ -52,10 +52,7 @@ export function SampleList() {
               draggable
               selected={selectedPaths.includes(file.path)}
               onDragStart={(e: React.DragEvent) => {
-                handleDragFilepaths(
-                  e,
-                  files.map((f) => f.path)
-                );
+                handleDragFilepaths(e, selectedPaths);
               }}
               onClick={(e: React.MouseEvent) => {
                 // somehow this also captures "enter" button press
