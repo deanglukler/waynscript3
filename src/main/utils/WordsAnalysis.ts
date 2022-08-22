@@ -12,6 +12,7 @@ interface WordLinks {
 
 const MIN_COMMON_AMOUNT = 5;
 
+const WORDANAL_CHUNK_SIZE = 10000;
 export class WordsAnalysis {
   public wordLinks: WordLinks = {};
 
@@ -133,7 +134,7 @@ export class WordsAnalysis {
       return nextChunkPromise;
     };
 
-    const wordPathsChunks = _.chunk(wordPaths, 10000);
+    const wordPathsChunks = _.chunk(wordPaths, WORDANAL_CHUNK_SIZE);
     this.progress.total = wordPathsChunks.length;
 
     const insertWordsPromise = await insertWordsChunks(wordPathsChunks);

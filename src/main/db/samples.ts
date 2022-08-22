@@ -1,11 +1,11 @@
 import SqlString from 'sqlstring-sqlite';
 import { Sample } from '../types';
+import { SqlGen } from '../utils/SqlGen';
 import { getActiveDirectories } from './directories';
-import { getLastQuery } from './queries';
 import { createSamplesSQL, dropSamplesSQL } from './reset';
 import { activeDirsWhereClause, allQuery, runQuery } from './utils';
 
-export const wordsClause = (words: string[]) =>
+export const wordsWhereClause = (words: string[]) =>
   words.map((word) => SqlString.format(`words.word = ?`, [word])).join(' OR ');
 
 export const insertSamples = (samples: Sample[]) => {
@@ -41,44 +41,28 @@ export const getSamplesInActiveDirs = () => {
 };
 
 export const getSamplesByQuery = () => {
-  const query = getLastQuery();
-  const activeDirs = getActiveDirectories();
-  if (activeDirs.length === 0) {
+  const sqlGen = new SqlGen();
+  if (sqlGen.activeDirectories.length === 0) {
     console.log('\nNO ACTIVE DIRS\n');
     return [];
   }
 
-  const { bpms, keys, words } = query;
-  const bpmsClause = bpms
-    .map((bpm) => SqlString.format(`samples.bpm = ?`, [bpm]))
-    .join(' OR ');
-  const keysClause = keys
-    .map((key) => SqlString.format(`samples.key = ?`, [key]))
-    .join(' OR ');
+  const sql = `${sqlGen.selectFromSamples([
+    'samples.path as path',
+    'samples.bpm as bpm',
+    'samples.key as key',
+  ])}
+  ${sqlGen.joinWordsToSamplesIfAnyWords()}
+  ${sqlGen.joinTagsToSamplesIfAnyTags()}
+  ${sqlGen.whereFiltering([
+    'bpms',
+    'keys',
+    'words',
+    'tags',
+    'sample-paths-like',
+  ])}`;
 
-  const whereClause = activeDirsWhereClause(activeDirs, [
-    bpmsClause,
-    keysClause,
-    wordsClause(words),
-  ]);
-
-  let fullClause = `SELECT DISTINCT
-  samples.path as path,
-  samples.bpm as bpm,
-  samples.key as key
-  FROM samples`;
-
-  if (wordsClause(words)) {
-    fullClause = `${fullClause} JOIN words ON words.path = samples.path`;
-  }
-
-  if (whereClause) {
-    fullClause = `${fullClause} WHERE ${whereClause}`;
-  }
-
-  fullClause = `${fullClause} ORDER BY RANDOM() LIMIT 50;`;
-
-  return allQuery<Sample>(fullClause);
+  return allQuery<Sample>(sql);
 };
 
 export const deleteSamples = (paths: string[]) => {

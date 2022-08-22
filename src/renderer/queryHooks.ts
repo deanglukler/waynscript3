@@ -44,6 +44,7 @@ export const useQueryParamsUpdate = () => {
   const bpms = useStoreState((state) => state.bpms);
   const keys = useStoreState((state) => state.keys);
   const words = useStoreState((state) => state.words);
+  const tags = useStoreState((state) => state.tags);
   const initializing = useStoreState((state) => state.query.initializingQuery);
   useEffect(() => {
     if (initializing) {
@@ -54,10 +55,11 @@ export const useQueryParamsUpdate = () => {
       bpms: [...bpms],
       keys: [...keys],
       words: [...words],
+      tags: [...tags],
     };
 
     window.electron.ipcRenderer.sendMessage('SYNC_QUERY', [query]);
-  }, [bpms, keys, words, initializing]);
+  }, [bpms, keys, words, tags, initializing]);
 };
 
 export const useQueryLoading = () => {
@@ -112,6 +114,17 @@ export const useKeyStats = () => {
   return keyStats;
 };
 
+export const useTagStats = () => {
+  const [stats, setStats] = useState<Stats | null>(null);
+  useEffect(() => {
+    const cleanup = window.electron.ipcRenderer.on('TAG_QUERY_STATS', (s) => {
+      setStats(s as Stats);
+    });
+    return cleanup;
+  }, []);
+  return stats;
+};
+
 export const useWordStats = () => {
   const [wordStats, setWordStats] = useState<Stats | null>(null);
   useEffect(() => {
@@ -146,6 +159,12 @@ export const useQueryListControls = () => {
     toggleWord(value);
   };
 
+  const tags = useStoreState((state) => state.tags);
+  const toggleTag = useStoreActions((actions) => actions.toggleTag);
+  const handleToggleTag = (value: string) => () => {
+    toggleTag(value);
+  };
+
   return {
     selectedBPMS: bpms.map((bpm) => bpm.toString()),
     handleToggleBPM,
@@ -153,6 +172,8 @@ export const useQueryListControls = () => {
     handleToggleKey,
     selectedWords: words,
     handleToggleWord,
+    selectedTags: tags,
+    handleToggleTag,
   };
 };
 

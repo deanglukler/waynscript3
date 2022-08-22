@@ -38,4 +38,8 @@ export const store = createStore<QueryStoreModel>({
   toggleWord: action((state, payload) => {
     state.words = _.xor(state.words, [payload]);
   }),
+  tags: [],
+  toggleTag: action((state, payload) => {
+    state.tags = _.xor(state.tags, [payload]);
+  }),
 });
