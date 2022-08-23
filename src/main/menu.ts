@@ -1,5 +1,5 @@
 import { app, Menu, shell, MenuItemConstructorOptions } from 'electron';
-import { AvailableWindows } from './types';
+import { AvailableWindows } from '../shared/types';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;

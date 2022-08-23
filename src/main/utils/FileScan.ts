@@ -4,7 +4,7 @@ import path from 'path';
 import { getDirectories } from '../db/directories';
 
 import { insertSamples } from '../db/samples';
-import { Directory, Sample } from '../types';
+import { Directory, Sample } from '../../shared/types';
 import { BpmAnalysis } from './BpmAnalysis';
 import { KeyAnalysis } from './KeyAnalysis';
 import Windows from './Windows';

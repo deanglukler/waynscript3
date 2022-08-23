@@ -6,7 +6,7 @@ import { Box, Chip, IconButton, SxProps, Typography } from '@mui/material';
 import path from 'path';
 import { useEffect, useState } from 'react';
 
-import { DirectoryMap } from '../../main/types';
+import { DirectoryMap } from '../../../shared/types';
 import { useHover } from '../queryHooks';
 
 // these are Typescript interfaces..

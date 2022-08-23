@@ -16,7 +16,7 @@ import {
   setAllLastChildDirs,
   updateTotalSamples,
 } from '../db/directories';
-import { Directory } from '../types';
+import { Directory } from '../../shared/types';
 import { audioExts } from './constants';
 import { Progress } from './Progress';
 import Windows from './Windows';

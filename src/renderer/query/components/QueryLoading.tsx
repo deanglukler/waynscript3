@@ -1,5 +1,5 @@
 import { Backdrop, CircularProgress } from '@mui/material';
-import { useQueryLoading } from './queryHooks';
+import { useQueryLoading } from '../queryHooks';
 
 export function QueryLoading(): JSX.Element {
   const loading = useQueryLoading();

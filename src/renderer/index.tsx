@@ -4,9 +4,8 @@ import BugsnagPluginReact from '@bugsnag/plugin-react';
 import React from 'react';
 
 import { createRoot } from 'react-dom/client';
-
-import ListApp from './ListApp';
-import QueryApp from './QueryApp';
+import ListApp from './list/ListApp';
+import QueryApp from './query/QueryApp';
 
 import './App.scss';
 import { AppError } from './AppError';
@@ -37,10 +36,3 @@ if (queryContainer != null) {
     </ErrorBoundary>
   );
 }
-
-// calling IPC exposed from preload script
-window.electron.ipcRenderer.once('ipc-example', (arg) => {
-  // eslint-disable-next-line no-console
-  console.log(arg);
-});
-window.electron.ipcRenderer.sendMessage('ipc-example', ['ping from query']);

@@ -5,7 +5,7 @@ import { getListWindow, getQueryWindow, updateWindow } from '../db/windows';
 
 import MenuBuilder from '../menu';
 import { Channels } from '../preload';
-import { AvailableWindows, WindowInfo } from '../types';
+import { AvailableWindows, WindowInfo } from '../../shared/types';
 import { resolveHtmlPath } from '../util';
 import getAssetPath from './getAssetPath';
 import installExtensions from './installExtensions';

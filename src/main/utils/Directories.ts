@@ -7,7 +7,7 @@ import {
   getTopLevelDirs,
   setViewDir,
 } from '../db/directories';
-import { DirectoryMap } from '../types';
+import { DirectoryMap } from '../../shared/types';
 import { logMainOn } from './log';
 import Windows from './Windows';
 

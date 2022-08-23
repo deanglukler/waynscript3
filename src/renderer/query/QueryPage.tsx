@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
-import DirectoryList from './queryComponents/DirectoryList';
-import { QueryParams } from './queryComponents/QueryParams';
+import DirectoryList from './components/DirectoryList';
+import { QueryParams } from './components/QueryParams';
 import { useStoreState } from './queryHooks';
 
 export function QueryPage(): JSX.Element {

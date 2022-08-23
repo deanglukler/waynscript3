@@ -11,43 +11,36 @@ import {
   Stack,
 } from '@mui/material';
 import path from 'path';
-import React, { useCallback, useEffect, useState } from 'react';
-import scrollIntoView from 'scroll-into-view-if-needed';
-import { Sample } from '../../main/types';
-import { useHowlManager, useListNavigator } from '../listHooks';
+import React from 'react';
+import { useDrag, useHowlManager, useIPC, useList } from '../listHooks';
+import { BackgroundAnimBox } from './BackgroundAnimBox';
 
 export function SampleList() {
-  const [files, setFiles] = useState<Sample[]>([]);
-
+  useIPC();
   const { handlePlaySample, playingFile, volume, handleSetVolume } =
     useHowlManager();
-  const [selected, setSelected] = useListNavigator(files, handlePlaySample);
+  const { focused, files, focusedNode, selectedPaths, handleSampleClick } =
+    useList(handlePlaySample);
 
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on('RECEIVE_SAMPLES', (arg) => {
-      setFiles(arg as Sample[]);
-    });
+  const { handleDragFilepaths } = useDrag();
 
-    return cleanup;
-  }, []);
-
-  function handleDragSample(event: React.DragEvent, filepath: string) {
-    event.preventDefault();
-    window.electron.ipcRenderer.sendMessage('FILE_DRAG', [filepath]);
+  function renderFocussedBox(focussed: boolean) {
+    if (!focussed) return null;
+    return (
+      <Box
+        sx={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        }}
+      >
+        <BackgroundAnimBox />
+      </Box>
+    );
   }
 
-  const handleClickListItem = useCallback(setSelected, [setSelected]);
-
-  const selectedNode = useCallback((node: HTMLElement) => {
-    if (node !== null) {
-      node.focus();
-      scrollIntoView(node, {
-        scrollMode: 'if-needed',
-        block: 'nearest',
-        inline: 'nearest',
-      });
-    }
-  }, []);
   return (
     <Box>
       <List dense>
@@ -55,16 +48,20 @@ export function SampleList() {
           return (
             <ListItemButton
               key={file.path}
+              component="a"
               draggable
-              selected={index === selected}
-              onDragStart={(e) => {
-                handleDragSample(e, file.path);
+              selected={selectedPaths.includes(file.path)}
+              onDragStart={(e: React.DragEvent) => {
+                handleDragFilepaths(e, selectedPaths);
               }}
-              onClick={() => {
-                handleClickListItem(index);
+              onClick={(e: React.MouseEvent) => {
+                // somehow this also captures "enter" button press
+                handleSampleClick(e, file, index);
               }}
-              ref={index === selected ? selectedNode : null}
+              ref={index === focused ? focusedNode : null}
+              sx={{ position: 'relative' }}
             >
+              {renderFocussedBox(index === focused)}
               <ListItemIcon
                 onClick={() => {
                   handlePlaySample(file);

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import path from 'path';
 import { getAllSamples } from '../db/samples';
 import { insertWords } from '../db/words';
-import { Word } from '../types';
+import { Word } from '../../shared/types';
 import { Progress } from './Progress';
 import Windows from './Windows';
 

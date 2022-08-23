@@ -1,17 +1,18 @@
 import { ipcMain } from 'electron';
 import { getSamplesByQuery } from '../db/samples';
-import { Sample } from '../types';
+import { Sample } from '../../shared/types';
 import getAssetPath from './getAssetPath';
 import { logMainOn } from './log';
 import Windows from './Windows';
 
 export default class Samples {
   static initIPC(windows: Windows, refreshSampleList: () => void) {
-    ipcMain.on('FILE_DRAG', (event, arg) => {
-      logMainOn(arg, 'FILE_DRAG');
-      const file = arg[0] as string;
+    ipcMain.on('DRAG_FILEPATHS', (event, arg) => {
+      logMainOn(arg, 'DRAG_FILEPATHS');
+      const files = arg[0] as string[];
+      // the following seems to work well despite typescript..
       event.sender.startDrag({
-        file,
+        files,
         icon: getAssetPath('music-icon-sm.png'),
       });
     });

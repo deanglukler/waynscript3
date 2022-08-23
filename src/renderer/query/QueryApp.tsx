@@ -1,11 +1,11 @@
 import { Box, CssBaseline, ThemeProvider } from '@mui/material';
 import { StoreProvider } from 'easy-peasy';
-import { store } from './queryStore';
-import { theme } from './theme';
-import '../../assets/mukta-font/mukta-fontface.css';
-import { AppInitDialog } from './AppInitDialog';
+import { store } from './store';
+import { theme } from '../theme';
+import '../../../assets/mukta-font/mukta-fontface.css';
+import { AppInitDialog } from './components/AppInitDialog';
 import { QueryPage } from './QueryPage';
-import { QueryLoading } from './QueryLoading';
+import { QueryLoading } from './components/QueryLoading';
 
 export default function QueryApp() {
   return (

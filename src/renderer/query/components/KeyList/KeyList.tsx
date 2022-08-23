@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import _ from 'lodash';
+import { visibleKeyText } from '../../../shared/visibleKeyText';
 import { useKeyStats, useQueryListControls } from '../../queryHooks';
-import { visibleKeyText } from '../../utils/visibleKeyText';
 import { GenericListItem } from '../shared/GenericListItem';
 import { NoneListText } from '../shared/NoneListText';
 import { StickyListHeader } from '../StickyListHeader';

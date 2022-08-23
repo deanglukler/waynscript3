@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { centerContent } from '../../utils/centerContent';
+import { centerContent } from '../../../shared/centerContent';
 
 export function NoneListText() {
   return (

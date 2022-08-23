@@ -1,5 +1,5 @@
 import SqlString from 'sqlstring-sqlite';
-import { Word } from '../types';
+import { Word } from '../../shared/types';
 import { createWordsSQL, dropWordsSQL } from './reset';
 import { runQuery } from './utils';
 

@@ -1,5 +1,5 @@
 import SqlString from 'sqlstring-sqlite';
-import { WindowInfo } from '../types';
+import { WindowInfo } from '../../shared/types';
 import db from './db';
 import { logQuery, runQuery } from './utils';
 

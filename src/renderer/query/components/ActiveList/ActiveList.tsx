@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
+import { visibleKeyText } from '../../../shared/visibleKeyText';
 import { useQueryListControls } from '../../queryHooks';
-import { visibleKeyText } from '../../utils/visibleKeyText';
 import { ActiveListItem } from './ActiveListItem';
 
 export function ActiveQueryList(): JSX.Element {

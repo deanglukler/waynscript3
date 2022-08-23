@@ -76,6 +76,8 @@ export interface SampleWord {
   path: string;
 }
 
+export type FilePath = string;
+
 type Bpms = number[];
 type Keys = string[];
 type Words = string[];
@@ -101,6 +103,11 @@ export interface QueryStoreModel {
   toggleWord: Action<QueryStoreModel, string>;
   tags: Tags;
   toggleTag: Action<QueryStoreModel, string>;
+}
+
+export interface ListStoreModel {
+  files: Sample[];
+  setFiles: Action<ListStoreModel, Sample[]>;
 }
 
 export interface Query {
