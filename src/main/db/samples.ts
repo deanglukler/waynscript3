@@ -47,7 +47,7 @@ export const getSamplesByQuery = () => {
     return [];
   }
 
-  const sql = `${sqlGen.selectFromSamples([
+  const sql = `${sqlGen.selectDistinctFromSamples([
     'samples.path as path',
     'samples.bpm as bpm',
     'samples.key as key',
@@ -60,7 +60,8 @@ export const getSamplesByQuery = () => {
     'words',
     'tags',
     'sample-paths-like',
-  ])}`;
+  ])}
+  ${sqlGen.limit(50)}`;
 
   return allQuery<Sample>(sql);
 };

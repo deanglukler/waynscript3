@@ -10,14 +10,12 @@ export function KeyList(): JSX.Element {
   const stats = useKeyStats();
   const { selectedKeys, handleToggleKey } = useQueryListControls();
 
-  if (!stats || _.keys(stats).length === 0) {
-    return <NoneListText />;
-  }
-
-  return (
-    <Box>
-      <StickyListHeader header="Keys" />
-      <Stack direction="row">
+  function renderList() {
+    if (!stats || _.keys(stats).length === 0) {
+      return <NoneListText />;
+    }
+    return (
+      <Stack flexWrap="wrap" direction="row">
         {_.keys(stats).map((key) => {
           const stat = stats[key];
 
@@ -32,6 +30,13 @@ export function KeyList(): JSX.Element {
           );
         })}
       </Stack>
+    );
+  }
+
+  return (
+    <Box>
+      <StickyListHeader header="Keys" />
+      {renderList()}
     </Box>
   );
 }

@@ -30,6 +30,10 @@ export class SqlGen {
     return `SELECT ${selections.join(', ')} FROM samples`;
   }
 
+  public selectDistinctFromSamples(selections: string[]) {
+    return `SELECT DISTINCT ${selections.join(', ')} FROM samples`;
+  }
+
   public selectFromTags(selections: string[]) {
     return `SELECT ${selections.join(', ')} FROM tags`;
   }
@@ -44,8 +48,7 @@ export class SqlGen {
   }
 
   public joinSamplesToTagsIfAnyBpmsOrKeys(): string {
-    if (this.query.bpms.length === 0) return '';
-    if (this.query.keys.length === 0) return '';
+    if (this.query.bpms.length === 0 && this.query.keys.length === 0) return '';
     return `JOIN samples ON tags.path = samples.path`;
   }
 
@@ -122,5 +125,9 @@ export class SqlGen {
     const conditions = this.andConditions(inclusions);
     if (conditions === '') return '';
     return `WHERE ${conditions}`;
+  }
+
+  public limit(num: number): string {
+    return `LIMIT ${num}`;
   }
 }

@@ -30,7 +30,7 @@ export function BPMList(): JSX.Element {
       <Stack sx={{ bgcolor: 'transparent' }}>
         {dividedLists.map((bpms) => {
           return (
-            <Stack direction="row">
+            <Stack direction="row" flexWrap="wrap">
               {bpms.map((bpm) => {
                 const stat = stats[bpm];
 

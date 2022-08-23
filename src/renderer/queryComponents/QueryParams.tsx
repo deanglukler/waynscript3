@@ -4,10 +4,10 @@ import {
   useQueryParamsUpdate,
   useTagStats,
 } from '../queryHooks';
-import { ActiveQueryList } from './ActiveQueryList';
+import { ActiveQueryList } from './ActiveList/ActiveList';
 import { BPMList } from './BpmList/BPMList';
 import { KeyList } from './KeyList/KeyList';
-import { TagList } from './TagList';
+import { TagList } from './TagList/TagList';
 import { WordList } from './WordList';
 
 export function QueryParams(): JSX.Element {
