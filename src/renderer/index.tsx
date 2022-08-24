@@ -5,7 +5,6 @@ import React from 'react';
 
 import { createRoot } from 'react-dom/client';
 import ListApp from './list/ListApp';
-import QueryApp from './query/QueryApp';
 
 import './App.scss';
 import { AppError } from './AppError';
@@ -17,22 +16,9 @@ Bugsnag.start({
 
 const ErrorBoundary = Bugsnag.getPlugin('react').createErrorBoundary(React);
 
-const listContainer = document.getElementById('list-root');
-if (listContainer != null) {
-  const root = createRoot(listContainer);
-  root.render(
-    <ErrorBoundary FallbackComponent={AppError}>
-      <ListApp />
-    </ErrorBoundary>
-  );
-}
-
-const queryContainer = document.getElementById('query-root');
-if (queryContainer != null) {
-  const root = createRoot(queryContainer);
-  root.render(
-    <ErrorBoundary FallbackComponent={AppError}>
-      <QueryApp />
-    </ErrorBoundary>
-  );
-}
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <ErrorBoundary FallbackComponent={AppError}>
+    <ListApp />
+  </ErrorBoundary>
+);

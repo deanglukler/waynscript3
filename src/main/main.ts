@@ -10,17 +10,10 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app } from 'electron';
-import App from './App';
-import { createDirsTables, dropDirsTables } from './db/directories';
-import { createSamplesTable, dropSamplesTable } from './db/samples';
-import { createTagsTable, dropTagsTable } from './db/tags';
-import { createWordsTable, dropWordsTable } from './db/words';
-import { DirectoryScan } from './utils/DirectoryScan';
-import FileScan from './utils/FileScan';
-import Windows from './utils/Windows';
-import { WordsAnalysis } from './utils/WordsAnalysis';
 import './utils/electronIpcLog';
 import './utils/errorTracking';
+import { MainWindow } from './windows/MainWindow';
+import { IS_DEBUG } from './shared/constants';
 
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -29,16 +22,11 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
-
-if (isDebug) {
+if (IS_DEBUG) {
   require('electron-debug')();
 }
 
-const windows = new Windows(isDebug);
-
-new App(windows);
+// new App(windows);
 
 /**
  * Add event listeners...
@@ -55,35 +43,32 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
-    await windows.createListWindow();
-    await windows.createQueryWindow();
+    const mainWindow = await MainWindow.createWindow();
 
     if (
       process.env.RESCAN_FILES === 'true' ||
       process.env.NODE_ENV === 'production'
     ) {
-      dropWordsTable();
-      dropTagsTable();
-      dropSamplesTable();
-      dropDirsTables();
-      createDirsTables();
-      createSamplesTable();
-      createWordsTable();
-      createTagsTable();
-      await new DirectoryScan(windows).scan();
-      await new FileScan(windows).analyzeFiles();
-      await new WordsAnalysis(windows).analyzeWordsAsync();
+      // dropWordsTable();
+      // dropTagsTable();
+      // dropSamplesTable();
+      // dropDirsTables();
+      // createDirsTables();
+      // createSamplesTable();
+      // createWordsTable();
+      // createTagsTable();
+      // await new DirectoryScan(windows).scan();
+      // await new FileScan(windows).analyzeFiles();
+      // await new WordsAnalysis(windows).analyzeWordsAsync();
     }
-    windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
+
+    // windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
 
     app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (windows.windows.queryWindow === null) {
-        windows.createQueryWindow();
-      }
-      if (windows.windows.listWindow === null) {
-        windows.createListWindow();
+      if (mainWindow === null) {
+        await MainWindow.createWindow();
       }
     });
   })

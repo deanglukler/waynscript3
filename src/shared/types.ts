@@ -64,7 +64,7 @@ export interface Tag {
 
 export interface WindowInfo {
   id?: number;
-  name?: string;
+  name?: 'main';
   width: number;
   height: number;
   x: number | undefined;

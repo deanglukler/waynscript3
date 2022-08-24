@@ -19,6 +19,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'promise/catch-or-return': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
+    'consistent-return': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
