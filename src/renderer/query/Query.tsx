@@ -1,5 +1,7 @@
 import { Box } from '@mui/material';
+import { AppInitDialog } from './components/AppInitDialog';
 import DirectoryList from './components/DirectoryList';
+import { QueryLoading } from './components/QueryLoading';
 import { QueryParams } from './components/QueryParams';
 import { useStoreState } from './queryHooks';
 
@@ -10,6 +12,9 @@ export function QueryPage(): JSX.Element {
 
   return (
     <>
+      <AppInitDialog />
+      <QueryLoading />
+      <QueryPage />
       <Box
         sx={{
           width: 300,

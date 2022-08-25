@@ -1,6 +1,6 @@
 import SqlString from 'sqlstring-sqlite';
 
-import { Directory } from '../../shared/types';
+import { Directory } from '../../types';
 import {
   createDirChildsSQL,
   createDirsSQL,

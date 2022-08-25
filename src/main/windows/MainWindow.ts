@@ -2,7 +2,7 @@ import { app, BrowserWindow, shell } from 'electron';
 import _ from 'lodash';
 import path from 'path';
 
-import { getMainWindow, , updateWindow } from '../db/windows';
+import { getMainWindow, updateWindow } from '../db/windows';
 import { IS_DEBUG } from '../shared/constants';
 import { resolveHtmlPath } from '../util';
 import getAssetPath from '../utils/getAssetPath';

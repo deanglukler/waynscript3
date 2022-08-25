@@ -4,7 +4,7 @@ import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 import React, { useCallback, useEffect, useState } from 'react';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import { FilePath, ListStoreModel, Sample } from '../../shared/types';
+import { FilePath, ListStoreModel, Sample } from '../../types';
 
 const typedHooks = createTypedHooks<ListStoreModel>();
 

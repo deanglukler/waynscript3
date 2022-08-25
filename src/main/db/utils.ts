@@ -1,5 +1,5 @@
 import SqlString from 'sqlstring-sqlite';
-import { Directory } from '../../shared/types';
+import { Directory } from '../../types';
 import db from './db';
 
 let timeLogID = 0;

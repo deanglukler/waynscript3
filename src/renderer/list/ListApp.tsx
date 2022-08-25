@@ -1,7 +1,7 @@
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { StoreProvider } from 'easy-peasy';
 
-import { theme } from '../theme';
+import { theme } from '../providers/theme';
 import { SampleList } from './components/SampleList';
 import { store } from './store';
 

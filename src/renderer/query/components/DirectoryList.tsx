@@ -3,7 +3,7 @@ import _ from 'lodash';
 import path from 'path';
 import React, { useCallback, useState } from 'react';
 
-import { DirectoryMap } from '../../../shared/types';
+import { DirectoryMap } from '../../../types';
 
 // the cycle should be only for types which should be moved to types files
 import { Directory } from './Directory';

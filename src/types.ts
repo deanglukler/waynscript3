@@ -110,6 +110,8 @@ export interface ListStoreModel {
   setFiles: Action<ListStoreModel, Sample[]>;
 }
 
+export interface MainWindowStoreModel extends QueryStoreModel, ListStoreModel {}
+
 export interface Query {
   bpms: Bpms;
   keys: Keys;

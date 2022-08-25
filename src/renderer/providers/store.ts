@@ -1,8 +1,8 @@
 import { action, createStore } from 'easy-peasy';
 import _ from 'lodash';
-import { QueryStoreModel } from '../../shared/types';
+import { MainWindowStoreModel } from '../../types';
 
-export const store = createStore<QueryStoreModel>({
+export const store = createStore<MainWindowStoreModel>({
   appInit: { finished: false },
   appInitFinished: action((state) => {
     state.appInit.finished = true;
@@ -41,5 +41,9 @@ export const store = createStore<QueryStoreModel>({
   tags: [],
   toggleTag: action((state, payload) => {
     state.tags = _.xor(state.tags, [payload]);
+  }),
+  files: [],
+  setFiles: action((state, files) => {
+    state.files = files;
   }),
 });

@@ -7,12 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  DirectoryMap,
-  Query,
-  QueryStoreModel,
-  Stats,
-} from '../../shared/types';
+import { DirectoryMap, Query, QueryStoreModel, Stats } from '../../types';
 import { Progress } from '../../main/utils/Progress';
 
 const typedHooks = createTypedHooks<QueryStoreModel>();

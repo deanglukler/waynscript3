@@ -1,5 +1,5 @@
 import SqlString from 'sqlstring-sqlite';
-import { Query, QueryRow } from '../../shared/types';
+import { Query, QueryRow } from '../../types';
 import { getQuery, runQuery } from './utils';
 
 export const addQuery = (query: Query) => {
