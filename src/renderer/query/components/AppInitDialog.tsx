@@ -6,7 +6,8 @@ import {
   LinearProgress,
   Typography,
 } from '@mui/material';
-import { useAppInit, useScanningProgress, useStoreState } from '../queryHooks';
+import { useStoreState } from '../../providers/store';
+import { useAppInit, useScanningProgress } from '../queryHooks';
 
 export function AppInitDialog(): JSX.Element {
   const appInit = useStoreState((store) => store.appInit);

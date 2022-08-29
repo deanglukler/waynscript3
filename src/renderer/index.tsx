@@ -4,8 +4,8 @@ import BugsnagPluginReact from '@bugsnag/plugin-react';
 import React from 'react';
 
 import { createRoot } from 'react-dom/client';
-import ListApp from './list/ListApp';
 
+import '../../assets/mukta-font/mukta-fontface.css';
 import './App.scss';
 import { AppError } from './AppError';
 import { MainWindow } from './MainWindow';

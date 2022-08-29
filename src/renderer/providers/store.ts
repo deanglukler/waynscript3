@@ -1,4 +1,4 @@
-import { action, createStore } from 'easy-peasy';
+import { action, createStore, createTypedHooks } from 'easy-peasy';
 import _ from 'lodash';
 import { MainWindowStoreModel } from '../../types';
 
@@ -46,4 +46,21 @@ export const store = createStore<MainWindowStoreModel>({
   setFiles: action((state, files) => {
     state.files = files;
   }),
+  layout: {
+    sampleList: {
+      width: '100px',
+    },
+    directoryList: {
+      width: '100px',
+    },
+    query: {
+      width: '100px',
+    },
+  },
+  updateLayout: action((state, layoutOptions) => {
+    state.layout = { ...state.layout, ...layoutOptions };
+  }),
 });
+
+const typedHooks = createTypedHooks<MainWindowStoreModel>();
+export const { useStoreState, useStoreActions } = typedHooks;

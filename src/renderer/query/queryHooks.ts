@@ -1,4 +1,3 @@
-import { createTypedHooks } from 'easy-peasy';
 import _ from 'lodash';
 import React, {
   MutableRefObject,
@@ -7,12 +6,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { DirectoryMap, Query, QueryStoreModel, Stats } from '../../types';
+import { DirectoryMap, Query, Stats } from '../../types';
 import { Progress } from '../../main/utils/Progress';
-
-const typedHooks = createTypedHooks<QueryStoreModel>();
-
-export const { useStoreState, useStoreActions } = typedHooks;
+import { useStoreActions, useStoreState } from '../providers/store';
 
 export const useQueryParamsInit = () => {
   const updateQueryParams = useStoreActions(

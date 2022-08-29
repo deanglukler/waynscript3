@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material';
-import { visibleKeyText } from '../../../shared/visibleKeyText';
+import { visibleKeyText } from '../../../shared/logic/visibleKeyText';
 import { useQueryListControls } from '../../queryHooks';
 import { ActiveListItem } from './ActiveListItem';
 

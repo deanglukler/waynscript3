@@ -6,8 +6,8 @@ import { Box, Chip, IconButton, SxProps, Typography } from '@mui/material';
 import path from 'path';
 import { useEffect, useState } from 'react';
 
-import { DirectoryMap } from '../../../types';
-import { useHover } from '../queryHooks';
+import { DirectoryMap } from '../../types';
+import { useHover } from '../query/queryHooks';
 
 // these are Typescript interfaces..
 // eslint-disable-next-line import/no-cycle

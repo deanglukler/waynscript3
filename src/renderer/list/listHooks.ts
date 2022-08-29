@@ -1,14 +1,10 @@
-import { createTypedHooks } from 'easy-peasy';
 import { Howl } from 'howler';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 import React, { useCallback, useEffect, useState } from 'react';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import { FilePath, ListStoreModel, Sample } from '../../types';
-
-const typedHooks = createTypedHooks<ListStoreModel>();
-
-export const { useStoreState, useStoreActions } = typedHooks;
+import { FilePath, Sample } from '../../types';
+import { useStoreActions, useStoreState } from '../providers/store';
 
 export const useHowlManager = () => {
   const [howl, setHowl] = useState<Howl | null>(null);

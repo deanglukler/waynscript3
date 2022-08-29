@@ -1,6 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import _ from 'lodash';
-import { visibleKeyText } from '../../../shared/visibleKeyText';
+import { visibleKeyText } from '../../../shared/logic/visibleKeyText';
 import { useKeyStats, useQueryListControls } from '../../queryHooks';
 import { GenericListItem } from '../shared/GenericListItem';
 import { NoneListText } from '../shared/NoneListText';

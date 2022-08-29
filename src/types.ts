@@ -110,7 +110,25 @@ export interface ListStoreModel {
   setFiles: Action<ListStoreModel, Sample[]>;
 }
 
-export interface MainWindowStoreModel extends QueryStoreModel, ListStoreModel {}
+interface GenericLayout {
+  width: string;
+}
+
+export interface MainWindowStoreModel extends QueryStoreModel, ListStoreModel {
+  layout: {
+    sampleList: GenericLayout;
+    directoryList: GenericLayout;
+    query: GenericLayout;
+  };
+  updateLayout: Action<
+    MainWindowStoreModel,
+    {
+      sampleList?: GenericLayout;
+      directoryList?: GenericLayout;
+      query?: GenericLayout;
+    }
+  >;
+}
 
 export interface Query {
   bpms: Bpms;

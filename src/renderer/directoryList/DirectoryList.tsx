@@ -3,13 +3,11 @@ import _ from 'lodash';
 import path from 'path';
 import React, { useCallback, useState } from 'react';
 
-import { DirectoryMap } from '../../../types';
+import { DirectoryMap } from '../../types';
 
 // the cycle should be only for types which should be moved to types files
 import { Directory } from './Directory';
-import { useDirectorySync } from '../queryHooks';
-
-import '../../../../assets/mukta-font/mukta-fontface.css';
+import { useDirectorySync } from '../query/queryHooks';
 
 export type DirectoryChildOptions = {
   ancestorActive: 0 | 1;
@@ -23,6 +21,8 @@ export type ChildRenderer = (
 ) => JSX.Element[];
 
 export default function DirectoryList() {
+  return <Box>This is the directory list</Box>;
+
   const {
     dirMaps,
     activateViewDir,
