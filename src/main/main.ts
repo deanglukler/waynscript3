@@ -15,6 +15,7 @@ import './utils/errorTracking';
 import { MainWindow } from './windows/MainWindow';
 import { IS_DEBUG } from './shared/constants';
 import { Splash } from './splash/Splash';
+import { AppStarter } from './appStarter/AppStarter';
 
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -45,33 +46,19 @@ app
   .whenReady()
   .then(async () => {
     const splash = new Splash();
-    // const mainWindow = await MainWindow.createWindow();
+    const mainWindow = await MainWindow.createWindow();
+    splash.window = null;
+    mainWindow.show();
 
-    // if (
-    //   process.env.RESCAN_FILES === 'true' ||
-    //   process.env.NODE_ENV === 'production'
-    // ) {
-    //   // dropWordsTable();
-    //   // dropTagsTable();
-    //   // dropSamplesTable();
-    //   // dropDirsTables();
-    //   // createDirsTables();
-    //   // createSamplesTable();
-    //   // createWordsTable();
-    //   // createTagsTable();
-    //   // await new DirectoryScan(windows).scan();
-    //   // await new FileScan(windows).analyzeFiles();
-    //   // await new WordsAnalysis(windows).analyzeWordsAsync();
-    // }
+    const appStarter = new AppStarter(mainWindow);
+    await appStarter.start();
 
-    // // windows.sendWindowMessage('queryWindow', 'APP_INIT_FINISHED', null);
-
-    // app.on('activate', async () => {
-    //   // On macOS it's common to re-create a window in the app when the
-    //   // dock icon is clicked and there are no other windows open.
-    //   if (mainWindow === null) {
-    //     await MainWindow.createWindow();
-    //   }
-    // });
+    app.on('activate', async () => {
+      // On macOS it's common to re-create a window in the app when the
+      // dock icon is clicked and there are no other windows open.
+      if (mainWindow === null) {
+        await MainWindow.createWindow();
+      }
+    });
   })
   .catch(console.log);

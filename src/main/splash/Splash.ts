@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 import path from 'path';
 
 export class Splash {
-  public window: BrowserWindow;
+  public window: BrowserWindow | null;
 
   constructor() {
     this.window = new BrowserWindow({

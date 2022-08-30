@@ -19,7 +19,6 @@ import {
 import { Directory } from '../../types';
 import { audioExts } from './constants';
 import { Progress } from './Progress';
-import Windows from './Windows';
 
 const { username } = os.userInfo();
 
@@ -45,7 +44,9 @@ export class DirectoryScan {
 
   public progress: Progress = new Progress();
 
-  constructor(public windows: Windows) {
+  constructor(
+    private options: { onProgressUpdate: (progress: Progress) => void }
+  ) {
     this.rootDir = getRootDirectory(this.rootDirPath);
     if (!this.rootDir) {
       this.rootDir = makeRootDirectory(this.rootDirPath);
@@ -158,13 +159,7 @@ export class DirectoryScan {
   }
 
   private updateRendererProgress(): void {
-    if (!this.windows) return;
-
-    this.windows.sendWindowMessage(
-      'queryWindow',
-      'UPDATE_DIRSCAN_PROGRESS',
-      this.progress
-    );
+    this.options.onProgressUpdate(this.progress);
   }
 }
 function scanFileForAudio(

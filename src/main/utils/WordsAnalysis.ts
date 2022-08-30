@@ -4,7 +4,6 @@ import { getAllSamples } from '../db/samples';
 import { insertWords } from '../db/words';
 import { Word } from '../../types';
 import { Progress } from './Progress';
-import Windows from './Windows';
 
 interface WordLinks {
   [key: string]: { paths: string[]; amount: number };
@@ -22,7 +21,9 @@ export class WordsAnalysis {
 
   public progress: Progress = new Progress();
 
-  constructor(public windows: Windows) {
+  constructor(
+    private options: { onProgressUpdate: (progress: Progress) => void }
+  ) {
     this.samples = getAllSamples().map((sample) => sample.path);
   }
 
@@ -142,12 +143,6 @@ export class WordsAnalysis {
   }
 
   private updateRendererProgress(): void {
-    if (!this.windows) return;
-
-    this.windows.sendWindowMessage(
-      'queryWindow',
-      'UPDATE_WORDANAL_PROGRESS',
-      this.progress
-    );
+    this.options.onProgressUpdate(this.progress);
   }
 }

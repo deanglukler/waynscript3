@@ -7,7 +7,6 @@ import { insertSamples } from '../db/samples';
 import { Directory, Sample } from '../../types';
 import { BpmAnalysis } from './BpmAnalysis';
 import { KeyAnalysis } from './KeyAnalysis';
-import Windows from './Windows';
 import { audioExts } from './constants';
 import { Progress } from './Progress';
 import { TagAnalysis } from './TagAnalysis';
@@ -84,7 +83,9 @@ export default class FileScan {
 
   public progress: Progress = new Progress();
 
-  constructor(public windows: Windows) {}
+  constructor(
+    private options: { onProgressUpdate: (progress: Progress) => void }
+  ) {}
 
   private analyzeFile(filePath: string): Sample {
     const { name, dir } = path.parse(filePath);
@@ -162,12 +163,6 @@ export default class FileScan {
   }
 
   private updateRendererProgress(): void {
-    if (!this.windows) return;
-
-    this.windows.sendWindowMessage(
-      'queryWindow',
-      'UPDATE_FILESCAN_PROGRESS',
-      this.progress
-    );
+    this.options.onProgressUpdate(this.progress);
   }
 }
