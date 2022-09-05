@@ -5,8 +5,8 @@ export type Channels =
   | 'UPDATE_FILESCAN_PROGRESS'
   | 'UPDATE_WORDANAL_PROGRESS'
   | 'UPDATE_DIRSCAN_PROGRESS'
-  | 'APP_INIT_STARTING'
-  | 'APP_INIT_FINISHED'
+  | 'START_SCAN'
+  | 'FINISH_SCAN'
   | 'RESET_DB'
   | 'SYNC_QUERY'
   | 'INIT_QUERY_PARAMS'
@@ -30,6 +30,8 @@ export type Channels =
   | 'DEACTIVATE_VIEW_DIR'
   | 'RECEIVE_DIR_SYNC';
 
+export type InvokeChannels = 'MAIN_WINDOW_START';
+
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
     sendMessage(channel: Channels, args: unknown[]) {
@@ -48,6 +50,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
+    },
+    mainWindowStart() {
+      return ipcRenderer.invoke('MAIN_WINDOW_START');
     },
   },
 });

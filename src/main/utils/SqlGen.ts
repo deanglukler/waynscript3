@@ -1,28 +1,27 @@
 /* eslint-disable class-methods-use-this */
 import SqlString from 'sqlstring-sqlite';
-import { getActiveDirectories } from '../db/directories';
+import { Query } from '../../types';
 import { getLastQuery } from '../db/queries';
-import { Directory, Query } from '../types';
 
 type FilterInclusions = (
   | 'bpms'
   | 'keys'
   | 'words'
   | 'tags'
-  | 'sample-paths-like'
-  | 'tags-paths-like'
+  | 'sample-paths-like-active-dirs'
+  | 'tags-paths-like-active-dirs'
   | 'bpm-not-null'
   | 'key-not-null'
 )[];
 
 export class SqlGen {
-  public activeDirectories: Directory[];
+  public activeDirectories: string[];
 
   public query: Query;
 
   constructor() {
-    this.activeDirectories = getActiveDirectories();
     this.query = getLastQuery();
+    this.activeDirectories = this.query.directories;
     console.log(this.query);
   }
 
@@ -71,18 +70,18 @@ export class SqlGen {
       conditions.push('samples.key IS NOT NULL');
     }
 
-    if (inclusions.includes('sample-paths-like')) {
+    if (inclusions.includes('sample-paths-like-active-dirs')) {
       conditions.push(
         this.activeDirectories
-          .map((dir) => `samples.path LIKE ${SqlString.escape(`${dir.path}%`)}`)
+          .map((dir) => `samples.path LIKE ${SqlString.escape(`${dir}%`)}`)
           .join(' OR ')
       );
     }
 
-    if (inclusions.includes('tags-paths-like')) {
+    if (inclusions.includes('tags-paths-like-active-dirs')) {
       conditions.push(
         this.activeDirectories
-          .map((dir) => `tags.path LIKE ${SqlString.escape(`${dir.path}%`)}`)
+          .map((dir) => `tags.path LIKE ${SqlString.escape(`${dir}%`)}`)
           .join(' OR ')
       );
     }

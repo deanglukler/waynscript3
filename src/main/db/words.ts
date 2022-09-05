@@ -1,7 +1,15 @@
 import SqlString from 'sqlstring-sqlite';
 import { Word } from '../../types';
-import { createWordsSQL, dropWordsSQL } from './reset';
 import { runQuery } from './utils';
+
+export const dropWordsSQL = `DROP TABLE IF EXISTS words;`;
+
+export const createWordsSQL = `CREATE TABLE "words" (
+  "id"	INTEGER NOT NULL UNIQUE,
+  "word"	TEXT NOT NULL,
+  "path"	TEXT NOT NULL REFERENCES samples("path"),
+  PRIMARY KEY("id" AUTOINCREMENT)
+);`;
 
 export const insertWords = (words: Word[]) => {
   const wordsSQL = words.map((wordPath) => [wordPath.word, wordPath.path]);

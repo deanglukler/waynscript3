@@ -1,66 +1,66 @@
 import { action, createStore, createTypedHooks } from 'easy-peasy';
 import _ from 'lodash';
-import { MainWindowStoreModel } from '../../types';
+import { MainWindowStoreData, MainWindowStoreModel } from '../../types';
 
-export const store = createStore<MainWindowStoreModel>({
-  appInit: { finished: false },
-  appInitFinished: action((state) => {
-    state.appInit.finished = true;
-  }),
-  appInitStarting: action((state) => {
-    state.appInit.finished = false;
-  }),
-  query: {
-    initializingQuery: true,
-    loadingQuery: false,
-  },
-  initializedQuery: action((state) => {
-    state.query.initializingQuery = false;
-  }),
-  loadingQueryStart: action((state) => {
-    state.query.loadingQuery = true;
-  }),
-  loadingQueryFinish: action((state) => {
-    state.query.loadingQuery = false;
-  }),
-  updateQueryParams: action((state, payload) => {
-    return { ...state, ...payload }; // <-- nice one bruv
-  }),
-  bpms: [],
-  toggleBpm: action((state, payload) => {
-    state.bpms = _.xor(state.bpms, [payload]);
-  }),
-  keys: [],
-  toggleKey: action((state, payload) => {
-    state.keys = _.xor(state.keys, [payload]);
-  }),
-  words: [],
-  toggleWord: action((state, payload) => {
-    state.words = _.xor(state.words, [payload]);
-  }),
-  tags: [],
-  toggleTag: action((state, payload) => {
-    state.tags = _.xor(state.tags, [payload]);
-  }),
-  files: [],
-  setFiles: action((state, files) => {
-    state.files = files;
-  }),
-  layout: {
-    sampleList: {
-      width: '100px',
-    },
-    directoryList: {
-      width: '100px',
-    },
-    query: {
-      width: '100px',
-    },
-  },
-  updateLayout: action((state, layoutOptions) => {
-    state.layout = { ...state.layout, ...layoutOptions };
-  }),
-});
+export const createMainWindowStore = (initializedData: MainWindowStoreData) => {
+  return createStore<MainWindowStoreModel>({
+    setFileScanProgress: action((state, payload) => {
+      state.scans.fileScanProgress = payload;
+    }),
+    setDirScanProgress: action((state, payload) => {
+      state.scans.dirScanProgress = payload;
+    }),
+    setWordsScanProgress: action((state, payload) => {
+      state.scans.wordsScanProgress = payload;
+    }),
+    setScanStart: action((state) => {
+      state.scans.isScanning = true;
+    }),
+    setScanEnd: action((state) => {
+      state.scans.isScanning = false;
+    }),
+    updateQueryParams: action((state, payload) => {
+      return { ...state, ...payload }; // <-- nice one bruv
+    }),
+    toggleBpm: action((state, payload) => {
+      state.bpms = _.xor(state.bpms, [payload]);
+    }),
+    toggleKey: action((state, payload) => {
+      state.keys = _.xor(state.keys, [payload]);
+    }),
+    toggleWord: action((state, payload) => {
+      state.words = _.xor(state.words, [payload]);
+    }),
+    toggleTag: action((state, payload) => {
+      state.tags = _.xor(state.tags, [payload]);
+    }),
+    toggleDirectory: action((state, payload) => {
+      state.directories = _.xor(state.directories, [payload]);
+    }),
+    updateDirMaps: action((state, payload) => {
+      state.dirMaps = payload;
+    }),
+    updateBpmStats: action((state, payload) => {
+      state.bpmStats = payload;
+    }),
+    updateKeyStats: action((state, payload) => {
+      state.keyStats = payload;
+    }),
+    updateWordStats: action((state, payload) => {
+      state.wordStats = payload;
+    }),
+    updateTagStats: action((state, payload) => {
+      state.tagStats = payload;
+    }),
+    setFiles: action((state, files) => {
+      state.files = files;
+    }),
+    updateLayout: action((state, layoutOptions) => {
+      state.layout = { ...state.layout, ...layoutOptions };
+    }),
+    ...initializedData,
+  });
+};
 
 const typedHooks = createTypedHooks<MainWindowStoreModel>();
 export const { useStoreState, useStoreActions } = typedHooks;

@@ -1,7 +1,15 @@
 import SqlString from 'sqlstring-sqlite';
-import { Tag } from '../types';
-import { createTagsSQL, dropTagsSQL } from './reset';
+import { Tag } from '../../types';
 import { runQuery } from './utils';
+
+export const dropTagsSQL = `DROP TABLE IF EXISTS tags;`;
+
+export const createTagsSQL = `CREATE TABLE "tags" (
+  "id" INTEGER NOT NULL UNIQUE,
+  "tag" TEXT NOT NULL,
+  "path" TEXT NOT NULL REFERENCES samples("path"),
+  PRIMARY KEY("id" AUTOINCREMENT)
+);`;
 
 export const insertTags = (tags: Tag[]) => {
   if (tags.length === 0) return;

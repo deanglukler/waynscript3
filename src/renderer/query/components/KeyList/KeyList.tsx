@@ -1,13 +1,14 @@
 import { Box, Stack } from '@mui/material';
 import _ from 'lodash';
+import { useStoreState } from '../../../providers/store';
 import { visibleKeyText } from '../../../shared/logic/visibleKeyText';
-import { useKeyStats, useQueryListControls } from '../../queryHooks';
+import { useQueryListControls } from '../../hooks';
 import { GenericListItem } from '../shared/GenericListItem';
 import { NoneListText } from '../shared/NoneListText';
 import { StickyListHeader } from '../StickyListHeader';
 
 export function KeyList(): JSX.Element {
-  const stats = useKeyStats();
+  const stats = useStoreState((state) => state.keyStats);
   const { selectedKeys, handleToggleKey } = useQueryListControls();
 
   function renderList() {

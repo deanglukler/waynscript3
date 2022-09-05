@@ -1,10 +1,11 @@
 import { Box } from '@mui/material';
-import { useQueryListControls, useWordStats } from '../queryHooks';
+import { useStoreState } from '../../providers/store';
+import { useQueryListControls } from '../hooks';
 import { QueryCheckboxList } from './QueryCheckboxList';
 import { StickyListHeader } from './StickyListHeader';
 
 export function WordList() {
-  const wordStats = useWordStats();
+  const wordStats = useStoreState((state) => state.wordStats);
   const { selectedWords, handleToggleWord } = useQueryListControls();
 
   const renderList = () => {

@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import path from 'path';
 import React from 'react';
-import { useDrag, useHowlManager, useIPC, useList } from '../listHooks';
+import { useDrag, useHowlManager, useIPC, useList } from '../hooks';
 import { BackgroundAnimBox } from './BackgroundAnimBox';
 
 export function SampleList() {

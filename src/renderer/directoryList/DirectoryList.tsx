@@ -4,10 +4,11 @@ import path from 'path';
 import React, { useCallback, useState } from 'react';
 
 import { DirectoryMap } from '../../types';
+import { useStoreActions } from '../providers/store';
 
 // the cycle should be only for types which should be moved to types files
 import { Directory } from './Directory';
-import { useDirectorySync } from '../query/queryHooks';
+import { useDirectorySync, useIpc } from './hooks';
 
 export type DirectoryChildOptions = {
   ancestorActive: 0 | 1;
@@ -21,17 +22,11 @@ export type ChildRenderer = (
 ) => JSX.Element[];
 
 export default function DirectoryList() {
-  return <Box>This is the directory list</Box>;
+  useIpc();
+  const { dirMaps, activateViewDir, deactivateViewDir, totalTopLevelSamples } =
+    useDirectorySync();
 
-  const {
-    dirMaps,
-    activateViewDir,
-    deactivateViewDir,
-    totalTopLevelSamples,
-    averageTopLevelTotal,
-    activateDir,
-    deactivateDir,
-  } = useDirectorySync();
+  const toggleDirectory = useStoreActions((actions) => actions.toggleDirectory);
 
   const [infoBar, setInfoBar] = useState('Nothing yet');
 
@@ -50,17 +45,13 @@ export default function DirectoryList() {
   );
 
   const handleActivateClick = useCallback(
-    (id: number, active: 0 | 1) => {
+    (dirPath: string) => {
       return (e: React.MouseEvent) => {
-        if (active) {
-          deactivateDir(id);
-        } else {
-          activateDir(id);
-        }
+        toggleDirectory(dirPath);
         e.stopPropagation();
       };
     },
-    [activateDir, deactivateDir]
+    [toggleDirectory]
   );
 
   const renderChilds: ChildRenderer = useCallback(

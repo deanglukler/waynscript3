@@ -1,12 +1,13 @@
 import { Box, Stack } from '@mui/material';
 import _ from 'lodash';
-import { useQueryListControls, useTagStats } from '../../queryHooks';
+import { useStoreState } from '../../../providers/store';
+import { useQueryListControls } from '../../hooks';
 import { GenericListItem } from '../shared/GenericListItem';
 import { NoneListText } from '../shared/NoneListText';
 import { StickyListHeader } from '../StickyListHeader';
 
 export function TagList(): JSX.Element {
-  const stats = useTagStats();
+  const stats = useStoreState((state) => state.tagStats);
   const { selectedTags, handleToggleTag } = useQueryListControls();
 
   function list() {

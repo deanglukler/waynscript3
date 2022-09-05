@@ -1,6 +1,6 @@
 import { VolumeDown, VolumeUp } from '@mui/icons-material';
 import { Paper, Slider, Stack } from '@mui/material';
-import { useHowlManager } from '../list/listHooks';
+import { useHowlManager } from '../list/hooks';
 
 export function BottomBar() {
   const { volume, handleSetVolume } = useHowlManager();

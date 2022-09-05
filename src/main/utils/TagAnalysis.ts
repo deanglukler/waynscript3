@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import path from 'path';
+import { Tag, TagType } from '../../types';
 import { insertTags } from '../db/tags';
-import { TagType, Tag } from '../types';
 
 export class TagAnalysis {
   static analyze(paths: string[]) {

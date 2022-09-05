@@ -1,9 +1,10 @@
 import { Box } from '@mui/system';
-import DirectoryList from './directoryList/DirectoryList';
-import { SampleList } from './list/components/SampleList';
-import { useStoreActions, useStoreState } from './providers/store';
-import { Query } from './query/Query';
-import { ResizableBox } from './shared/components/ResizableBox';
+import { AppScanDialog } from '../AppScanDialog';
+import DirectoryList from '../directoryList/DirectoryList';
+import { SampleList } from '../list/components/SampleList';
+import { useStoreActions, useStoreState } from '../providers/store';
+import { Query } from '../query/Query';
+import { ResizableBox } from '../shared/components/ResizableBox';
 
 // styles
 const mainContainer = {
@@ -29,6 +30,7 @@ export function Layout() {
 
   return (
     <>
+      <AppScanDialog />
       <Box sx={mainContainer}>
         <ResizableBox
           width={layout.sampleList.width}

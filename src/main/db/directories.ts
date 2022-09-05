@@ -1,23 +1,26 @@
 import SqlString from 'sqlstring-sqlite';
 
 import { Directory } from '../../types';
-import {
-  createDirChildsSQL,
-  createDirsSQL,
-  dropDirectoriesSQL,
-  dropDirectoryChildsSQL,
-} from './reset';
 import { allQuery, getQuery, runQuery } from './utils';
+
+export const dropDirectoriesSQL = `DROP TABLE IF EXISTS directories;`;
+export const createDirsSQL = `CREATE TABLE "directories" (
+  "id"	INTEGER NOT NULL UNIQUE,
+  "path"	TEXT NOT NULL,
+  "viewing"	INTEGER NOT NULL,
+  "top_level"	INTEGER NOT NULL,
+  "last_child" INTEGER,
+  "total_samples" INTEGER,
+  PRIMARY KEY("id" AUTOINCREMENT),
+  UNIQUE("path") ON CONFLICT IGNORE
+);`;
 
 export const getDirectories = () =>
   allQuery<Directory>(`SELECT * FROM directories;`);
 
-export const getActiveDirectories = () =>
-  allQuery<Directory>(`SELECT * FROM directories WHERE active=TRUE`);
-
 export const addDirectory = (dirPath: string, totalSamples: number) => {
   const sql = SqlString.format(
-    'INSERT INTO directories (path, active, viewing, top_level, last_child, total_samples) VALUES (?, ?, ?, ?, ?, ?)',
+    'INSERT INTO directories (path, viewing, top_level, last_child, total_samples) VALUES (?, ?, ?, ?, ?)',
     [dirPath, false, false, false, false, totalSamples]
   );
   return runQuery(sql, true);
@@ -53,36 +56,10 @@ export const removeDirectory = (dirPath: string) => {
   return runQuery(sql);
 };
 
-export const activateDir = (id: number) => {
-  const sql = SqlString.format(
-    'UPDATE directories SET active=TRUE WHERE id = ?',
-    [id]
-  );
-  return runQuery(sql);
-};
-
-export const deActivateDir = (id: number) => {
-  const sql = SqlString.format(
-    'UPDATE directories SET active=FALSE WHERE id = ?',
-    [id]
-  );
-  return runQuery(sql);
-};
-
-export const addDirectoryChilds = (values: [number, number][]) => {
-  if (values.length === 0) return;
-  const sql = SqlString.format(
-    'INSERT INTO directory_childs (id, child_id) VALUES ?',
-    [values]
-  );
-  runQuery(sql, true);
-};
-
 export const getVisibleChildDirs = () =>
   allQuery<{
     child_id: number;
     child_path: string;
-    active: 0 | 1;
     parent_id: number;
     viewing: 0 | 1;
     top_level: 0 | 1;
@@ -91,7 +68,6 @@ export const getVisibleChildDirs = () =>
   }>(`SELECT
   directories.id as child_id,
   directories.path as child_path,
-  directories.active as active,
   directories.viewing as viewing,
   directories.top_level as top_level,
   directories.last_child as last_child,
@@ -150,11 +126,9 @@ export const setAllLastChildDirs = () =>
   (SELECT id FROM directory_childs)`);
 
 export const dropDirsTables = () => {
-  runQuery(dropDirectoryChildsSQL);
   runQuery(dropDirectoriesSQL);
 };
 
 export const createDirsTables = () => {
   runQuery(createDirsSQL);
-  runQuery(createDirChildsSQL);
 };

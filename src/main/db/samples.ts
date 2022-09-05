@@ -1,9 +1,18 @@
 import SqlString from 'sqlstring-sqlite';
 import { Sample } from '../../types';
 import { SqlGen } from '../utils/SqlGen';
-import { getActiveDirectories } from './directories';
-import { createSamplesSQL, dropSamplesSQL } from './reset';
-import { activeDirsWhereClause, allQuery, runQuery } from './utils';
+import { allQuery, runQuery } from './utils';
+
+export const dropSamplesSQL = `DROP TABLE IF EXISTS samples;`;
+
+export const createSamplesSQL = `CREATE TABLE "samples" (
+  "path"	TEXT NOT NULL,
+  "bpm"	INTEGER,
+  "key"	TEXT,
+  "dir_id" INTEGER NOT NULL REFERENCES directories("id"),
+  PRIMARY KEY("path"),
+  UNIQUE("path") ON CONFLICT IGNORE
+);`;
 
 export const wordsWhereClause = (words: string[]) =>
   words.map((word) => SqlString.format(`words.word = ?`, [word])).join(' OR ');
@@ -27,17 +36,13 @@ export const getAllSamples = () => {
 };
 
 export const getSamplesInActiveDirs = () => {
-  const activeDirs = getActiveDirectories();
-  if (activeDirs.length === 0) {
-    console.log('\nNO ACTIVE DIRS\n');
-    return [];
-  }
+  const sqlGen = new SqlGen();
+  const sql = `
+  ${sqlGen.selectFromSamples(['path'])}
+  ${sqlGen.whereFiltering(['sample-paths-like-active-dirs'])}
+  `;
 
-  const whereClause = activeDirsWhereClause(activeDirs, []);
-
-  const fullClause = `SELECT path FROM samples WHERE ${whereClause}`;
-
-  return allQuery<{ path: string }>(fullClause);
+  return allQuery<{ path: string }>(sql);
 };
 
 export const getSamplesByQuery = () => {
@@ -59,7 +64,7 @@ export const getSamplesByQuery = () => {
     'keys',
     'words',
     'tags',
-    'sample-paths-like',
+    'sample-paths-like-active-dirs',
   ])}
   ${sqlGen.limit(50)}`;
 

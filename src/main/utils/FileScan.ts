@@ -114,7 +114,6 @@ export default class FileScan {
   }
 
   private async analyzeFilesToScan() {
-    // const activeDirs = getActiveDirectories();
     const allDirs = getDirectories();
     allDirs.forEach((dir) => {
       this.allDirectoriesMap[dir.path] = dir;

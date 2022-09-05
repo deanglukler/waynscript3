@@ -7,7 +7,7 @@ import path from 'path';
 import { useEffect, useState } from 'react';
 
 import { DirectoryMap } from '../../types';
-import { useHover } from '../query/queryHooks';
+import { useHover } from '../query/hooks';
 
 // these are Typescript interfaces..
 // eslint-disable-next-line import/no-cycle
@@ -19,10 +19,7 @@ interface DirectoryProps extends DirectoryChildOptions {
   avg: number;
   index: number;
   handleDirClick: (id: number, viewing: 0 | 1) => (e: React.MouseEvent) => void;
-  handleActivateClick: (
-    id: number,
-    active: 0 | 1
-  ) => (e: React.MouseEvent) => void;
+  handleActivateClick: (dirPath: string) => (e: React.MouseEvent) => void;
   onHover: (hoveredPath: string) => void;
   renderChilds: ChildRenderer;
 }
@@ -167,13 +164,16 @@ export function Directory({
     }
     if (active) {
       return (
-        <IconButton sx={iconButtonSx} onClick={handleActivateClick(id, active)}>
+        <IconButton
+          sx={iconButtonSx}
+          onClick={handleActivateClick(dirMap.path)}
+        >
           <RemoveOutlinedIcon sx={listIconSx} />
         </IconButton>
       );
     }
     return (
-      <IconButton sx={iconButtonSx} onClick={handleActivateClick(id, active)}>
+      <IconButton sx={iconButtonSx} onClick={handleActivateClick(dirMap.path)}>
         <AddOutlinedIcon sx={listIconSx} />
       </IconButton>
     );

@@ -1,5 +1,6 @@
 import { Action } from 'easy-peasy';
 import { BrowserWindow } from 'electron';
+import { Progress } from './main/utils/Progress';
 
 export interface AvailableWindows {
   queryWindow: BrowserWindow | null;
@@ -9,7 +10,6 @@ export interface AvailableWindows {
 export interface Directory {
   id: number;
   path: string;
-  active: 0 | 1;
   viewing: 0 | 1;
   last_child: 0 | 1;
   top_level: 0 | 1;
@@ -78,48 +78,55 @@ export interface SampleWord {
 
 export type FilePath = string;
 
-type Bpms = number[];
-type Keys = string[];
-type Words = string[];
-type Tags = string[];
-
-export interface QueryStoreModel {
-  appInit: { finished: boolean };
-  appInitFinished: Action<QueryStoreModel>;
-  appInitStarting: Action<QueryStoreModel>;
-  query: {
-    initializingQuery: boolean;
-    loadingQuery: boolean;
-  };
-  initializedQuery: Action<QueryStoreModel>;
-  loadingQueryStart: Action<QueryStoreModel>;
-  loadingQueryFinish: Action<QueryStoreModel>;
-  updateQueryParams: Action<QueryStoreModel, Query>;
-  bpms: Bpms;
-  toggleBpm: Action<QueryStoreModel, number>;
-  keys: Keys;
-  toggleKey: Action<QueryStoreModel, string>;
-  words: Words;
-  toggleWord: Action<QueryStoreModel, string>;
-  tags: Tags;
-  toggleTag: Action<QueryStoreModel, string>;
-}
-
-export interface ListStoreModel {
-  files: Sample[];
-  setFiles: Action<ListStoreModel, Sample[]>;
-}
-
 interface GenericLayout {
   width: string;
 }
 
-export interface MainWindowStoreModel extends QueryStoreModel, ListStoreModel {
+export interface ScanProgress {
+  isScanning: boolean;
+  fileScanProgress: Progress;
+  wordsScanProgress: Progress;
+  dirScanProgress: Progress;
+}
+
+export interface MainWindowStoreData {
+  scans: ScanProgress;
+  files: Sample[];
+  bpms: Bpms;
+  keys: Keys;
+  words: Words;
+  tags: Tags;
+  directories: string[];
+  dirMaps: DirectoryMap[];
+  bpmStats: Stats;
+  keyStats: Stats;
+  wordStats: Stats;
+  tagStats: Stats;
   layout: {
     sampleList: GenericLayout;
     directoryList: GenericLayout;
     query: GenericLayout;
   };
+}
+
+export interface MainWindowStoreModel extends MainWindowStoreData {
+  setFileScanProgress: Action<MainWindowStoreModel, Progress>;
+  setWordsScanProgress: Action<MainWindowStoreModel, Progress>;
+  setDirScanProgress: Action<MainWindowStoreModel, Progress>;
+  setScanStart: Action<MainWindowStoreModel>;
+  setScanEnd: Action<MainWindowStoreModel>;
+  setFiles: Action<MainWindowStoreModel, Sample[]>;
+  updateQueryParams: Action<MainWindowStoreModel, Query>;
+  toggleBpm: Action<MainWindowStoreModel, number>;
+  toggleKey: Action<MainWindowStoreModel, string>;
+  toggleWord: Action<MainWindowStoreModel, string>;
+  toggleTag: Action<MainWindowStoreModel, string>;
+  toggleDirectory: Action<MainWindowStoreModel, string>;
+  updateDirMaps: Action<MainWindowStoreModel, DirectoryMap[]>;
+  updateBpmStats: Action<MainWindowStoreModel, Stats>;
+  updateKeyStats: Action<MainWindowStoreModel, Stats>;
+  updateWordStats: Action<MainWindowStoreModel, Stats>;
+  updateTagStats: Action<MainWindowStoreModel, Stats>;
   updateLayout: Action<
     MainWindowStoreModel,
     {
@@ -130,11 +137,21 @@ export interface MainWindowStoreModel extends QueryStoreModel, ListStoreModel {
   >;
 }
 
+export interface MainWindowStart {
+  initializedStoreData: MainWindowStoreData;
+}
+
+type Bpms = number[];
+type Keys = string[];
+type Words = string[];
+type Tags = string[];
+
 export interface Query {
   bpms: Bpms;
   keys: Keys;
   words: Words;
   tags: Tags;
+  directories: string[];
 }
 
 export interface QueryRow {

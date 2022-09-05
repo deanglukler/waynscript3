@@ -1,9 +1,9 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { visibleKeyText } from '../../../shared/logic/visibleKeyText';
-import { useQueryListControls } from '../../queryHooks';
+import { useQueryListControls } from '../../hooks';
 import { ActiveListItem } from './ActiveListItem';
 
-export function ActiveQueryList(): JSX.Element {
+export function ActiveList(): JSX.Element {
   const {
     selectedBPMS,
     handleToggleBPM,

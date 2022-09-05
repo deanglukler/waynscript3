@@ -1,38 +1,34 @@
 import _ from 'lodash';
+import { Stats } from '../../types';
 import { allQuery } from '../db/utils';
-import { Stats } from '../types';
 import { SqlGen } from './SqlGen';
-import Windows from './Windows';
 
 export default class QueryStats {
-  static getBpmStatsAndSendToQuery(windows: Windows) {
+  static getBpmStats() {
     console.log('\nSTATS: getting BPM stats');
     console.log('- - - - - - - - - - - - -');
-    const stats = getBpmStats();
-    windows.sendWindowMessage('queryWindow', 'BPM_QUERY_STATS', stats);
+    return getBpmStats();
   }
 
-  static getKeyStatsAndSendToQuery(windows: Windows) {
+  static getKeyStats() {
     console.log('\nSTATS: getting KEY stats');
     console.log('- - - - - - - - - - - - -');
-    const stats = getKeyStats();
-    windows.sendWindowMessage('queryWindow', 'KEY_QUERY_STATS', stats);
+    return getKeyStats();
   }
 
-  static async getWordStatsAndSendToQuery(windows: Windows) {
+  static async getWordStats() {
     console.log('\nSTATS: STARTING ASYNC getting WORD stats');
     console.log('- - - - - - - - - - - - -');
     const stats = await getWordStats();
-    windows.sendWindowMessage('queryWindow', 'WORD_QUERY_STATS', stats);
     console.log('\nSTATS: FINISHED ASYNC getting WORD stats');
     console.log('- - - - - - - - - - - - -');
+    return stats;
   }
 
-  static getTagStatsAndSendToQuery(windows: Windows) {
+  static getTagStats() {
     console.log('\nSTATS: getting TAGS stats');
     console.log('- - - - - - - - - - - - -');
-    const stats = getTagStats();
-    windows.sendWindowMessage('queryWindow', 'TAG_QUERY_STATS', stats);
+    return getTagStats();
   }
 }
 
@@ -47,7 +43,7 @@ const getBpmStats = (): Stats => {
     'keys',
     'words',
     'tags',
-    'sample-paths-like',
+    'sample-paths-like-active-dirs',
     'bpm-not-null',
   ])}`;
 
@@ -73,7 +69,7 @@ const getKeyStats = (): Stats => {
     'bpms',
     'words',
     'tags',
-    'sample-paths-like',
+    'sample-paths-like-active-dirs',
     'key-not-null',
   ])}`;
 
@@ -95,7 +91,12 @@ const getWordStats = async (): Promise<Stats> => {
   const sql = `${sqlGen.selectFromSamples(['words.word'])}
   ${sqlGen.joinWordsToSamples()}
   ${sqlGen.joinTagsToSamplesIfAnyTags()}
-  ${sqlGen.whereFiltering(['keys', 'bpms', 'tags', 'sample-paths-like'])}`;
+  ${sqlGen.whereFiltering([
+    'keys',
+    'bpms',
+    'tags',
+    'sample-paths-like-active-dirs',
+  ])}`;
 
   const results = allQuery<{ word: string }>(sql);
 
@@ -136,7 +137,12 @@ const getTagStats = (): Stats => {
   const sql = `${sqlGen.selectFromTags(['tags.tag'])}
   ${sqlGen.joinSamplesToTagsIfAnyBpmsOrKeys()}
   ${sqlGen.joinWordsToTagsIfAnyWords()}
-  ${sqlGen.whereFiltering(['keys', 'bpms', 'words', 'tags-paths-like'])}`;
+  ${sqlGen.whereFiltering([
+    'keys',
+    'bpms',
+    'words',
+    'tags-paths-like-active-dirs',
+  ])}`;
 
   const results = allQuery<{ tag: string }>(sql);
   const tagStats: Stats = {};

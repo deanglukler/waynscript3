@@ -1,4 +1,5 @@
 import { Channels } from 'main/preload';
+import { MainWindowStart } from '../types';
 
 declare global {
   interface Window {
@@ -10,6 +11,7 @@ declare global {
           func: (...args: unknown[]) => void
         ): (() => void) | undefined;
         once(channel: string, func: (...args: unknown[]) => void): void;
+        mainWindowStart(): Promise<MainWindowStart>;
       };
     };
   }

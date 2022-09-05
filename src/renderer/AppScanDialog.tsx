@@ -6,17 +6,16 @@ import {
   LinearProgress,
   Typography,
 } from '@mui/material';
-import { useStoreState } from '../../providers/store';
-import { useAppInit, useScanningProgress } from '../queryHooks';
+import { useStoreState } from './providers/store';
+import { useScanningProgress } from './query/hooks';
 
-export function AppInitDialog(): JSX.Element {
-  const appInit = useStoreState((store) => store.appInit);
+export function AppScanDialog(): JSX.Element {
   const { fileScanProgress, wordsScanProgress, dirScanProgress } =
     useScanningProgress();
-  useAppInit();
 
+  const scans = useStoreState((state) => state.scans);
   return (
-    <Dialog open={!appInit.finished}>
+    <Dialog open={scans.isScanning}>
       <DialogTitle>Initial Sound Scan Progress</DialogTitle>
       <DialogContent>
         <Typography>Directory Scan</Typography>

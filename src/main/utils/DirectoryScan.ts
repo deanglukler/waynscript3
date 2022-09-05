@@ -6,7 +6,6 @@ import path from 'path';
 
 import {
   addDirectory,
-  addDirectoryChilds,
   getAllTotalSamples,
   getRootDirectory,
   getTotalSamplesData,
@@ -19,6 +18,7 @@ import {
 import { Directory } from '../../types';
 import { audioExts } from './constants';
 import { Progress } from './Progress';
+import { addDirectoryChilds } from '../db/directory_childs';
 
 const { username } = os.userInfo();
 

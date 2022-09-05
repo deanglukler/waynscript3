@@ -1,13 +1,14 @@
 import { Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import _ from 'lodash';
-import { useBPMStats, useQueryListControls } from '../../queryHooks';
+import { useStoreState } from '../../../providers/store';
+import { useQueryListControls } from '../../hooks';
 import { NoneListText } from '../shared/NoneListText';
 import { StickyListHeader } from '../StickyListHeader';
 import { BPMListItem } from './BPMListItem';
 
 export function BPMList(): JSX.Element {
-  const stats = useBPMStats();
+  const stats = useStoreState((state) => state.bpmStats);
 
   const { selectedBPMS, handleToggleBPM } = useQueryListControls();
 

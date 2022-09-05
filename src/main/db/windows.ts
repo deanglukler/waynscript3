@@ -1,13 +1,23 @@
 import SqlString from 'sqlstring-sqlite';
 import { WindowInfo } from '../../types';
-import db from './db';
-import { logQuery, runQuery } from './utils';
+import { getQuery, logQuery, runQuery } from './utils';
+
+export const dropWindowsSQL = `DROP TABLE IF EXISTS windows;`;
+
+export const createWindowsSQL = `CREATE TABLE "windows" (
+  "id"	INTEGER NOT NULL UNIQUE,
+  "name"	TEXT NOT NULL UNIQUE,
+  "width"	INTEGER NOT NULL,
+  "height"	INTEGER NOT NULL,
+  "x"	INTEGER,
+  "y"	INTEGER,
+  PRIMARY KEY("id" AUTOINCREMENT)
+);`;
 
 export const getMainWindow = () => {
   const sql = `SELECT * FROM windows WHERE windows.name = 'main';`;
   logQuery(sql);
-  const stmt = db.prepare(sql);
-  const res = stmt.get();
+  const res = getQuery(sql);
   return res as WindowInfo;
 };
 

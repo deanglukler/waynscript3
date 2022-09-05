@@ -7,6 +7,10 @@ export class Progress {
 
   public isFinished: boolean = false;
 
+  static defaultProgress() {
+    return new Progress();
+  }
+
   /**
    * incrementProcessed
    */
