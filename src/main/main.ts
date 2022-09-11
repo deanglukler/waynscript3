@@ -9,15 +9,15 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import './utils/electronIpcLog';
 import './utils/errorTracking';
 import { MainWindow } from './windows/MainWindow';
 import { IS_DEBUG } from './shared/constants';
 import { Splash } from './splash/Splash';
 import { AppStarter } from './app/AppStarter';
-import { Scans } from './app/Scans';
-import { AppState } from './AppState';
+import { Scans } from './app/scans/Scans';
+import { AppState } from './app/AppState';
 import { build, destroy } from './db/db';
 import { Connection } from './db/Connection';
 import { RenderSync } from './app/RenderSync';
@@ -67,16 +67,20 @@ ipcMain.handle('MAIN_WINDOW_START', () =>
 app
   .whenReady()
   .then(async () => {
-    const splash = new Splash();
-    const mainWindow = await MainWindow.createWindow();
-    new Msg({ window: mainWindow });
+    let mainWindow: BrowserWindow | null = null;
+    if (process.env.NO_WINDOWS === 'true') {
+      Scans.init();
+    } else {
+      const splash = new Splash();
+      mainWindow = await MainWindow.createWindow();
+      new Msg({ window: mainWindow });
 
-    splash.window?.close();
-    splash.window = null;
+      splash.window?.close();
+      splash.window = null;
 
-    mainWindow.show();
-
-    Scans.init();
+      mainWindow.show();
+      Scans.init();
+    }
 
     app.on('activate', async () => {
       // On macOS it's common to re-create a window in the app when the

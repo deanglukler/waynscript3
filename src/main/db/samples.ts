@@ -1,7 +1,7 @@
 import SqlString from 'sqlstring-sqlite';
 import { Sample } from '../../types';
 import { SqlGen } from '../utils/SqlGen';
-import { allQuery, runQuery } from './utils';
+import { allQuery, insertMany, runQuery } from './utils';
 
 export const dropSamplesSQL = `DROP TABLE IF EXISTS samples;`;
 
@@ -9,7 +9,6 @@ export const createSamplesSQL = `CREATE TABLE "samples" (
   "path"	TEXT NOT NULL,
   "bpm"	INTEGER,
   "key"	TEXT,
-  "dir_id" INTEGER NOT NULL REFERENCES directories("id"),
   PRIMARY KEY("path"),
   UNIQUE("path") ON CONFLICT IGNORE
 );`;
@@ -22,13 +21,16 @@ export const insertSamples = (samples: Sample[]) => {
     sample.path,
     sample.bpm,
     sample.key,
-    sample.dir_id,
   ]);
-  const sql = SqlString.format(
-    'INSERT INTO samples (path,bpm,key,dir_id) VALUES ?',
-    [samplesSQL]
-  );
+  const sql = SqlString.format('INSERT INTO samples (path,bpm,key) VALUES ?', [
+    samplesSQL,
+  ]);
   return runQuery(sql, true);
+};
+
+export const insertManySamples = (samples: Sample[]) => {
+  const sql = 'INSERT INTO samples (path,bpm,key) VALUES (@path, @bpm, @key)';
+  insertMany(sql, samples);
 };
 
 export const getAllSamples = () => {

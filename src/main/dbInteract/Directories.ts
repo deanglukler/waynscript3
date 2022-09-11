@@ -3,8 +3,9 @@ import {
   getVisibleChildDirs,
   getTopLevelDirs,
   setViewDir,
+  addDirectories,
 } from '../db/directories';
-import { DirectoryMap } from '../../types';
+import { DirectoryMap, FoundSampleDirectory } from '../../types';
 
 export default class Directories {
   static getDirMaps() {
@@ -42,5 +43,11 @@ export default class Directories {
 
   static setViewDir(id: number, view: boolean) {
     setViewDir(id, view);
+  }
+
+  static addFoundSampleDirectories(dirs: FoundSampleDirectory[]) {
+    addDirectories(
+      dirs.map(({ path, total }) => ({ path, totalSamples: total }))
+    );
   }
 }

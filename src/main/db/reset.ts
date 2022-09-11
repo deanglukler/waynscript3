@@ -23,24 +23,3 @@ export const resetSQLs = [
   createTagsSQL,
   createWindowsSQL,
 ];
-
-export const resetDatabase = () => {
-  console.log('\nRESETTING DATABASE');
-
-  // directories
-  // runQuery(dropDirectoryChildsSQL);
-  // runQuery(dropDirectoriesSQL);
-  // runQuery(dropWordsSQL);
-  // runQuery(dropTagsSQL);
-  // runQuery(dropSamplesSQL);
-  // runQuery(dropWindowsSQL);
-  // runQuery(createDirsSQL);
-  // runQuery(createDirChildsSQL);
-  // runQuery(createSamplesSQL);
-  // runQuery(dropQueriesSQL);
-  // runQuery(createQueriesSQL);
-  // runQuery(seedQueriesSQL);
-  // runQuery(createWordsSQL);
-  // runQuery(createTagsSQL);
-  // runQuery(createWindowsSQL);
-};

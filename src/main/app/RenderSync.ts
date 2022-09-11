@@ -1,8 +1,7 @@
 import { EventEmitter } from 'events';
 import { Sample, Stats } from '../../types';
-import Directories from '../utils/Directories';
 import QueryStats from '../utils/QueryStats';
-import Samples from '../utils/Samples';
+import Samples from '../dbInteract/Samples';
 import { Msg } from './Msg';
 
 const CH = {
@@ -28,7 +27,7 @@ export class RenderSync {
 
   static init() {
     emitter.on(CH.SYNC_DIRS, () => {
-      const dirMaps = Directories.getDirMaps();
+      const dirMaps = [];
       Msg.send('RECEIVE_DIR_SYNC', dirMaps);
     });
 

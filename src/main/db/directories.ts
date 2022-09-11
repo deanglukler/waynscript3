@@ -7,9 +7,6 @@ export const dropDirectoriesSQL = `DROP TABLE IF EXISTS directories;`;
 export const createDirsSQL = `CREATE TABLE "directories" (
   "id"	INTEGER NOT NULL UNIQUE,
   "path"	TEXT NOT NULL,
-  "viewing"	INTEGER NOT NULL,
-  "top_level"	INTEGER NOT NULL,
-  "last_child" INTEGER,
   "total_samples" INTEGER,
   PRIMARY KEY("id" AUTOINCREMENT),
   UNIQUE("path") ON CONFLICT IGNORE
@@ -18,12 +15,15 @@ export const createDirsSQL = `CREATE TABLE "directories" (
 export const getDirectories = () =>
   allQuery<Directory>(`SELECT * FROM directories;`);
 
-export const addDirectory = (dirPath: string, totalSamples: number) => {
+export const addDirectories = (
+  dirs: { totalSamples: number; path: string }[]
+) => {
+  const dirsSql = dirs.map(({ totalSamples, path }) => [path, totalSamples]);
   const sql = SqlString.format(
-    'INSERT INTO directories (path, viewing, top_level, last_child, total_samples) VALUES (?, ?, ?, ?, ?)',
-    [dirPath, false, false, false, false, totalSamples]
+    'INSERT INTO directories (path, total_samples) VALUES ?',
+    [dirsSql]
   );
-  return runQuery(sql, true);
+  runQuery(sql, true);
 };
 
 export const deleteDirectory = (id: number) => {
@@ -35,19 +35,6 @@ export const getRootDirectory = (rootPath: string) =>
   getQuery<Directory>(
     SqlString.format(`SELECT * FROM directories WHERE path = ?`, [rootPath])
   );
-
-export const makeRootDirectory = (rootPath: string) => {
-  addDirectory(rootPath, 0);
-  return getRootDirectory(rootPath);
-};
-
-export const updateTotalSamples = (dirID: number, totalSamples: number) => {
-  const sql = SqlString.format(
-    'UPDATE directories SET total_samples = ? WHERE id = ?',
-    [totalSamples, dirID]
-  );
-  return runQuery(sql);
-};
 
 export const removeDirectory = (dirPath: string) => {
   const sql = SqlString.format('DELETE FROM directories WHERE path = ?', [

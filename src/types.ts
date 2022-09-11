@@ -1,6 +1,5 @@
 import { Action } from 'easy-peasy';
 import { BrowserWindow } from 'electron';
-import { Progress } from './main/utils/Progress';
 
 export interface AvailableWindows {
   queryWindow: BrowserWindow | null;
@@ -16,13 +15,17 @@ export interface Directory {
   total_samples: number;
 }
 
+export interface FoundSampleDirectory {
+  path: string;
+  total: number;
+}
+
 export interface DirectoryMap extends Directory {
   childs: DirectoryMap[];
 }
 
 export interface Sample {
   path: string;
-  dir_id: number;
   bpm: number | null;
   key: string | null;
 }
@@ -82,15 +85,21 @@ interface GenericLayout {
   width: string;
 }
 
-export interface ScanProgress {
+export interface AppScanProgress {
   isScanning: boolean;
-  fileScanProgress: Progress;
-  wordsScanProgress: Progress;
-  dirScanProgress: Progress;
+  fileScanProgress: Scan;
+  dirScanProgress: Scan;
+}
+
+export interface Scan {
+  percent: number;
+  total: number;
+  processed: number;
+  isFinished: boolean;
 }
 
 export interface MainWindowStoreData {
-  scans: ScanProgress;
+  scans: AppScanProgress;
   files: Sample[];
   bpms: Bpms;
   keys: Keys;
@@ -110,9 +119,9 @@ export interface MainWindowStoreData {
 }
 
 export interface MainWindowStoreModel extends MainWindowStoreData {
-  setFileScanProgress: Action<MainWindowStoreModel, Progress>;
-  setWordsScanProgress: Action<MainWindowStoreModel, Progress>;
-  setDirScanProgress: Action<MainWindowStoreModel, Progress>;
+  setFileScanProgress: Action<MainWindowStoreModel, Scan>;
+  setWordsScanProgress: Action<MainWindowStoreModel, Scan>;
+  setDirScanProgress: Action<MainWindowStoreModel, Scan>;
   setScanStart: Action<MainWindowStoreModel>;
   setScanEnd: Action<MainWindowStoreModel>;
   setFiles: Action<MainWindowStoreModel, Sample[]>;

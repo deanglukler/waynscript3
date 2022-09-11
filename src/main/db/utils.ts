@@ -45,3 +45,17 @@ export const allQuery = <T>(q: string) => {
   db.close();
   return res as T[];
 };
+
+export const insertMany = (sql: string, datas: object[]) => {
+  const { db } = new Connection();
+  const insert = db.prepare(sql);
+  const t = db.transaction((ds: object[]) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const d of ds) insert.run(d);
+  });
+  console.log(`inserting many: ${datas.length} records`);
+  logQuery(sql);
+  t(datas);
+  logQueryTime();
+  db.close();
+};

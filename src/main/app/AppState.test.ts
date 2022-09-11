@@ -1,5 +1,5 @@
+import { ProgressiveScan } from './scans/ProgressiveScan';
 import { AppState } from './AppState';
-import { Progress } from './utils/Progress';
 
 describe('AppState', () => {
   describe('updating state', () => {
@@ -25,7 +25,7 @@ describe('AppState', () => {
       AppState.startScan();
       expect(appState.scans.isScanning).toBe(true);
       AppState.updateScanState((currentState) => {
-        const nextFileScanProgress = new Progress();
+        const nextFileScanProgress = new ProgressiveScan(() => {});
         nextFileScanProgress.total = 100;
         nextFileScanProgress.processed = 50;
         currentState.fileScanProgress = nextFileScanProgress;

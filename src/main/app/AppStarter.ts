@@ -6,10 +6,10 @@ import {
   Query,
   Sample,
 } from '../../types';
-import { AppState } from '../AppState';
+import { AppState } from './AppState';
 import { getLastQuery } from '../db/queries';
 import { getSamplesByQuery } from '../db/samples';
-import Directories from '../utils/Directories';
+import Directories from '../dbInteract/Directories';
 import { logMainOn } from '../utils/log';
 import { Queries } from '../utils/Queries';
 import QueryStats from '../utils/QueryStats';
@@ -22,39 +22,44 @@ export class AppStarter {
     appState: AppState;
   }): Promise<MainWindowStart> {
     const wordStats = await QueryStats.getWordStats();
-    return new Promise<MainWindowStart>((resolve) => {
-      const files: Sample[] = getSamplesByQuery();
-      const { bpms, keys, words, tags, directories } = getLastQuery();
-      const bpmStats = QueryStats.getBpmStats();
-      const keyStats = QueryStats.getKeyStats();
-      const tagStats = QueryStats.getTagStats();
-      const dirMaps = Directories.getDirMaps();
-      const initStoreData: MainWindowStoreData = {
-        scans: appState.scans,
-        bpms,
-        keys,
-        words,
-        tags,
-        directories,
-        dirMaps,
-        bpmStats,
-        keyStats,
-        wordStats,
-        tagStats,
-        files,
-        layout: {
-          sampleList: {
-            width: '100px',
+    return new Promise<MainWindowStart>((resolve, reject) => {
+      try {
+        const files: Sample[] = getSamplesByQuery();
+        const { bpms, keys, words, tags, directories } = getLastQuery();
+        const bpmStats = QueryStats.getBpmStats();
+        const keyStats = QueryStats.getKeyStats();
+        const tagStats = QueryStats.getTagStats();
+        const dirMaps = [];
+        const initStoreData: MainWindowStoreData = {
+          scans: { ...appState.scans },
+          bpms,
+          keys,
+          words,
+          tags,
+          directories,
+          dirMaps,
+          bpmStats,
+          keyStats,
+          wordStats,
+          tagStats,
+          files,
+          layout: {
+            sampleList: {
+              width: '100px',
+            },
+            directoryList: {
+              width: '100px',
+            },
+            query: {
+              width: '100px',
+            },
           },
-          directoryList: {
-            width: '100px',
-          },
-          query: {
-            width: '100px',
-          },
-        },
-      };
-      resolve({ initializedStoreData: initStoreData });
+        };
+        resolve({ initializedStoreData: initStoreData });
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
     });
   }
 

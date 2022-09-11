@@ -16,6 +16,7 @@ export function build() {
     }
   });
   migration(resetSQLs);
+  console.log('== F I N I S H E D = M I G R A T I O N ==\n\n\n');
   db.close();
 }
 

@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import path from 'path';
-import { Tag, TagType } from '../../types';
-import { insertTags } from '../db/tags';
+import { Tag, TagType } from '../../../types';
 
 export class TagAnalysis {
   static analyze(paths: string[]) {
@@ -15,7 +14,7 @@ export class TagAnalysis {
         });
       }
     });
-    insertTags(foundTags);
+    return foundTags;
   }
 }
 

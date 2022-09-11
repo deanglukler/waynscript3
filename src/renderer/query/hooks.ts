@@ -1,6 +1,5 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { Query, Stats } from '../../types';
-import { Progress } from '../../main/utils/Progress';
+import { Query, Scan, Stats } from '../../types';
 import { useStoreActions, useStoreState } from '../providers/store';
 
 export const useSyncQuery = () => {
@@ -99,13 +98,13 @@ export const useQueryListControls = () => {
 };
 
 export const useFileScanProgress = () => {
-  const [scanProgress, setScanProgress] = useState<Progress | null>(null);
+  const [scanProgress, setScanProgress] = useState<Scan | null>(null);
 
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on(
       'UPDATE_FILESCAN_PROGRESS',
       (arg) => {
-        const scanProgressInfo = arg as Progress;
+        const scanProgressInfo = arg as Scan;
         setScanProgress(scanProgressInfo);
       }
     );
@@ -115,84 +114,19 @@ export const useFileScanProgress = () => {
 };
 
 export const useWordAnalProgress = () => {
-  const [scanProgress, setScanProgress] = useState<Progress | null>(null);
+  const [scanProgress, setScanProgress] = useState<Scan | null>(null);
 
   useEffect(() => {
     const cleanup = window.electron.ipcRenderer.on(
       'UPDATE_WORDANAL_PROGRESS',
       (arg) => {
-        const scanProgressInfo = arg as Progress;
+        const scanProgressInfo = arg as Scan;
         setScanProgress(scanProgressInfo);
       }
     );
     return cleanup;
   }, []);
   return scanProgress;
-};
-
-export const useScanningProgress = () => {
-  const {
-    setFileScanProgress,
-    setDirScanProgress,
-    setWordsScanProgress,
-    setScanStart,
-    setScanEnd,
-  } = useStoreActions((actions) => actions);
-  const { scans } = useStoreState((s) => s);
-  const { fileScanProgress, dirScanProgress, wordsScanProgress } = scans;
-
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on(
-      'UPDATE_FILESCAN_PROGRESS',
-      (arg) => {
-        const scanProgressInfo = arg as Progress;
-        setFileScanProgress(scanProgressInfo);
-      }
-    );
-    return cleanup;
-  }, [setFileScanProgress]);
-
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on(
-      'UPDATE_WORDANAL_PROGRESS',
-      (arg) => {
-        const scanProgressInfo = arg as Progress;
-        setWordsScanProgress(scanProgressInfo);
-      }
-    );
-    return cleanup;
-  }, [setWordsScanProgress]);
-
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on(
-      'UPDATE_DIRSCAN_PROGRESS',
-      (arg) => {
-        const scanProgressInfo = arg as Progress;
-        setDirScanProgress(scanProgressInfo);
-      }
-    );
-    return cleanup;
-  }, [setDirScanProgress]);
-
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on('FINISH_SCAN', () => {
-      setScanEnd();
-    });
-    return cleanup;
-  }, [setScanEnd]);
-
-  useEffect(() => {
-    const cleanup = window.electron.ipcRenderer.on('START_SCAN', () => {
-      setScanStart();
-    });
-    return cleanup;
-  }, [setScanStart]);
-
-  return {
-    fileScanProgress,
-    wordsScanProgress,
-    dirScanProgress,
-  };
 };
 
 // Hook

@@ -1,6 +1,6 @@
 import SqlString from 'sqlstring-sqlite';
 import { Word } from '../../types';
-import { runQuery } from './utils';
+import { insertMany, runQuery } from './utils';
 
 export const dropWordsSQL = `DROP TABLE IF EXISTS words;`;
 
@@ -17,6 +17,11 @@ export const insertWords = (words: Word[]) => {
     wordsSQL,
   ]);
   return runQuery(sql, true);
+};
+
+export const insertManyWords = (words: Word[]) => {
+  const sql = 'INSERT INTO words (word, path) VALUES (@word, @path)';
+  insertMany(sql, words);
 };
 
 export const dropWordsTable = () => {

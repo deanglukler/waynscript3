@@ -1,6 +1,6 @@
 import SqlString from 'sqlstring-sqlite';
 import { Tag } from '../../types';
-import { runQuery } from './utils';
+import { insertMany, runQuery } from './utils';
 
 export const dropTagsSQL = `DROP TABLE IF EXISTS tags;`;
 
@@ -18,6 +18,11 @@ export const insertTags = (tags: Tag[]) => {
     tagsSQL,
   ]);
   return runQuery(sql, true);
+};
+
+export const insertManyTags = (tags: Tag[]) => {
+  const sql = 'INSERT INTO tags (tag, path) VALUES (@tagType, @path)';
+  insertMany(sql, tags);
 };
 
 export const dropTagsTable = () => {

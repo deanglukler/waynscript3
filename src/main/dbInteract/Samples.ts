@@ -1,5 +1,4 @@
-import { ipcMain } from 'electron';
-import { getSamplesByQuery } from '../db/samples';
+import { getSamplesByQuery, insertManySamples } from '../db/samples';
 import { Sample } from '../../types';
 
 export default class Samples {
@@ -7,5 +6,9 @@ export default class Samples {
     console.log('\nStarting get samples . . . . .');
     const files: Sample[] = getSamplesByQuery();
     return files;
+  }
+
+  static bulkInsertSamples(samples: Sample[]) {
+    insertManySamples(samples);
   }
 }

@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
-import { Query, ScanProgress } from '../types';
-import { Progress } from './utils/Progress';
+import { AppScanProgress } from '../../types';
+import { ProgressiveScan } from './scans/ProgressiveScan';
 
 type AppStateEvents =
   | 'start-scan'
@@ -8,12 +8,11 @@ type AppStateEvents =
   | 'update-scan-state'
   | 'update-query';
 
-function initialScanState(): ScanProgress {
+function initialScanState(): AppScanProgress {
   return {
     isScanning: false,
-    fileScanProgress: Progress.defaultProgress(),
-    dirScanProgress: Progress.defaultProgress(),
-    wordsScanProgress: Progress.defaultProgress(),
+    fileScanProgress: ProgressiveScan.defaultProgress(),
+    dirScanProgress: ProgressiveScan.defaultProgress(),
   };
 }
 
@@ -23,8 +22,9 @@ function emit(name: AppStateEvents, payload?: unknown) {
   eventEmitter.emit(name, payload);
 }
 
-type ScanStateUpdateCallback = (current: ScanProgress) => ScanProgress | void;
-type QueryStateUpdateCallback = (current: Query) => Query | void;
+type ScanStateUpdateCallback = (
+  current: AppScanProgress
+) => AppScanProgress | void;
 
 //
 //
@@ -43,7 +43,7 @@ export class AppState {
     emit('update-scan-state', cb);
   }
 
-  public scans: ScanProgress = initialScanState();
+  public scans: AppScanProgress = initialScanState();
 
   constructor() {
     eventEmitter.on('start-scan', () => {
