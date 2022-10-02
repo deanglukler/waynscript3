@@ -10,9 +10,6 @@ export const createMainWindowStore = (initializedData: MainWindowStoreData) => {
     setDirScanProgress: action((state, payload) => {
       state.scans.dirScanProgress = payload;
     }),
-    setWordsScanProgress: action((state, payload) => {
-      state.scans.wordsScanProgress = payload;
-    }),
     setScanStart: action((state) => {
       state.scans.isScanning = true;
     }),
@@ -37,9 +34,6 @@ export const createMainWindowStore = (initializedData: MainWindowStoreData) => {
     toggleDirectory: action((state, payload) => {
       state.directories = _.xor(state.directories, [payload]);
     }),
-    updateDirMaps: action((state, payload) => {
-      state.dirMaps = payload;
-    }),
     updateBpmStats: action((state, payload) => {
       state.bpmStats = payload;
     }),
@@ -57,6 +51,9 @@ export const createMainWindowStore = (initializedData: MainWindowStoreData) => {
     }),
     updateLayout: action((state, layoutOptions) => {
       state.layout = { ...state.layout, ...layoutOptions };
+    }),
+    updateDirectoryList: action((state, directoryList) => {
+      state.directoryList = directoryList;
     }),
     ...initializedData,
   });

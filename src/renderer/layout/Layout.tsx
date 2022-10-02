@@ -1,6 +1,6 @@
 import { Box } from '@mui/system';
 import { AppScanDialog } from '../appScan/AppScanDialog';
-import DirectoryList from '../directoryList/DirectoryList';
+import { DirectoryList } from '../directoryList/DirectoryList';
 import { SampleList } from '../list/components/SampleList';
 import { useStoreActions, useStoreState } from '../providers/store';
 import { Query } from '../query/Query';

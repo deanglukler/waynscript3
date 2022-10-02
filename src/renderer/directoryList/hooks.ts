@@ -1,47 +1,46 @@
 import _ from 'lodash';
 import { useCallback, useEffect } from 'react';
-import { DirectoryMap } from '../../types';
+import { DirectoryList } from '../../types';
 import { useStoreActions, useStoreState } from '../providers/store';
 
 export const useIpc = () => {
-  const updateDirMaps = useStoreActions((actions) => actions.updateDirMaps);
+  const updateDirectoryList = useStoreActions(
+    (actions) => actions.updateDirectoryList
+  );
   useEffect(() => {
     const cleanUps = [
-      window.electron.ipcRenderer.on('RECEIVE_DIR_SYNC', (arg) => {
-        const current = arg as DirectoryMap[];
-        updateDirMaps(current);
+      window.electron.ipcRenderer.on('UPDATE_DIR_LIST', (arg) => {
+        const current = arg as DirectoryList;
+        updateDirectoryList(current);
       }),
     ];
     return () => {
       _.over(_.compact(cleanUps))();
     };
-  }, [updateDirMaps]);
+  }, [updateDirectoryList]);
 };
 
 export const useDirectorySync = () => {
-  const dirMaps = useStoreState((state) => state.dirMaps);
+  const directoryList = useStoreState((store) => {
+    return store.directoryList;
+  });
 
-  const activateViewDir = useCallback((id: number) => {
-    window.electron.ipcRenderer.sendMessage('ACTIVATE_VIEW_DIR', [id]);
-  }, []);
+  const increaseDepth = useCallback(() => {
+    const nextDepth = directoryList.depth + 1;
+    window.electron.ipcRenderer.sendMessage('SET_DIRECTORY_LIST_DEPTH', [
+      nextDepth,
+    ]);
+  }, [directoryList]);
 
-  const deactivateViewDir = useCallback((id: number) => {
-    window.electron.ipcRenderer.sendMessage('DEACTIVATE_VIEW_DIR', [id]);
-  }, []);
-
-  const totalTopLevelSamples = dirMaps.reduce((count, dirMap) => {
-    return count + dirMap.total_samples;
-  }, 0);
-
-  const averageTopLevelTotal = _.mean(
-    dirMaps.map((dirMap) => dirMap.total_samples)
-  );
+  const decreaseDepth = useCallback(() => {
+    const nextDepth = directoryList.depth - 1;
+    window.electron.ipcRenderer.sendMessage('SET_DIRECTORY_LIST_DEPTH', [
+      nextDepth,
+    ]);
+  }, [directoryList]);
 
   return {
-    dirMaps,
-    activateViewDir,
-    deactivateViewDir,
-    totalTopLevelSamples,
-    averageTopLevelTotal,
+    increaseDepth,
+    decreaseDepth,
   };
 };

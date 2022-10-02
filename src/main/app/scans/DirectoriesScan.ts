@@ -7,6 +7,7 @@ import Directories from '../../dbInteract/Directories';
 import { ProgressiveScan } from './ProgressiveScan';
 
 const ENOUGH_AUDIO_FILES = 5;
+const IGNORED_DIRECTORIES = [path.join(`/`, `users`, `${USER_DIR}`, `Library`)];
 
 export class DirectoriesScan extends ProgressiveScan {
   private unscannedDirectories: string[] = [];
@@ -18,9 +19,7 @@ export class DirectoriesScan extends ProgressiveScan {
   constructor(options: { onProgressUpdate: (progress: Scan) => void }) {
     super(options.onProgressUpdate);
 
-    this.unscannedDirectories.push(
-      path.join(`/users/${USER_DIR}/__stuff/__life/_music_production/_samples`)
-    );
+    this.unscannedDirectories.push(path.join(`/`, `users`, `${USER_DIR}`));
   }
 
   /**
@@ -47,9 +46,11 @@ export class DirectoriesScan extends ProgressiveScan {
     this.unscannedDirectories = [...this.unscannedDirectories, ...subDirs];
     const fileNamesAnalysis = analyzeFileNames(fileNames);
     if (fileNamesAnalysis) {
+      const depth = directory.split(path.sep).length;
       this.discoveredSampleDirectories.push({
         path: directory,
         total: fileNamesAnalysis.amountFound,
+        depth,
       });
       const foundSamples = fileNames.map((name) => ({
         dir: directory,
@@ -81,7 +82,11 @@ async function subDirsAndFiles(dirPath: string): Promise<{
     };
     readDirNoDotFiles.forEach((entity) => {
       if (entity.isDirectory()) {
-        results.subDirs.push(path.join(dirPath, entity.name));
+        if (IGNORED_DIRECTORIES.includes(path.join(dirPath, entity.name))) {
+          console.log('ignoring..', path.join(dirPath, entity.name));
+        } else {
+          results.subDirs.push(path.join(dirPath, entity.name));
+        }
       } else {
         results.fileNames.push(entity.name);
       }

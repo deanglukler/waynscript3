@@ -28,7 +28,9 @@ export type Channels =
   | 'DEACTIVATE_DIR'
   | 'ACTIVATE_VIEW_DIR'
   | 'DEACTIVATE_VIEW_DIR'
-  | 'RECEIVE_DIR_SYNC';
+  | 'RECEIVE_DIR_SYNC'
+  | 'UPDATE_DIR_LIST'
+  | 'SET_DIRECTORY_LIST_DEPTH';
 
 export type InvokeChannels = 'MAIN_WINDOW_START';
 

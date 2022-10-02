@@ -9,15 +9,14 @@ export interface AvailableWindows {
 export interface Directory {
   id: number;
   path: string;
-  viewing: 0 | 1;
-  last_child: 0 | 1;
-  top_level: 0 | 1;
+  depth: number;
   total_samples: number;
 }
 
 export interface FoundSampleDirectory {
   path: string;
   total: number;
+  depth: number;
 }
 
 export interface DirectoryMap extends Directory {
@@ -98,6 +97,11 @@ export interface Scan {
   isFinished: boolean;
 }
 
+export interface DirectoryList {
+  depth: number;
+  list: Directory[];
+}
+
 export interface MainWindowStoreData {
   scans: AppScanProgress;
   files: Sample[];
@@ -106,7 +110,7 @@ export interface MainWindowStoreData {
   words: Words;
   tags: Tags;
   directories: string[];
-  dirMaps: DirectoryMap[];
+  directoryList: DirectoryList;
   bpmStats: Stats;
   keyStats: Stats;
   wordStats: Stats;
@@ -120,7 +124,6 @@ export interface MainWindowStoreData {
 
 export interface MainWindowStoreModel extends MainWindowStoreData {
   setFileScanProgress: Action<MainWindowStoreModel, Scan>;
-  setWordsScanProgress: Action<MainWindowStoreModel, Scan>;
   setDirScanProgress: Action<MainWindowStoreModel, Scan>;
   setScanStart: Action<MainWindowStoreModel>;
   setScanEnd: Action<MainWindowStoreModel>;
@@ -131,7 +134,6 @@ export interface MainWindowStoreModel extends MainWindowStoreData {
   toggleWord: Action<MainWindowStoreModel, string>;
   toggleTag: Action<MainWindowStoreModel, string>;
   toggleDirectory: Action<MainWindowStoreModel, string>;
-  updateDirMaps: Action<MainWindowStoreModel, DirectoryMap[]>;
   updateBpmStats: Action<MainWindowStoreModel, Stats>;
   updateKeyStats: Action<MainWindowStoreModel, Stats>;
   updateWordStats: Action<MainWindowStoreModel, Stats>;
@@ -144,6 +146,7 @@ export interface MainWindowStoreModel extends MainWindowStoreData {
       query?: GenericLayout;
     }
   >;
+  updateDirectoryList: Action<MainWindowStoreModel, DirectoryList>;
 }
 
 export interface MainWindowStart {

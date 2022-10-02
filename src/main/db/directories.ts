@@ -8,6 +8,7 @@ export const createDirsSQL = `CREATE TABLE "directories" (
   "id"	INTEGER NOT NULL UNIQUE,
   "path"	TEXT NOT NULL,
   "total_samples" INTEGER,
+  "depth" INTEGER,
   PRIMARY KEY("id" AUTOINCREMENT),
   UNIQUE("path") ON CONFLICT IGNORE
 );`;
@@ -15,12 +16,21 @@ export const createDirsSQL = `CREATE TABLE "directories" (
 export const getDirectories = () =>
   allQuery<Directory>(`SELECT * FROM directories;`);
 
+export const getDirectoriesByDepth = (depth: number) =>
+  allQuery<Directory>(
+    SqlString.format(`SELECT * FROM directories WHERE depth < ?`, [depth])
+  );
+
 export const addDirectories = (
-  dirs: { totalSamples: number; path: string }[]
+  dirs: { totalSamples: number; path: string; depth: number }[]
 ) => {
-  const dirsSql = dirs.map(({ totalSamples, path }) => [path, totalSamples]);
+  const dirsSql = dirs.map(({ totalSamples, path, depth }) => [
+    path,
+    totalSamples,
+    depth,
+  ]);
   const sql = SqlString.format(
-    'INSERT INTO directories (path, total_samples) VALUES ?',
+    'INSERT INTO directories (path, total_samples, depth) VALUES ?',
     [dirsSql]
   );
   runQuery(sql, true);

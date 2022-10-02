@@ -29,7 +29,10 @@ export class AppStarter {
         const bpmStats = QueryStats.getBpmStats();
         const keyStats = QueryStats.getKeyStats();
         const tagStats = QueryStats.getTagStats();
-        const dirMaps = [];
+        const directoryList = {
+          depth: 11,
+          list: Directories.getDirectoryListByDepth(11),
+        };
         const initStoreData: MainWindowStoreData = {
           scans: { ...appState.scans },
           bpms,
@@ -37,12 +40,12 @@ export class AppStarter {
           words,
           tags,
           directories,
-          dirMaps,
           bpmStats,
           keyStats,
           wordStats,
           tagStats,
           files,
+          directoryList,
           layout: {
             sampleList: {
               width: '100px',
@@ -72,16 +75,9 @@ export class AppStarter {
       RenderSync.syncQueryStats();
     });
 
-    ipcMain.on(`ACTIVATE_VIEW_DIR`, (_event, arg) => {
-      const id = arg[0] as number;
-      Directories.setViewDir(id, true);
-      RenderSync.syncDirectories();
-    });
-
-    ipcMain.on(`DEACTIVATE_VIEW_DIR`, (_event, arg) => {
-      const id = arg[0] as number;
-      Directories.setViewDir(id, false);
-      RenderSync.syncDirectories();
+    ipcMain.on('SET_DIRECTORY_LIST_DEPTH', (_event, arg: [number]) => {
+      logMainOn(arg, 'SET_DIRECTORY_LIST_DEPTH');
+      // set depth in database and then sync
     });
 
     // may potentially reuse this logic in future dialogues
